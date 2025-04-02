@@ -4,23 +4,32 @@ import com.opencsv.exceptions.CsvException;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * The CsvProcessor class is responsible for processing CSV files by uploading, validating, and logging the process.
+ */
 public class CsvProcessor {
+
+    /**
+     * The main method that initiates the CSV processing.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         CsvUploader uploader = new CsvUploader();
         CsvValidator validator = new CsvValidator();
 
         try {
-            // Registrar o início do processo
+            // Log the start of the process
             CsvLogger.logStart();
 
-            // Carregar dados do CSV
+            // Load data from the CSV file
             List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
 
-            // Validar os dados
+            // Validate the data
             validator.validate(data);
-            System.out.println("Ficheiro carregado e validado com sucesso!");
+            System.out.println("File uploaded and validated successfully!");
 
-            // Exibir os dados (apenas para fins de teste)
+            // Display the data (for testing purposes only)
             for (String[] row : data) {
                 for (String cell : row) {
                     System.out.print(cell + " | ");
@@ -28,21 +37,21 @@ public class CsvProcessor {
                 System.out.println();
             }
 
-            // Registrar o fim do processo
+            // Log the end of the process
             CsvLogger.logEnd();
 
         } catch (IOException e) {
-            // Lidar com erros de leitura de arquivo
-            CsvLogger.logError("Erro ao ler o arquivo CSV: " + e.getMessage());
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            // Handle file reading errors
+            CsvLogger.logError("Error reading CSV file: " + e.getMessage());
+            System.err.println("Error reading file: " + e.getMessage());
         } catch (UploadCSV.CsvException e) {
-            // Lidar com erros personalizados definidos em CsvException
-            CsvLogger.logError("Erro de validação do CSV: " + e.getMessage());
-            System.err.println("Erro de validação do CSV: " + e.getMessage());
+            // Handle custom validation errors defined in CsvException
+            CsvLogger.logError("Error validating CSV file: " + e.getMessage());
+            System.err.println("Error validating CSV file: " + e.getMessage());
         } catch (Exception e) {
-            // Capturar qualquer outra exceção inesperada
-            CsvLogger.logError("Erro inesperado: " + e.getMessage());
-            System.err.println("Erro inesperado: " + e.getMessage());
+            // Catch any other unexpected exceptions
+            CsvLogger.logError("Unexpected error: " + e.getMessage());
+            System.err.println("Unexpected error: " + e.getMessage());
         }
     }
 }

@@ -2,20 +2,29 @@ package UploadCSV;
 
 import java.util.List;
 
+/**
+ * The CsvValidator class provides methods to validate the contents of a CSV file.
+ */
 public class CsvValidator {
 
+    /**
+     * Validates the contents of the CSV file.
+     *
+     * @param data the list of string arrays representing the CSV data
+     * @throws CsvException if the CSV file is empty or contains invalid headers
+     */
     public void validate(List<String[]> data) throws CsvException {
         if (data.isEmpty()) {
-            CsvLogger.logError("Ficheiro CSV está vazio!");
-            throw new CsvException("Ficheiro CSV está vazio!");
+            CsvLogger.logError("csv file is empty!");
+            throw new CsvException("csv file is empty!");
         }
 
         String[] headers = data.get(0);
 
-        // Validar cabeçalhos
+        // Validate headers
         if (headers.length != 10) {
-            CsvLogger.logError("Cabeçalhos incompletos ou inválidos.");
-            throw new CsvException("Cabeçalhos incompletos ou inválidos.");
+            CsvLogger.logError("imcomplete or invalid headers.");
+            throw new CsvException("imcomplete or invalid headers.");
         }
 
         if (!headers[0].equalsIgnoreCase("OBJECTID") ||
@@ -28,42 +37,42 @@ public class CsvValidator {
                 !headers[7].equalsIgnoreCase("Freguesia") ||
                 !headers[8].equalsIgnoreCase("Municipio") ||
                 !headers[9].equalsIgnoreCase("Ilha")) {
-            CsvLogger.logError("Cabeçalhos inválidos!");
-            throw new CsvException("Cabeçalhos inválidos!");
+            CsvLogger.logError("invalid headers!");
+            throw new CsvException("invalid headers!");
         }
 
-        // Validar as linhas de dados (a partir da segunda linha)
+        // Validate data rows (starting from the second row)
         for (int i = 1; i < data.size(); i++) {
             String[] row = data.get(i);
 
-            // Verificar se a linha tem 10 colunas
+            // Check if the row has 10 columns
             if (row.length != 10) {
-                CsvLogger.logError("Linha " + (i + 1) + " tem número incorreto de colunas.");
-                continue; // Pular para a próxima linha
+                CsvLogger.logError("line " + (i + 1) + " has an invalid number of columns.");
+                continue; // Skip to the next row
             }
 
             try {
-                // Validar valores numéricos
-                if (!row[1].matches("\\d+(\\.\\d+)?")) { // PAR_ID: numérico, pode ser decimal
-                    CsvLogger.logError("PAR_ID inválido na linha " + (i + 1));
+                // Validate numeric values
+                if (!row[1].matches("\\d+(\\.\\d+)?")) { // PAR_ID: numeric, can be decimal
+                    CsvLogger.logError("PAR_ID invalid in line " + (i + 1));
                 }
 
-                if (!row[3].matches("\\d+(\\.\\d+)?")) { // Shape_Length: numérico
-                    CsvLogger.logError("Shape_Length inválido na linha " + (i + 1));
+                if (!row[3].matches("\\d+(\\.\\d+)?")) { // Shape_Length: numeric
+                    CsvLogger.logError("Shape_Length invalid in line " + (i + 1));
                 }
 
-                if (!row[4].matches("\\d+(\\.\\d+)?")) { // Shape_Area: numérico
-                    CsvLogger.logError("Shape_Area inválido na linha " + (i + 1));
+                if (!row[4].matches("\\d+(\\.\\d+)?")) { // Shape_Area: numeric
+                    CsvLogger.logError("Shape_Area invalid in line " + (i + 1));
                 }
 
-                // Validar a geometria (MULTIPOLYGON WKT)
-                if (!row[5].matches("^MULTIPOLYGON\\s*\\(\\(.*\\)\\)")) { // Exemplo simples para verificar MULTIPOLYGON
-                    CsvLogger.logError("Formato de geometria inválido na linha " + (i + 1) + ": " + row[5]);
+                // Validate geometry (MULTIPOLYGON WKT)
+                if (!row[5].matches("^MULTIPOLYGON\\s*\\(\\(.*\\)\\)")) { // Simple example to check MULTIPOLYGON
+                    CsvLogger.logError("Formato de geometria invalid in line " + (i + 1) + ": " + row[5]);
                 }
 
             } catch (Exception e) {
-                // Qualquer erro dentro do try (caso falhe a validação de uma linha)
-                CsvLogger.logError("Erro ao validar a linha " + (i + 1) + ": " + e.getMessage());
+                // Any error within the try (if a row validation fails)
+                CsvLogger.logError("error while validating line " + (i + 1) + ": " + e.getMessage());
             }
         }
     }
