@@ -1,6 +1,7 @@
 package DetectAdjacentProperties;
 
 import UploadCSV.CsvLogger;
+import UploadCSV.CsvValidator;
 
 import java.util.*;
 
@@ -27,6 +28,10 @@ public class AdjacencyDetector {
                     CsvLogger.logError("Polygon without vertices in row " + (i + 1));
                     continue;  // Skip properties without vertices
                 }
+                if (property.getOwner().isEmpty()) {
+                    CsvLogger.logError("Polygon without owner in row " + (i + 1));
+                    continue;
+                }
                 properties.add(property);
             }
         }
@@ -42,37 +47,39 @@ public class AdjacencyDetector {
      */
     public static List<AdjacentPropertyPair> findAdjacentProperties(List<PropertyPolygon> properties) {
         List<AdjacentPropertyPair> adjacentPairs = new ArrayList<>();
-        Set<String> seenPairs = new HashSet<>(); // To check if pairs have already been processed
-        int adjacentCount = 0; // Counter for adjacent properties
+        Set<String> seenPairs = new HashSet<>();
+        int adjacentCount = 0;
 
-        for (int i = 0; i < properties.size(); i++) {
-            PropertyPolygon prop1 = properties.get(i);
-            System.out.println("Testing propertie " + prop1);
+        // Criar a grade espacial e inserir os terrenos nela
+        SpatialGrid spatialGrid = new SpatialGrid();
+        for (PropertyPolygon property : properties) {
+            spatialGrid.insert(property);
+        }
 
-            for (int j = 0; j < properties.size(); j++) {
-                if (i == j) continue; // Avoid comparing the property with itself
+        // Comparar cada propriedade apenas com as que estão na mesma grid
+        for (PropertyPolygon prop1 : properties) {
+            List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
 
-                PropertyPolygon prop2 = properties.get(j);
+            System.out.println("Testing property: " + prop1.getObjectId() +
+                    " | Nearby properties: " + nearbyProperties.size());
+
+            for (PropertyPolygon prop2 : nearbyProperties) {
+                if (prop1 == prop2) continue; // Evitar comparar com ele mesmo
 
                 if (shareVertex(prop1, prop2)) {
-                    // Create a unique key for the pair
                     String pair1 = prop1.getObjectId() + "-" + prop2.getObjectId();
                     String pair2 = prop2.getObjectId() + "-" + prop1.getObjectId();
 
-                    // Check if the pair or its reverse has already been processed
                     if (!seenPairs.contains(pair1) && !seenPairs.contains(pair2)) {
                         adjacentPairs.add(new AdjacentPropertyPair(prop1.getObjectId(), prop2.getObjectId()));
-                        seenPairs.add(pair1); // Add the pair to the processed list
-
-                        // Increment the count of adjacent properties
+                        seenPairs.add(pair1);
                         adjacentCount++;
                     }
                 }
             }
         }
-        // Display the total number of adjacent properties
-        System.out.println("Total number of adjacent properties: " + adjacentCount);
 
+        System.out.println("Total number of adjacent properties: " + adjacentCount);
         return adjacentPairs;
     }
 

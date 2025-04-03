@@ -1,8 +1,6 @@
 package UploadCSV;
 
-import DetectAdjacentProperties.AdjacencyDetector;
-import DetectAdjacentProperties.AdjacentPropertyPair;
-import DetectAdjacentProperties.PropertyPolygon;
+import DetectAdjacentProperties.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +34,11 @@ public class CsvProcessor {
             // Format Properties
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
 
-            // Display properties formated (for testing
+//            // Chamar o método para testar as coordenadas máximas e minimas
+//            MaxCoordinateFinder.findMaxCoordinates(properties);
+//            MinCoordinateFinder.findMinCoordinates(properties);
+
+            // Display properties formated (for testing)
 //            for (PropertyPolygon property : properties) {
 //                System.out.println(property);
 //            }
@@ -45,10 +47,10 @@ public class CsvProcessor {
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
             // Display adjacent properties (for testing)
-            System.out.println("\n======= Terrenos Adjacentes =======");
-            for (AdjacentPropertyPair pair : adjacentProperties) {
-                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
-            }
+//            System.out.println("\n======= Terrenos Adjacentes =======");
+//            for (AdjacentPropertyPair pair : adjacentProperties) {
+//                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
+//            }
 
             // Log the end of the process
             CsvLogger.logEnd();
