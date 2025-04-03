@@ -108,4 +108,6 @@ public class AdjacencyDetector {
         }
         return false;
     }
+
+
 }
