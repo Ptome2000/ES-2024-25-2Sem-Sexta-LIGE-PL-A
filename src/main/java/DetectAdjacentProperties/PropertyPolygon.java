@@ -8,7 +8,6 @@ import java.util.List;
  * object ID, parcel ID, geometry (polygon), and other property details.
  */
 public class PropertyPolygon {
-
     private final int objectId;
     private final double parId;
     private final String parNum;
