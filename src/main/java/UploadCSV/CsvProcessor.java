@@ -1,6 +1,7 @@
 package UploadCSV;
 
 import DetectAdjacentProperties.AdjacencyDetector;
+import DetectAdjacentProperties.AdjacentPropertyPair;
 import DetectAdjacentProperties.PropertyPolygon;
 
 import java.io.IOException;
@@ -32,31 +33,21 @@ public class CsvProcessor {
             validator.validate(data);
             System.out.println("File uploaded and validated successfully!");
 
-            // Convert data to PropertyPolygon objects
+            // Format Properties
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
 
-//            // Exibir os terrenos carregados
+            // Display properties formated (for testing
 //            for (PropertyPolygon property : properties) {
 //                System.out.println(property);
 //            }
 
             // Find adjacent properties
-            Map<PropertyPolygon, List<PropertyPolygon>> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
+            List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
-            // Display adjacent properties
+            // Display adjacent properties (for testing)
             System.out.println("\n======= Terrenos Adjacentes =======");
-            for (Map.Entry<PropertyPolygon, List<PropertyPolygon>> entry : adjacentProperties.entrySet()) {
-                PropertyPolygon property = entry.getKey();
-                List<PropertyPolygon> adjacentList = entry.getValue();
-
-                System.out.println("Terreno: " + property.getObjectId() + " (" + property.getOwner() + ")");
-                System.out.println("Adjacentes:");
-
-                for (PropertyPolygon adjacent : adjacentList) {
-                    System.out.println(" - " + adjacent.getObjectId() + " (" + adjacent.getOwner() + ")");
-                }
-
-                System.out.println("-----------------------------------");
+            for (AdjacentPropertyPair pair : adjacentProperties) {
+                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
             }
 
             // Log the end of the process

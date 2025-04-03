@@ -41,3 +41,4 @@ build/
 *.log
 .allure
 allure-results
+csv_errors.log
