@@ -1,7 +1,11 @@
 package UploadCSV;
 
+import DetectAdjacentProperties.AdjacencyDetector;
+import DetectAdjacentProperties.PropertyPolygon;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The CsvProcessor class is responsible for processing CSV files by uploading, validating, and logging the process.
@@ -28,12 +32,31 @@ public class CsvProcessor {
             validator.validate(data);
             System.out.println("File uploaded and validated successfully!");
 
-            // Display the data (for testing purposes only)
-            for (String[] row : data) {
-                for (String cell : row) {
-                    System.out.print(cell + " | ");
+            // Convert data to PropertyPolygon objects
+            List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
+
+//            // Exibir os terrenos carregados
+//            for (PropertyPolygon property : properties) {
+//                System.out.println(property);
+//            }
+
+            // Find adjacent properties
+            Map<PropertyPolygon, List<PropertyPolygon>> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
+
+            // Display adjacent properties
+            System.out.println("\n======= Terrenos Adjacentes =======");
+            for (Map.Entry<PropertyPolygon, List<PropertyPolygon>> entry : adjacentProperties.entrySet()) {
+                PropertyPolygon property = entry.getKey();
+                List<PropertyPolygon> adjacentList = entry.getValue();
+
+                System.out.println("Terreno: " + property.getObjectId() + " (" + property.getOwner() + ")");
+                System.out.println("Adjacentes:");
+
+                for (PropertyPolygon adjacent : adjacentList) {
+                    System.out.println(" - " + adjacent.getObjectId() + " (" + adjacent.getOwner() + ")");
                 }
-                System.out.println();
+
+                System.out.println("-----------------------------------");
             }
 
             // Log the end of the process
