@@ -4,26 +4,45 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a property polygon with various attributes such as
+ * object ID, parcel ID, geometry (polygon), and other property details.
+ */
 public class PropertyPolygon {
+
     private final int objectId;
     private final double parId;
     private final String parNum;
     private final double shapeLength;
     private final double shapeArea;
-    private final List<double[]> vertices; // Lista de pontos (x, y)
+    private final Polygon polygon; // Using Polygon instead of List<double[]>
     private final String owner;
     private final String freguesia;
     private final String municipio;
     private final String ilha;
 
+    /**
+     * Constructor to initialize a PropertyPolygon object.
+     *
+     * @param objectId    Unique identifier for the property.
+     * @param parId       Parcel ID associated with the property.
+     * @param parNum      Parcel number for the property.
+     * @param shapeLength Length of the shape's boundary.
+     * @param shapeArea   Area of the property shape.
+     * @param polygon     The polygon representing the shape of the property.
+     * @param owner       ID of the owner of the property.
+     * @param freguesia   The parish where the property is located.
+     * @param municipio   The municipality where the property is located.
+     * @param ilha        The island where the property is located.
+     */
     public PropertyPolygon(int objectId, double parId, String parNum, double shapeLength, double shapeArea,
-                           List<double[]> vertices, String owner, String freguesia, String municipio, String ilha) {
+                           Polygon polygon, String owner, String freguesia, String municipio, String ilha) {
         this.objectId = objectId;
         this.parId = parId;
         this.parNum = parNum;
         this.shapeLength = shapeLength;
         this.shapeArea = shapeArea;
-        this.vertices = vertices;
+        this.polygon = polygon;
         this.owner = owner;
         this.freguesia = freguesia;
         this.municipio = municipio;
@@ -50,8 +69,8 @@ public class PropertyPolygon {
         return shapeArea;
     }
 
-    public List<double[]> getVertices() {
-        return vertices;
+    public Polygon getPolygon() {
+        return polygon;
     }
 
     public String getOwner() {
@@ -70,6 +89,12 @@ public class PropertyPolygon {
         return ilha;
     }
 
+    /**
+     * Creates a PropertyPolygon object from a CSV row.
+     *
+     * @param row A CSV row representing the properties of the polygon.
+     * @return A PropertyPolygon object or null if an error occurs during parsing.
+     */
     public static PropertyPolygon fromCsvRow(String[] row) {
         try {
             int objectId = Integer.parseInt(row[0]);
@@ -77,25 +102,31 @@ public class PropertyPolygon {
             String parNum = row[2];
             double shapeLength = Double.parseDouble(row[3]);
             double shapeArea = Double.parseDouble(row[4]);
-            List<double[]> vertices = parseGeometry(row[5]);
+            Polygon polygon = parseGeometry(row[5]);
             String owner = row[6];
             String freguesia = row[7];
             String municipio = row[8];
             String ilha = row[9];
 
-            return new PropertyPolygon(objectId, parId, parNum, shapeLength, shapeArea, vertices, owner, freguesia, municipio, ilha);
+            return new PropertyPolygon(objectId, parId, parNum, shapeLength, shapeArea, polygon, owner, freguesia, municipio, ilha);
         } catch (Exception e) {
-            System.err.println("Erro ao processar linha do CSV: " + e.getMessage());
-            return null; // Ignora a linha se der erro
+            System.err.println("Error processing CSV row: " + e.getMessage());
+            return null; // Ignore the row if there is an error
         }
     }
 
-    private static List<double[]> parseGeometry(String geometry) {
-        List<double[]> vertices = new ArrayList<>();
+    /**
+     * Parses the geometry string from the CSV into a Polygon object with its vertices.
+     *
+     * @param geometry The geometry string representing the polygon.
+     * @return A Polygon object representing the parsed geometry.
+     */
+    private static Polygon parseGeometry(String geometry) {
+        List<VertexCoordinate> vertices = new ArrayList<>();
 
-        if (!geometry.startsWith("MULTIPOLYGON ((")) return vertices;
+        if (!geometry.startsWith("MULTIPOLYGON ((")) return new Polygon(vertices);
 
-        // Extrair os pares de coordenadas
+        // Extract the coordinate pairs
         String coords = geometry.replace("MULTIPOLYGON ((", "")
                 .replace("))", "")
                 .trim();
@@ -107,26 +138,20 @@ public class PropertyPolygon {
                 try {
                     double x = Double.parseDouble(xy[0]);
                     double y = Double.parseDouble(xy[1]);
-                    vertices.add(new double[]{x, y});
+                    vertices.add(new VertexCoordinate(x, y));
                 } catch (NumberFormatException ignored) {}
             }
         }
-        return vertices;
+        return new Polygon(vertices);
     }
 
+    /**
+     * Returns a string representation of the PropertyPolygon.
+     *
+     * @return A string containing the property ID, owner, and the list of vertices.
+     */
     @Override
     public String toString() {
-        return "PropertyPolygon{" +
-                "objectId=" + objectId +
-                ", parId=" + parId +
-                ", parNum='" + parNum + '\'' +
-                ", Property Length=" + shapeLength +
-                ", Property Area=" + shapeArea +
-                ", Owner='" + owner + '\'' +
-                ", freguesia='" + freguesia + '\'' +
-                ", municipio='" + municipio + '\'' +
-                ", ilha='" + ilha + '\'' +
-                ", vertices=" + vertices +
-                '}';
+        return "ID: " + objectId + ", Owner: " + owner + ", Vertices: " + polygon.toString();
     }
 }
