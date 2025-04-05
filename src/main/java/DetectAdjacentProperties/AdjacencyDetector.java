@@ -56,6 +56,9 @@ public class AdjacencyDetector {
             spatialGrid.insert(property);
         }
 
+        // Após inserir todas as propriedades, exibe a contagem de propriedades por célula
+        spatialGrid.logPropertiesInCells();
+
         // Comparar cada propriedade apenas com as que estão na mesma grid
         for (PropertyPolygon prop1 : properties) {
             List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
@@ -70,6 +73,7 @@ public class AdjacencyDetector {
                     String pair1 = prop1.getObjectId() + "-" + prop2.getObjectId();
                     String pair2 = prop2.getObjectId() + "-" + prop1.getObjectId();
 
+                    // Verifica se a combinação de propriedades já foi comparada
                     if (!seenPairs.contains(pair1) && !seenPairs.contains(pair2)) {
                         adjacentPairs.add(new AdjacentPropertyPair(prop1.getObjectId(), prop2.getObjectId()));
                         seenPairs.add(pair1);

@@ -20,12 +20,12 @@ public class CsvProcessor {
         CsvUploader uploader = new CsvUploader();
         CsvValidator validator = new CsvValidator();
 
-        try {
+        try  {
             // Log the start of the process
             CsvLogger.logStart();
 
             // Load data from the CSV file
-            List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
+            List<String[]> data = uploader.uploadCsv("src/main/resources/teste100.csv");
 
             // Validate the data
             validator.validate(data);
@@ -47,10 +47,10 @@ public class CsvProcessor {
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
             // Display adjacent properties (for testing)
-//            System.out.println("\n======= Terrenos Adjacentes =======");
-//            for (AdjacentPropertyPair pair : adjacentProperties) {
-//                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
-//            }
+            System.out.println("\n======= Terrenos Adjacentes =======");
+            for (AdjacentPropertyPair pair : adjacentProperties) {
+                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
+            }
 
             // Log the end of the process
             CsvLogger.logEnd();
