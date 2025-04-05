@@ -4,10 +4,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +13,6 @@ class CsvValidatorTests {
     CsvValidator validator;
     static String[] exampleData;
     static String[] validHeaders;
-    static final Path LOG_FILE_PATH = Path.of("csv_errors.log");
 
     @BeforeAll
     static void init() {
@@ -29,11 +24,6 @@ class CsvValidatorTests {
     @BeforeEach
     void setUp() {
         validator = new CsvValidator();
-        try {
-            Files.write(LOG_FILE_PATH, new byte[0]);
-        } catch (IOException e) {
-            fail("Failed to clear log file: " + e.getMessage());
-        }
     }
 
     @Test
@@ -46,6 +36,12 @@ class CsvValidatorTests {
         String expectedMessage = "csv file is empty!";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void correctData() {
+        List<String[]> data = List.of(validHeaders, exampleData);
+        assertDoesNotThrow(() -> validator.validate(data));
     }
 
     @Nested
@@ -79,13 +75,6 @@ class CsvValidatorTests {
 
             String actualMessage = exception.getMessage();
             assertTrue(actualMessage.contains("incomplete or invalid headers."));
-        }
-
-        @Test
-        void headersAreCorrect() {
-            List<String[]> data = List.of(validHeaders, exampleData);
-
-            assertDoesNotThrow(() -> validator.validate(data));
         }
 
         @Test

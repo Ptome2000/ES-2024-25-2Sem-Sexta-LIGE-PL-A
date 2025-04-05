@@ -12,7 +12,7 @@ class CsvUploaderTests {
      * Ensures that the method correctly reads a CSV file and returns non-null, non-empty data.
      */
     @Test
-    void UploadCsv() {
+    void uploadCsv() {
         CsvUploader uploader = new CsvUploader();
         String filePath = "src/main/resources/teste.csv";
 

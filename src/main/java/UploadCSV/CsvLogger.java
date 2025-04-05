@@ -15,7 +15,7 @@ public class CsvLogger {
      *
      * @return the current timestamp in the format "yyyy-MM-dd HH:mm:ss"
      */
-    private static String getTimestamp() {
+    static String getTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         return now.format(formatter);
