@@ -40,3 +40,4 @@ build/
 ### Project ###
 *.log
 .allure
+allure-results
