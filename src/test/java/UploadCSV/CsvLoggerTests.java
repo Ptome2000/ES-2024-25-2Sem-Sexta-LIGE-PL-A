@@ -13,6 +13,9 @@ class CsvLoggerTests {
 
     static final Path LOG_FILE_PATH = Path.of("csv_errors.log");
 
+    /**
+     * Sets up the test environment by clearing the log file before each test.
+     */
     @BeforeEach
     void setUp() {
         try {
@@ -22,6 +25,10 @@ class CsvLoggerTests {
         }
     }
 
+    /**
+     * Tests the getTimestamp method of the CsvLogger class.
+     * Ensures that the timestamp is not null, not empty, and matches the expected format.
+     */
     @Test
     void correctTimeStamp() {
         String timestamp = CsvLogger.getTimestamp();
@@ -32,6 +39,10 @@ class CsvLoggerTests {
         assertTrue(timestamp.matches(regex), "Timestamp does not match the expected format");
     }
 
+    /**
+     * Tests the logError method of the CsvLogger class.
+     * Ensures that the error message is correctly logged to the log file.
+     */
     @Test
     void validateLogError() {
         String errorMessage = "Test error message";
@@ -45,6 +56,10 @@ class CsvLoggerTests {
         }
     }
 
+    /**
+     * Tests the logStart method of the CsvLogger class.
+     * Ensures that the start message is correctly logged to the log file.
+     */
     @Test
     void validateLogStart() {
         CsvLogger.logStart();
@@ -57,8 +72,12 @@ class CsvLoggerTests {
         }
     }
 
+    /**
+     * Tests the logEnd method of the CsvLogger class.
+     * Ensures that the end message is correctly logged to the log file.
+     */
     @Test
-    void validatelogEnd() {
+    void validateLogEnd() {
         CsvLogger.logEnd();
 
         try {

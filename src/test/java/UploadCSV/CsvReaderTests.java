@@ -8,6 +8,10 @@ import java.util.List;
 
 class CsvReaderTests {
 
+    /**
+     * Tests the readCsv method with a valid CSV file.
+     * Ensures that the method returns non-null data with the expected number of rows and correct headers.
+     */
     @Test
     void validFile() {
         String filePath = "src/main/resources/teste.csv";
@@ -25,6 +29,10 @@ class CsvReaderTests {
         }
     }
 
+    /**
+     * Tests the readCsv method with an empty CSV file.
+     * Ensures that the method returns non-null, empty data.
+     */
     @Test
     void emptyFile() {
         String filePath = "src/main/resources/empty_teste.csv";
@@ -40,6 +48,10 @@ class CsvReaderTests {
         }
     }
 
+    /**
+     * Tests the readCsv method with an invalid file path.
+     * Ensures that the method throws an IOException.
+     */
     @Test
     void invalidFilePath() {
         String filePath = "src/main/resources/non_existent_file.csv";
