@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The CsvProcessor class is responsible for processing CSV files by uploading, validating, and logging the process.
+ * The CsvProcessor class is responsible for processing CSV files by uploading, validating,
+ * and logging the entire process. It manages the reading, validation, and processing of property data
+ * and calculates adjacent property pairs.
  */
 public class CsvProcessor {
 
     /**
      * The main method that initiates the CSV processing.
+     * It handles the CSV upload, validation, and the detection of adjacent properties.
      *
      * @param args command-line arguments (not used)
      */
@@ -20,7 +23,7 @@ public class CsvProcessor {
         CsvUploader uploader = new CsvUploader();
         CsvValidator validator = new CsvValidator();
 
-        try  {
+        try {
             // Log the start of the process
             CsvLogger.logStart();
 
@@ -34,21 +37,10 @@ public class CsvProcessor {
             // Format Properties
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
 
-            // Display properties formated (for testing)
-//            for (PropertyPolygon property : properties) {
-//                System.out.println(property);
-//            }
-
             // Find adjacent properties
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
             // Calcular o número de ligações únicas (pares de terrenos adjacentes)
             System.out.println("\nTotal de terrenos adjacentes: " + adjacentProperties.size());
-
-            // Display adjacent properties (for testing)
-//            System.out.println("\n======= Terrenos Adjacentes =======");
-//            for (AdjacentPropertyPair pair : adjacentProperties) {
-//                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
-//            }
 
             // Log the end of the process
             CsvLogger.logEnd();
