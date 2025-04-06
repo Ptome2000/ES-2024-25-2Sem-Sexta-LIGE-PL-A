@@ -25,7 +25,7 @@ public class CsvProcessor {
             CsvLogger.logStart();
 
             // Load data from the CSV file
-            List<String[]> data = uploader.uploadCsv("src/main/resources/teste100.csv");
+            List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
 
             // Validate the data
             validator.validate(data);
@@ -34,10 +34,6 @@ public class CsvProcessor {
             // Format Properties
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
 
-//            // Chamar o método para testar as coordenadas máximas e minimas
-//            MaxCoordinateFinder.findMaxCoordinates(properties);
-//            MinCoordinateFinder.findMinCoordinates(properties);
-
             // Display properties formated (for testing)
 //            for (PropertyPolygon property : properties) {
 //                System.out.println(property);
@@ -45,12 +41,14 @@ public class CsvProcessor {
 
             // Find adjacent properties
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
+            // Calcular o número de ligações únicas (pares de terrenos adjacentes)
+            System.out.println("\nTotal de terrenos adjacentes: " + adjacentProperties.size());
 
             // Display adjacent properties (for testing)
-            System.out.println("\n======= Terrenos Adjacentes =======");
-            for (AdjacentPropertyPair pair : adjacentProperties) {
-                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
-            }
+//            System.out.println("\n======= Terrenos Adjacentes =======");
+//            for (AdjacentPropertyPair pair : adjacentProperties) {
+//                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
+//            }
 
             // Log the end of the process
             CsvLogger.logEnd();

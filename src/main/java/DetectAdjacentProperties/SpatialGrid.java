@@ -7,18 +7,33 @@ import java.util.*;
  * by dividing the space into cells and storing properties based on their vertices.
  */
 class SpatialGrid {
-    private static final int CELL_SIZE = 10000;
-    private static final int ORIGIN_X = 289132; // Canto inferior esquerdo
-    private static final int ORIGIN_Y = 3612469;
-    private static final int MAX_GRID_X = 9; // 9 células no total (0 a 8)
-    private static final int MAX_GRID_Y = 5; // 5 células no total (0 a 4)
+    private static final int CELL_SIZE = 250;
+    private double minX;
+    private double minY;
+    private int MAX_GRID_X;
+    private int MAX_GRID_Y;
     private Map<String, List<PropertyPolygon>> grid;
 
     /**
      * Constructs an empty spatial grid.
      */
-    public SpatialGrid() {
+    public SpatialGrid(List<PropertyPolygon> properties) {
         this.grid = new HashMap<>();
+
+        // Obter as coordenadas mínimas e máximas usando as classes MinCoordinateFinder e MaxCoordinateFinder
+        double[] minCoordinates = MinCoordinateFinder.findMinCoordinates(properties);
+        double[] maxCoordinates = MaxCoordinateFinder.findMaxCoordinates(properties);
+
+        this.minX = minCoordinates[0];
+        this.minY = minCoordinates[1];
+        double maxX = maxCoordinates[0];
+        double maxY = maxCoordinates[1];
+
+        // Calcular o número de células para o grid
+        this.MAX_GRID_X = (int) Math.ceil((maxX - minX) / (double) CELL_SIZE);
+        this.MAX_GRID_Y = (int) Math.ceil((maxY - minY) / (double) CELL_SIZE);
+
+        System.out.printf("Grid criada automaticamente com %d colunas e %d linhas.%n", MAX_GRID_X, MAX_GRID_Y);
     }
 
     /**
@@ -30,12 +45,12 @@ class SpatialGrid {
      */
     // Converte uma coordenada (x, y) para o ID da célula correspondente
     private String getCellKey(double x, double y) {
-        int gridX = (int) Math.floor((x - ORIGIN_X) / CELL_SIZE);
-        int gridY = (int) Math.floor((y - ORIGIN_Y) / CELL_SIZE);
+        int gridX = (int) Math.floor((x - minX) / CELL_SIZE);
+        int gridY = (int) Math.floor((y - minY) / CELL_SIZE);
 
-        // **Corrigir para não ultrapassar os limites da grid**
-        gridX = Math.max(0, Math.min(gridX, MAX_GRID_X));
-        gridY = Math.max(0, Math.min(gridY, MAX_GRID_Y));
+        // Garantir que o valor de X e Y não ultrapasse o limite do grid
+        gridX = Math.max(0, Math.min(gridX, MAX_GRID_X - 1));
+        gridY = Math.max(0, Math.min(gridY, MAX_GRID_Y - 1));
 
         return gridX + "-" + gridY;
     }
@@ -46,23 +61,31 @@ class SpatialGrid {
      *
      * @param property The property polygon to be inserted.
      */
-    // Insere um terreno na grelha (pode estar em várias células)
+    // Método de inserção da propriedade
     public void insert(PropertyPolygon property) {
-        Set<String> uniqueCells = new HashSet<>();
+        // Para garantir que apenas a célula do primeiro vértice será usada
+        VertexCoordinate firstVertex = property.getPolygon().getCoordenadas().get(0); // primeiro vértice
+        String firstCellKey = getCellKey(firstVertex.getX(), firstVertex.getY()); // célula do primeiro vértice
 
-        for (VertexCoordinate vertex : property.getPolygon().getCoordenadas()) {
-            uniqueCells.add(getCellKey(vertex.getX(), vertex.getY()));
-        }
+        // Adiciona a propriedade à célula do primeiro vértice
+        grid.computeIfAbsent(firstCellKey, k -> new ArrayList<>()).add(property);
+    }
 
-        // Escolher apenas uma célula (por exemplo, a com menor valor lexicográfico)
-        Optional<String> selectedCell = uniqueCells.stream().sorted().findFirst();
+    public void printGridRanges() {
+        System.out.println("\n--- Grid Cell Ranges ---");
 
-        if (selectedCell.isPresent()) {
-            String cellKey = selectedCell.get();
-            grid.computeIfAbsent(cellKey, k -> new ArrayList<>()).add(property);
+        for (int i = 0; i < MAX_GRID_X; i++) {
+            for (int j = 0; j < MAX_GRID_Y; j++) {
+                // Cálculo dos intervalos X e Y
+                double xStart = i * CELL_SIZE;
+                double yStart = j * CELL_SIZE;
+                double xEnd = xStart + CELL_SIZE;
+                double yEnd = yStart + CELL_SIZE;
 
-            // Debug: Mostra em que célula foi colocado o terreno
-            System.out.println("Property " + property.getObjectId() + " inserted in cell: " + cellKey);
+                // Imprimir os intervalos da célula
+                System.out.printf("Cell (%d, %d): X = [%.2f, %.2f], Y = [%.2f, %.2f]%n",
+                        i, j, xStart, xEnd, yStart, yEnd);
+            }
         }
     }
 
@@ -100,7 +123,7 @@ class SpatialGrid {
         // Recupera as células nas quais o terreno está presente (deve ser só uma)
         List<String> propertyCells = getPropertyGridCells(property);
 
-        System.out.println("\n--- Checking property " + property.getObjectId() + " ---");
+        System.out.println("\n--- Checking property " + property.getObjectId() + " -> " + propertyCells + " ---");
 
         for (String cellKey : propertyCells) {
             String[] parts = cellKey.split("-");
@@ -120,9 +143,9 @@ class SpatialGrid {
                     if (grid.containsKey(adjCellKey)) {
                         for (PropertyPolygon other : grid.get(adjCellKey)) {
                             if (!other.equals(property)) {
-                                System.out.println(" → Property " + property.getObjectId() +
-                                        " compared with Property " + other.getObjectId() +
-                                        " in cell " + adjCellKey);
+//                                System.out.println(" → Property " + property.getObjectId() +
+//                                        " compared with Property " + other.getObjectId() +
+//                                        " in cell " + adjCellKey);
                                 nearby.add(other);
                             }
                         }

@@ -9,11 +9,11 @@ public class AdjacentPropertyPair {
         this.propertyId2 = propertyId2;
     }
 
-    public int getPropertyId1() {
+    public long getPropertyId1() {
         return propertyId1;
     }
 
-    public int getPropertyId2() {
+    public long getPropertyId2() {
         return propertyId2;
     }
 

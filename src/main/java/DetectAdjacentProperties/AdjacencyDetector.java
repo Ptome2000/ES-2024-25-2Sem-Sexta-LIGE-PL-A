@@ -51,7 +51,8 @@ public class AdjacencyDetector {
         int adjacentCount = 0;
 
         // Criar a grade espacial e inserir os terrenos nela
-        SpatialGrid spatialGrid = new SpatialGrid();
+        SpatialGrid spatialGrid = new SpatialGrid(properties);
+//        spatialGrid.printGridRanges();
         for (PropertyPolygon property : properties) {
             spatialGrid.insert(property);
         }
