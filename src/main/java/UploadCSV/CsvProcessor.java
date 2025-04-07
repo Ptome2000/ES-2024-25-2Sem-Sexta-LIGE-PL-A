@@ -1,10 +1,16 @@
 package UploadCSV;
 
+import BuildPropertyGraph.PropertyGraphBuilder;
 import DetectAdjacentProperties.*;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
+
+import static BuildPropertyGraph.PropertyGraphBuilder.*;
+
 
 /**
  * The CsvProcessor class is responsible for processing CSV files by uploading, validating, and logging the process.
@@ -25,7 +31,7 @@ public class CsvProcessor {
             CsvLogger.logStart();
 
             // Load data from the CSV file
-            List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
+            List<String[]> data = uploader.uploadCsv("src/main/resources/MAdeira-Moodle-1.1.csv");
 
             // Validate the data
             validator.validate(data);
@@ -46,11 +52,21 @@ public class CsvProcessor {
             // Find adjacent properties
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
-            // Display adjacent properties (for testing)
+//            // Display adjacent properties (for testing)
 //            System.out.println("\n======= Terrenos Adjacentes =======");
 //            for (AdjacentPropertyPair pair : adjacentProperties) {
 //                System.out.println("Terreno " + pair.getPropertyId1() + " está adjacente ao Terreno " + pair.getPropertyId2());
 //            }
+
+
+            // Build the graph from the properties
+            Graph<PropertyPolygon, DefaultEdge> graph = PropertyGraphBuilder.buildGraph(properties);
+
+            // Print the graph details
+            printGraph(graph);
+
+            // Export the graph to a DOT file
+            exportGraphToDot(graph);
 
             // Log the end of the process
             CsvLogger.logEnd();

@@ -1,0 +1,5 @@
+site to check graphs
+https://dreampuf.github.io/GraphvizOnline/
+
+open link and paste the content of the graphCheck.dot file
+then download the graph to check if its beeing created correctly
