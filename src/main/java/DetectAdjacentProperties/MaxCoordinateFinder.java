@@ -2,10 +2,6 @@ package DetectAdjacentProperties;
 
 import java.util.List;
 
-
-public class MaxCoordinateFinder {
-
-
 /**
  * This class is responsible for finding the maximum coordinates (X and Y) from a list of PropertyPolygon objects.
  * It iterates through the vertices of each property polygon and identifies the highest X and Y values.
@@ -35,8 +31,6 @@ public class MaxCoordinateFinder {
                 }
             }
         }
-
-
 
         // Log the maximum X and Y values
         System.out.println("Max X = " + maxX + " Max Y = " + maxY);

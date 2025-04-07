@@ -2,11 +2,6 @@ package DetectAdjacentProperties;
 
 import java.util.List;
 
-
-public class Polygon {
-    private List<VertexCoordinate> coordenadas;
-
-
 /**
  * This class represents a polygon with a list of vertex coordinates.
  * It is used to define the shape of a property, represented by its coordinates.
@@ -32,7 +27,6 @@ public class Polygon {
     public List<VertexCoordinate> getCoordenadas() {
         return coordenadas;
     }
-
 
     /**
      * Returns a string representation of the polygon as a list of its coordinates.

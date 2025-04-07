@@ -67,10 +67,6 @@ public class VertexCoordinate {
         return Objects.hash((int)(x * 1000), (int)(y * 1000));
     }
 
-    @Override
-
-    
-
     /**
      * Returns a string representation of the vertex as (X, Y).
      *
