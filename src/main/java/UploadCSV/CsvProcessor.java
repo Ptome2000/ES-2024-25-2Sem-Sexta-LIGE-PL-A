@@ -31,7 +31,7 @@ public class CsvProcessor {
             CsvLogger.logStart();
 
             // Load data from the CSV file
-            List<String[]> data = uploader.uploadCsv("src/main/resources/MAdeira-Moodle-1.1.csv");
+            List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
 
             // Validate the data
             validator.validate(data);
