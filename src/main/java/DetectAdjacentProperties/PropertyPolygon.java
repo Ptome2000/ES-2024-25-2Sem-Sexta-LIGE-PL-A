@@ -1,5 +1,6 @@
 package DetectAdjacentProperties;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,6 +146,32 @@ public class PropertyPolygon {
     }
 
     /**
+
+     * Compares this PropertyPolygon to the specified object.
+     *
+     * @param obj the object to compare this PropertyPolygon against
+     * @return true if the given object represents a PropertyPolygon with the same objectId, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PropertyPolygon other = (PropertyPolygon) obj;
+        return objectId == other.objectId;
+    }
+
+    /**
+     * Returns a hash code value for this PropertyPolygon.
+     *
+     * @return a hash code value for this PropertyPolygon
+     */
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(objectId);
+    }
+
+    /**
+
      * Returns a string representation of the PropertyPolygon.
      *
      * @return A string containing the property ID, owner, and the list of vertices.

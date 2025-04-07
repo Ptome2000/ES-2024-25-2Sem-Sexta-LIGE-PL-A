@@ -53,14 +53,17 @@ public class AdjacencyDetector {
         // Create the spatial grid and insert properties into it
         SpatialGrid spatialGrid = new SpatialGrid(properties);
 //        spatialGrid.printGridRanges();
+
         for (PropertyPolygon property : properties) {
             spatialGrid.insert(property);
         }
+
 
         // After inserting all properties, log the number of properties in each cell
         spatialGrid.logPropertiesInCells();
 
         // Compare each property only with others in the same grid
+
         for (PropertyPolygon prop1 : properties) {
             List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
 
@@ -68,6 +71,7 @@ public class AdjacencyDetector {
                     " | Nearby properties: " + nearbyProperties.size());
 
             for (PropertyPolygon prop2 : nearbyProperties) {
+
                 if (prop1 == prop2) continue; // Avoid comparing with itself
 
                 if (shareVertex(prop1, prop2)) {
@@ -75,6 +79,7 @@ public class AdjacencyDetector {
                     String pair2 = prop2.getObjectId() + "-" + prop1.getObjectId();
 
                     // Check if this property pair has already been compared
+
                     if (!seenPairs.contains(pair1) && !seenPairs.contains(pair2)) {
                         adjacentPairs.add(new AdjacentPropertyPair(prop1.getObjectId(), prop2.getObjectId()));
                         seenPairs.add(pair1);
