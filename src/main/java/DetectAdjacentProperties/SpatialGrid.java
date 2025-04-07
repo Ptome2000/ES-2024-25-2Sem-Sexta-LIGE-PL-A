@@ -119,6 +119,7 @@ class SpatialGrid {
     }
 
     /**
+     * Retrieves a list of properties that are near the given property,
      * by checking its current and adjacent grid cells.
      *
      * @param property The property whose neighbors are to be found.
