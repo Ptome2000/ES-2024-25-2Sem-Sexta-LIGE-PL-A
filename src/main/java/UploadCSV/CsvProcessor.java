@@ -1,15 +1,21 @@
 package UploadCSV;
 
+import DetectAdjacentProperties.*;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
- * The CsvProcessor class is responsible for processing CSV files by uploading, validating, and logging the process.
+ * The CsvProcessor class is responsible for processing CSV files by uploading, validating,
+ * and logging the entire process. It manages the reading, validation, and processing of property data
+ * and calculates adjacent property pairs.
  */
 public class CsvProcessor {
 
     /**
      * The main method that initiates the CSV processing.
+     * It handles the CSV upload, validation, and the detection of adjacent properties.
      *
      * @param args command-line arguments (not used)
      */
@@ -28,13 +34,13 @@ public class CsvProcessor {
             validator.validate(data);
             System.out.println("File uploaded and validated successfully!");
 
-            // Display the data (for testing purposes only)
-            for (String[] row : data) {
-                for (String cell : row) {
-                    System.out.print(cell + " | ");
-                }
-                System.out.println();
-            }
+            // Format Properties
+            List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
+
+            // Find adjacent properties
+            List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
+            // Calcular o número de ligações únicas (pares de terrenos adjacentes)
+            System.out.println("\nTotal de terrenos adjacentes: " + adjacentProperties.size());
 
             // Log the end of the process
             CsvLogger.logEnd();

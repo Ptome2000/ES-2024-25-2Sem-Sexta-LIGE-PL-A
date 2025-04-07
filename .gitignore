@@ -41,3 +41,6 @@ build/
 *.log
 .allure
 allure-results
+csv_errors.log
+
+src/main/resources/grids.txt
