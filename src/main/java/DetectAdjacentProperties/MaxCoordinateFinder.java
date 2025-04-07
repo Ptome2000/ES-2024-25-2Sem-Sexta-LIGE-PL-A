@@ -25,6 +25,7 @@ public class MaxCoordinateFinder {
                 if (vertex.getX() > maxX) {
                     maxX = vertex.getX();
                 }
+
                 if (vertex.getY() > maxY) {
                     maxY = vertex.getY();
                 }
@@ -36,5 +37,6 @@ public class MaxCoordinateFinder {
 
         // Return both values as an array: [maxX, maxY]
         return new double[] { maxX, maxY };
+
     }
 }

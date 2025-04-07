@@ -7,6 +7,7 @@ import java.util.*;
  * by dividing the space into cells and storing properties based on their vertices.
  */
 class SpatialGrid {
+
     private static final int CELL_SIZE = 300;
     private double minX;
     private double minY;
@@ -35,6 +36,7 @@ class SpatialGrid {
         this.MAX_GRID_Y = (int) Math.ceil((maxY - minY) / (double) CELL_SIZE);
 
         System.out.printf("Grid criada automaticamente com %d colunas e %d linhas.%n", MAX_GRID_X, MAX_GRID_Y);
+
     }
 
     /**
@@ -44,6 +46,7 @@ class SpatialGrid {
      * @param y The y-coordinate of the vertex.
      * @return A string representing the cell key.
      */
+
     private String getCellKey(double x, double y) {
         int gridX = (int) Math.floor((x - minX) / CELL_SIZE);
         int gridY = (int) Math.floor((y - minY) / CELL_SIZE);
@@ -106,6 +109,7 @@ class SpatialGrid {
      * @param property The property to locate in the grid.
      * @return A list of cell keys the property touches.
      */
+
     private List<String> getPropertyGridCells(PropertyPolygon property) {
         Set<String> cells = new HashSet<>();
         for (VertexCoordinate vertex : property.getPolygon().getCoordenadas()) {
@@ -168,4 +172,5 @@ class SpatialGrid {
             }
         }
     }
+
 }

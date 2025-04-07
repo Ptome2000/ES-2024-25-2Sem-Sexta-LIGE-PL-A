@@ -7,8 +7,7 @@ import java.util.List;
  * It iterates through the vertices of each property polygon and identifies the lowest X and Y values.
  */
 public class MinCoordinateFinder {
-
-    /**
+/**
      * Finds the minimum X and Y coordinates from a list of PropertyPolygon objects.
      * It iterates over all the vertices of all the properties to determine the lowest X and Y values.
      *
@@ -20,6 +19,7 @@ public class MinCoordinateFinder {
         double minY = Double.MAX_VALUE;
 
         // Iterate through all properties and their vertices to find the minimum X and Y values
+
         for (PropertyPolygon property : properties) {
             for (VertexCoordinate vertex : property.getPolygon().getCoordenadas()) {
                 if (vertex.getX() < minX) {
@@ -36,5 +36,6 @@ public class MinCoordinateFinder {
 
         // Return both values as an array: [minX, minY]
         return new double[] { minX, minY };
+
     }
 }

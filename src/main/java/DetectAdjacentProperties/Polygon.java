@@ -23,6 +23,7 @@ public class Polygon {
      *
      * @return A list of VertexCoordinate objects representing the vertices of the polygon.
      */
+
     public List<VertexCoordinate> getCoordenadas() {
         return coordenadas;
     }
@@ -32,6 +33,7 @@ public class Polygon {
      *
      * @return A string representing the polygon, formatted as a list of coordinates.
      */
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -40,4 +42,6 @@ public class Polygon {
         }
         return sb.toString();
     }
+
 }
+
