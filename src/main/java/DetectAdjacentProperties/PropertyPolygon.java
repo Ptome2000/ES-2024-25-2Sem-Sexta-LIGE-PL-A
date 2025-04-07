@@ -146,6 +146,7 @@ public class PropertyPolygon {
     }
 
     /**
+
      * Compares this PropertyPolygon to the specified object.
      *
      * @param obj the object to compare this PropertyPolygon against
@@ -170,6 +171,7 @@ public class PropertyPolygon {
     }
 
     /**
+
      * Returns a string representation of the PropertyPolygon.
      *
      * @return A string containing the property ID, owner, and the list of vertices.

@@ -23,8 +23,8 @@ public class CsvValidator {
 
         // Validate headers
         if (headers.length != 10) {
-            CsvLogger.logError("imcomplete or invalid headers.");
-            throw new CsvException("imcomplete or invalid headers.");
+            CsvLogger.logError("incomplete or invalid headers.");
+            throw new CsvException("incomplete or invalid headers.");
         }
 
         if (!headers[0].equalsIgnoreCase("OBJECTID") ||
