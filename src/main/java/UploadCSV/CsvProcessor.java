@@ -18,7 +18,6 @@ import static BuildPropertyGraph.PropertyGraphBuilder.*;
  * CsvProcessor is responsible for uploading, validating, and processing a CSV file
  * representing property polygons. It builds a graph based on shared coordinates and
  * visualizes it using the GraphStream library.
- *
  * The graph can be exported to DOT format and printed as a text representation in the console.
  *
  */
