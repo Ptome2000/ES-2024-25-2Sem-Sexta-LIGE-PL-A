@@ -1,7 +1,6 @@
 package DetectAdjacentProperties;
 
 import UploadCSV.CsvLogger;
-import UploadCSV.CsvValidator;
 
 import java.util.*;
 
@@ -24,7 +23,7 @@ public class AdjacencyDetector {
         for (int i = 1; i < data.size(); i++) { // Skipping headers
             PropertyPolygon property = PropertyPolygon.fromCsvRow(data.get(i));
             if (property != null) {
-                if (property.getPolygon().getCoordenadas().isEmpty()) {
+                if (property.getPolygon().getVertices().isEmpty()) {
                     CsvLogger.logError("Polygon without vertices in row " + (i + 1));
                     continue;  // Skip properties without vertices
                 }
@@ -100,13 +99,13 @@ public class AdjacencyDetector {
      * @param p2 The second property polygon.
      * @return True if the two properties share at least one vertex, false otherwise.
      */
-    private static boolean shareVertex(PropertyPolygon p1, PropertyPolygon p2) {
+    static boolean shareVertex(PropertyPolygon p1, PropertyPolygon p2) {
         Set<String> vertices1 = new HashSet<>();
-        for (VertexCoordinate v : p1.getPolygon().getCoordenadas()) {
+        for (VertexCoordinate v : p1.getPolygon().getVertices()) {
             vertices1.add(v.getX() + "," + v.getY());
         }
 
-        for (VertexCoordinate v : p2.getPolygon().getCoordenadas()) {
+        for (VertexCoordinate v : p2.getPolygon().getVertices()) {
             if (vertices1.contains(v.getX() + "," + v.getY())) {
                 return true; // Found a shared vertex
             }

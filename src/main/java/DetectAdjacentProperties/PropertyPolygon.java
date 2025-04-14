@@ -49,6 +49,20 @@ public class PropertyPolygon {
         this.ilha = ilha;
     }
 
+    // For Testing purposes
+    public PropertyPolygon(int objectId, Polygon polygon) {
+        this.objectId = objectId;
+        this.polygon = polygon;
+        this.parId = 0;
+        this.parNum = "";
+        this.shapeLength = 0;
+        this.shapeArea = 0;
+        this.owner = "";
+        this.freguesia = "";
+        this.municipio = "";
+        this.ilha = "";
+    }
+
     public int getObjectId() {
         return objectId;
     }
@@ -121,7 +135,7 @@ public class PropertyPolygon {
      * @param geometry The geometry string representing the polygon.
      * @return A Polygon object representing the parsed geometry.
      */
-    private static Polygon parseGeometry(String geometry) {
+    static Polygon parseGeometry(String geometry) {
         List<VertexCoordinate> vertices = new ArrayList<>();
 
         if (!geometry.startsWith("MULTIPOLYGON ((")) return new Polygon(vertices);

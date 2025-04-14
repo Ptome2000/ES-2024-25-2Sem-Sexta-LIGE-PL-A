@@ -7,15 +7,15 @@ import java.util.List;
  * It is used to define the shape of a property, represented by its coordinates.
  */
 public class Polygon {
-    private List<VertexCoordinate> coordenadas;
+    private List<VertexCoordinate> vertices;
 
     /**
      * Constructor to initialize the polygon with a list of coordinates.
      *
-     * @param coordenadas A list of VertexCoordinate objects representing the vertices of the polygon.
+     * @param vertices A list of VertexCoordinate objects representing the vertices of the polygon.
      */
-    public Polygon(List<VertexCoordinate> coordenadas) {
-        this.coordenadas = coordenadas;
+    public Polygon(List<VertexCoordinate> vertices) {
+        this.vertices = vertices;
     }
 
     /**
@@ -23,9 +23,8 @@ public class Polygon {
      *
      * @return A list of VertexCoordinate objects representing the vertices of the polygon.
      */
-
-    public List<VertexCoordinate> getCoordenadas() {
-        return coordenadas;
+    public List<VertexCoordinate> getVertices() {
+        return vertices;
     }
 
     /**
@@ -33,11 +32,10 @@ public class Polygon {
      *
      * @return A string representing the polygon, formatted as a list of coordinates.
      */
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (VertexCoordinate c : coordenadas) {
+        for (VertexCoordinate c : vertices) {
             sb.append(c.toString()).append(" ");
         }
         return sb.toString();
