@@ -41,7 +41,7 @@ public class PropertyGraphBuilder {
         // Map each vertex coordinate to the properties it belongs to
         Map<VertexCoordinate, List<PropertyPolygon>> vertexMap = new HashMap<>();
         for (PropertyPolygon property : properties) {
-            for (VertexCoordinate vertex : property.getPolygon().getCoordenadas()) {
+            for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
                 vertexMap.computeIfAbsent(vertex, k -> new ArrayList<>()).add(property);
             }
         }
@@ -135,7 +135,7 @@ public class PropertyGraphBuilder {
         // Add each coordinate of each property as a node
         for (PropertyPolygon p : jgraphtGraph.vertexSet()) {
             String id = String.valueOf(p.getObjectId());
-            List<VertexCoordinate> coords = p.getPolygon().getCoordenadas();
+            List<VertexCoordinate> coords = p.getPolygon().getVertices();
 
             for (int i = 0; i < coords.size(); i++) {
                 VertexCoordinate v = coords.get(i);
@@ -151,7 +151,7 @@ public class PropertyGraphBuilder {
         // Add internal edges for each polygon
         for (PropertyPolygon p : jgraphtGraph.vertexSet()) {
             String id = String.valueOf(p.getObjectId());
-            List<VertexCoordinate> coords = p.getPolygon().getCoordenadas();
+            List<VertexCoordinate> coords = p.getPolygon().getVertices();
 
             for (int i = 0; i < coords.size(); i++) {
                 String from = id + "_v" + i;
