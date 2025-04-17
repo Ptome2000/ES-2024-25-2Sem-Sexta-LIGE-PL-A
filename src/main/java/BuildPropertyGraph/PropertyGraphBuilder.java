@@ -24,7 +24,8 @@ import java.util.*;
 public class PropertyGraphBuilder {
 
     /**
-     * Builds a graph where each node represents a property polygon and an edge connects
+     * Builds a graph where each node represents a property polygon and an edge
+     * connects
      * properties that share at least one vertex.
      *
      * @param properties List of PropertyPolygon objects
@@ -63,8 +64,11 @@ public class PropertyGraphBuilder {
         return graph;
     }
 
+
+
     /**
-     * Prints the number of vertices and edges, and lists all connections between properties.
+     * Prints the number of vertices and edges, and lists all connections between
+     * properties.
      *
      * @param graph The graph to print
      */
@@ -97,100 +101,3 @@ public class PropertyGraphBuilder {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Converts a JGraphT graph into a GraphStream graph for GUI-based visualization.
-     * Each polygon's vertices become nodes, and their edges are created accordingly.
-     * Also adds simplified links between adjacent properties.
-     *
-     * @param jgraphtGraph The JGraphT graph to convert
-     * @return The resulting GraphStream graph
-     */
-    public static org.graphstream.graph.Graph convertToGraphStream(Graph<PropertyPolygon, DefaultEdge> jgraphtGraph) {
-        org.graphstream.graph.Graph gsGraph = new SingleGraph("PropertyGraph");
-
-        // Styling and rendering hints
-        gsGraph.setAttribute("ui.quality");
-        gsGraph.setAttribute("ui.antialias");
-        gsGraph.setAttribute("ui.stylesheet", """
-            graph {
-                padding: 50px;
-            }
-            node {
-                fill-color: green;
-                size: 2px;
-                text-size: 0px;
-                text-alignment: center;
-            }
-            node:hover {
-                text-size: 10px;
-                text-color: black;
-            }
-            edge {
-                fill-color: gray;
-                size: 0.3px;
-            }
-        """);
-
-        // Add each coordinate of each property as a node
-        for (PropertyPolygon p : jgraphtGraph.vertexSet()) {
-            String id = String.valueOf(p.getObjectId());
-            List<VertexCoordinate> coords = p.getPolygon().getVertices();
-
-            for (int i = 0; i < coords.size(); i++) {
-                VertexCoordinate v = coords.get(i);
-                String vertexId = id + "_v" + i;
-                if (gsGraph.getNode(vertexId) == null) {
-                    Node vNode = gsGraph.addNode(vertexId);
-                    vNode.setAttribute("xyz", v.getX(), v.getY(), 0);
-                    vNode.setAttribute("ui.label", "");
-                }
-            }
-        }
-
-        // Add internal edges for each polygon
-        for (PropertyPolygon p : jgraphtGraph.vertexSet()) {
-            String id = String.valueOf(p.getObjectId());
-            List<VertexCoordinate> coords = p.getPolygon().getVertices();
-
-            for (int i = 0; i < coords.size(); i++) {
-                String from = id + "_v" + i;
-                String to = id + "_v" + ((i + 1) % coords.size());
-                String edgeId = from + "_to_" + to;
-
-                if (gsGraph.getNode(from) == null || gsGraph.getNode(to) == null) {
-                    System.err.println("Nó inexistente: " + from + " ou " + to);
-                    continue;
-                }
-
-                if (gsGraph.getEdge(edgeId) == null) {
-                    try {
-                        gsGraph.addEdge(edgeId, from, to);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao adicionar aresta interna: " + edgeId + " -> " + e.getMessage());
-                    }
-                }
-            }
-        }
-
-        // Add edges between polygons to represent adjacency
-        for (DefaultEdge edge : jgraphtGraph.edgeSet()) {
-            PropertyPolygon src = jgraphtGraph.getEdgeSource(edge);
-            PropertyPolygon tgt = jgraphtGraph.getEdgeTarget(edge);
-            String id1 = src.getObjectId() + "_v0";
-            String id2 = tgt.getObjectId() + "_v0";
-            String edgeId = src.getObjectId() + "-" + tgt.getObjectId();
-
-            if (gsGraph.getNode(id1) != null && gsGraph.getNode(id2) != null) {
-                try {
-                    if (gsGraph.getEdge(edgeId) == null)
-                        gsGraph.addEdge(edgeId, id1, id2);
-                } catch (Exception e) {
-                    System.err.println("Erro ao adicionar aresta entre polígonos: " + edgeId);
-                }
-            }
-        }
-
-        return gsGraph;
-    }
-}
