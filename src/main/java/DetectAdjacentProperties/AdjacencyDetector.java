@@ -14,7 +14,7 @@ public class AdjacencyDetector {
     /**
      * Converts a list of CSV data rows into a list of PropertyPolygon objects.
      * It skips rows with polygons that have no vertices.
-     *
+     *x
      * @param data A list of CSV rows, each representing a property with polygon data.
      * @return A list of PropertyPolygon objects.
      */
@@ -30,6 +30,11 @@ public class AdjacencyDetector {
                 }
                 if (property.getOwner().isEmpty()) {
                     CsvLogger.logError("Polygon without owner in row " + (i + 1));
+                    continue;
+                }
+                if (Arrays.asList(property.getFreguesia(), property.getMunicipio(), property.getIlha())
+                        .stream().anyMatch(val -> val.equalsIgnoreCase("NA"))) {
+//                    CsvLogger.logError("Propriedade ignorada por ter NA em freguesia, município ou ilha na linha " + (i + 1));
                     continue;
                 }
                 properties.add(property);
