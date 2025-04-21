@@ -32,7 +32,7 @@ public class PropertyGraphJungBuilder {
         // Map each vertex coordinate to the properties it belongs to
         Map<VertexCoordinate, List<PropertyPolygon>> vertexMap = new HashMap<>();
         for (PropertyPolygon property : properties) {
-            for (VertexCoordinate vertex : property.getPolygon().getCoordenadas()) {
+            for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
                 vertexMap.computeIfAbsent(vertex, k -> new ArrayList<>()).add(property);
             }
         }
