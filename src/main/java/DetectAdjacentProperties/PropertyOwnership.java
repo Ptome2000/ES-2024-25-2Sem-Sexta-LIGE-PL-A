@@ -44,7 +44,7 @@ public class PropertyOwnership {
      * @return A list of PropertyPolygon objects owned by the specified owner, or null if the owner does not exist.
      */
     public List<PropertyPolygon> filterByOwner(String owner) {
-        return propertiesByOwner.get(owner);
+        return propertiesByOwner.getOrDefault(owner, java.util.Collections.emptyList());
     }
 
     /**
