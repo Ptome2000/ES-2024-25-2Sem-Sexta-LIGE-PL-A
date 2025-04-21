@@ -14,7 +14,6 @@ import java.util.List;
 
 
 
-import static BuildPropertyGraph.PropertyGraphBuilder.*;
 
 /**
  * CsvProcessor is responsible for uploading, validating, and processing a CSV file
@@ -48,12 +47,6 @@ public class CsvProcessor {
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
-            // Build the JGraphT graph representation
-            Graph<PropertyPolygon, DefaultEdge> graph = PropertyGraphBuilder.buildGraph(properties);
-
-            System.out.println("NÚMERO DE PROPRIEDADES: " + properties.size());
-            System.out.println("NÓS NO GRAFO JGRAPHT: " + graph.vertexSet().size());
-            System.out.println("ARESTAS NO GRAFO JGRAPHT: " + graph.edgeSet().size());
 
             // Print and export graph for debugging/analysis
             //printGraph(graph);
