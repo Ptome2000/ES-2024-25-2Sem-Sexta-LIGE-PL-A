@@ -22,14 +22,14 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("GeoOrganizer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 800);
+        setSize(1224, 1024);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(200, getHeight()));
+        sidebar.setPreferredSize(new Dimension(300, getHeight()));
         sidebar.setBackground(new Color(30, 30, 30)); // cor escura
         add(sidebar, BorderLayout.WEST);
 
