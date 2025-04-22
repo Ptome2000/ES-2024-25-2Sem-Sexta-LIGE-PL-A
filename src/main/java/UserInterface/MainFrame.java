@@ -1,5 +1,7 @@
 package UserInterface;
 
+import BuildPropertyGraph.GraphViewer;
+import BuildPropertyGraph.PropertyGraphJungBuilder;
 import DetectAdjacentProperties.AdjacencyDetector;
 import DetectAdjacentProperties.AdjacentPropertyPair;
 import DetectAdjacentProperties.PropertyPolygon;
@@ -7,6 +9,7 @@ import UploadCSV.CsvException;
 import UploadCSV.CsvLogger;
 import UploadCSV.CsvUploader;
 import UploadCSV.CsvValidator;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +21,8 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 public class MainFrame extends JFrame {
+    private JPanel contentPanel;
+    private VisualizationViewer<PropertyPolygon, String> viewer;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
@@ -44,6 +49,27 @@ public class MainFrame extends JFrame {
         logoLabel.setIcon(logoIcon);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(logoLabel);
+
+//        JCheckBox showOwnerIdCheckbox = new JCheckBox("Mostrar ID do proprietário");
+//        showOwnerIdCheckbox.setForeground(Color.WHITE);
+//        showOwnerIdCheckbox.setBackground(new Color(30, 30, 30));
+//        showOwnerIdCheckbox.setFont(new Font("SansSerif", Font.PLAIN, 16));
+//        showOwnerIdCheckbox.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+////        showOwnerIdCheckbox.addActionListener(e -> {
+////            boolean mostrar = showOwnerIdCheckbox.isSelected();
+////            if (viewer != null) {  // Verifica se viewer não é nulo
+////                // Configura o transformer de rótulo de vértices baseado no estado do checkbox
+////                viewer.getRenderContext().setVertexLabelTransformer(mostrar ?
+////                        (PropertyPolygon p) -> String.valueOf(p.getOwner()) :
+////                        (PropertyPolygon p) -> "");
+////                viewer.repaint();  // Atualiza o gráfico para refletir a mudança
+////            }
+////        });
+
+// Adiciona à sidebar
+        sidebar.add(Box.createVerticalStrut(10));
+//        sidebar.add(showOwnerIdCheckbox);
 
 // Adiciona um espaçador para empurrar o botão para o fim
         sidebar.add(Box.createVerticalGlue());
@@ -90,10 +116,16 @@ public class MainFrame extends JFrame {
             int result = fileChooser.showOpenDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+                String fileName = selectedFile.getName();
+                if (!fileName.toLowerCase().endsWith(".csv")) {
+                    JOptionPane.showMessageDialog(MainFrame.this, "Por favor, selecione um ficheiro CSV válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return; // aborta a importação
+                }
 
                 // Mostra spinner
                 LoadingDialogSpinner loading = new LoadingDialogSpinner(MainFrame.this);
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                    edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
                     @Override
                     protected Void doInBackground() {
                         try {
@@ -106,6 +138,7 @@ public class MainFrame extends JFrame {
                             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
                             List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
+                            jungGraph = PropertyGraphJungBuilder.buildGraph(properties);
                             // Podes guardar os dados se quiseres
                         } catch (Exception ex) {
                             CsvLogger.logError("Erro ao importar: " + ex.getMessage());
@@ -117,6 +150,17 @@ public class MainFrame extends JFrame {
                     @Override
                     protected void done() {
                         loading.dispose(); // Fecha o spinner
+//                        // Criar painel com o grafo
+//
+                        JPanel graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+//
+                        // Substituir conteúdo atual do centro pelo grafo
+                        SwingUtilities.invokeLater(() -> {
+                            contentPanel.removeAll();
+                            contentPanel.add(graphPanel, BorderLayout.CENTER);
+                            contentPanel.revalidate();
+                            contentPanel.repaint();
+                        });
                         showSuccessDialog("CSV importado com sucesso!");                    }
                 };
 
@@ -129,7 +173,7 @@ public class MainFrame extends JFrame {
         sidebar.add(importCsvButton);
 
         // Content panel (centro da tela)
-        JPanel contentPanel = new JPanel();
+        contentPanel = new JPanel(); // USA O CAMPO DA CLASSE
         contentPanel.setLayout(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
 

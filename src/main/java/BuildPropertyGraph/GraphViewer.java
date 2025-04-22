@@ -54,7 +54,7 @@ public class GraphViewer {
 
         // Calculate centroids without normalizing Y
         for (PropertyPolygon polygon : graph.getVertices()) {
-            List<VertexCoordinate> coords = polygon.getPolygon().getCoordenadas();
+            List<VertexCoordinate> coords = polygon.getPolygon().getVertices();
             double sumX = 0, sumY = 0;
             for (VertexCoordinate vc : coords) {
                 sumX += vc.getX();
@@ -75,8 +75,11 @@ public class GraphViewer {
         double dataWidth = maxX - minX;
         double dataHeight = maxY - minY;
 
-        double scaleX = (windowWidth * 0.9) / dataWidth;
-        double scaleY = (windowHeight * 0.9) / dataHeight;
+        double padding = 20;
+        double scaleX = (windowWidth - padding * 2) / dataWidth;
+        double scaleY = (windowHeight - padding * 2) / dataHeight;
+//        double scaleX = (windowWidth * 0.9) / dataWidth;
+//        double scaleY = (windowHeight * 0.9) / dataHeight;
         double scale = Math.min(scaleX, scaleY); // maintain proportion
 
         // Apply transformation (invert Y after scaling)
@@ -127,6 +130,27 @@ public class GraphViewer {
         frame.getContentPane().add(vv);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public static JPanel createGraphPanel(Graph<PropertyPolygon, String> graph, int width, int height) {
+        Map<PropertyPolygon, Point2D> layoutMap = calculateGraphLayout(graph, width, height);
+        Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, layoutMap::get);
+        layout.setSize(new Dimension(width, height));
+
+        VisualizationViewer<PropertyPolygon, String> vv = new VisualizationViewer<>(layout);
+        vv.setPreferredSize(new Dimension(width, height));
+        vv.getRenderContext().setVertexLabelTransformer(p -> null);
+        vv.getRenderContext().setEdgeLabelTransformer(e -> null);
+        vv.getRenderContext().setVertexFillPaintTransformer(v -> Color.GRAY);
+        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 8, 8));
+
+        DefaultModalGraphMouse<PropertyPolygon, String> graphMouse = new DefaultModalGraphMouse<>();
+        graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
+        vv.setGraphMouse(graphMouse);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(vv, BorderLayout.CENTER);
+        return panel;
     }
 
     /**
