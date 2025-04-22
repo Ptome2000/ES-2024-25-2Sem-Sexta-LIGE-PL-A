@@ -54,7 +54,7 @@ public class GraphViewer {
 
         // Calculate centroids without normalizing Y
         for (PropertyPolygon polygon : graph.getVertices()) {
-            List<VertexCoordinate> coords = polygon.getPolygon().getCoordenadas();
+            List<VertexCoordinate> coords = polygon.getPolygon().getVertices();
             double sumX = 0, sumY = 0;
             for (VertexCoordinate vc : coords) {
                 sumX += vc.getX();
