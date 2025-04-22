@@ -8,7 +8,7 @@ import java.util.*;
  */
 class SpatialGrid {
 
-    private static final int CELL_SIZE = 300;
+    private static final int CELL_SIZE = 150;
     private double minX;
     private double minY;
     private int MAX_GRID_X;
