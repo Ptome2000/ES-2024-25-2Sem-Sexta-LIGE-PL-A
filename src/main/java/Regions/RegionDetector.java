@@ -70,9 +70,8 @@ public class RegionDetector {
      * @return true if the region data is valid, false otherwise
      */
     private static boolean validRegion(String[] columns) {
-        return !columns[7].equalsIgnoreCase("NA") ||
-                !columns[8].equalsIgnoreCase("NA") ||
-                !columns[9].equalsIgnoreCase("NA");
+        return !columns[7].equalsIgnoreCase("NA") &&
+                !columns[8].equalsIgnoreCase("NA") &&
     }
 
     /**
