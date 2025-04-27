@@ -1,8 +1,9 @@
 package DetectAdjacentProperties;
 
-import UploadCSV.CsvLogger;
-import UploadCSV.CsvUploader;
-import UploadCSV.CsvValidator;
+import Models.PropertyPolygon;
+import Repository.CsvLogger;
+import Repository.CsvUploader;
+import Repository.CsvValidator;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +91,7 @@ public class PropertyOwnership {
         } catch (IOException e) {
             CsvLogger.logError("Erro ao ler ficheiro CSV: " + e.getMessage());
             System.err.println("Erro ao ler ficheiro: " + e.getMessage());
-        } catch (UploadCSV.CsvException e) {
+        } catch (Repository.CsvException e) {
             CsvLogger.logError("Erro ao validar ficheiro CSV: " + e.getMessage());
             System.err.println("Erro ao validar ficheiro: " + e.getMessage());
         } catch (Exception e) {

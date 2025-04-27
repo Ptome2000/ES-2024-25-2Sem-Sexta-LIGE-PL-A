@@ -1,5 +1,7 @@
 package DetectAdjacentProperties;
 
+import Models.Polygon;
+import Models.VertexCoordinate;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;

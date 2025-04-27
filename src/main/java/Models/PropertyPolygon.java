@@ -1,4 +1,4 @@
-package DetectAdjacentProperties;
+package Models;
 
 
 import java.util.ArrayList;
@@ -194,4 +194,5 @@ public class PropertyPolygon {
     public String toString() {
         return "ID: " + objectId + ", Owner: " + owner + ", Vertices: " + polygon.toString();
     }
+
 }

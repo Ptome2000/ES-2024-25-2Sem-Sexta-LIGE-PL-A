@@ -1,14 +1,12 @@
 package UserInterface;
 
-import BuildPropertyGraph.GraphViewer;
-import BuildPropertyGraph.PropertyGraphJungBuilder;
-import DetectAdjacentProperties.AdjacencyDetector;
-import DetectAdjacentProperties.AdjacentPropertyPair;
-import DetectAdjacentProperties.PropertyPolygon;
-import UploadCSV.CsvException;
-import UploadCSV.CsvLogger;
-import UploadCSV.CsvUploader;
-import UploadCSV.CsvValidator;
+import Models.District;
+import Repository.CsvProcessor;
+import Services.GraphViewer;
+import Services.PropertyCollector;
+import Services.PropertyGraphJungBuilder;
+import Models.PropertyPolygon;
+import Repository.CsvLogger;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 import javax.swing.*;
@@ -16,13 +14,13 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingWorker;
 
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private VisualizationViewer<PropertyPolygon, String> viewer;
+    private PropertyCollector collector;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
@@ -129,16 +127,9 @@ public class MainFrame extends JFrame {
                     @Override
                     protected Void doInBackground() {
                         try {
-                            CsvUploader uploader = new CsvUploader();
-                            CsvValidator validator = new CsvValidator();
-
-                            List<String[]> data = uploader.uploadCsv(selectedFile.getAbsolutePath());
-                            validator.validate(data);
-
-                            List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
-                            List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
-
-                            jungGraph = PropertyGraphJungBuilder.buildGraph(properties);
+                            List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
+                            collector = new PropertyCollector(properties);
+                            jungGraph = PropertyGraphJungBuilder.buildGraph(collector.collectAllProperties());
                             // Podes guardar os dados se quiseres
                         } catch (Exception ex) {
                             CsvLogger.logError("Erro ao importar: " + ex.getMessage());

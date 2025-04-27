@@ -1,4 +1,4 @@
-package Regions;
+package Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,5 +48,18 @@ public class District implements Region {
      */
     public void addMunicipality(Municipality municipality) {
         this.municipalities.add(municipality);
+    }
+
+    /**
+     * Gets the list of all PropertyPolygons in the district.
+     *
+     * @return A list of PropertyPolygon objects from all municipalities in the district.
+     */
+    public List<PropertyPolygon> getAllPropertyPolygons() {
+        List<PropertyPolygon> allPolygons = new ArrayList<>();
+        for (Municipality municipality : municipalities) {
+            allPolygons.addAll(municipality.getAllPropertyPolygons());
+        }
+        return allPolygons;
     }
 }

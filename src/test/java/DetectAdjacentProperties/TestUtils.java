@@ -1,5 +1,9 @@
 package DetectAdjacentProperties;
 
+import Models.Polygon;
+import Models.PropertyPolygon;
+import Models.VertexCoordinate;
+
 import java.util.ArrayList;
 import java.util.List;
 

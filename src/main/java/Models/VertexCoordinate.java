@@ -1,4 +1,4 @@
-package DetectAdjacentProperties;
+package Models;
 
 import java.util.Objects;
 

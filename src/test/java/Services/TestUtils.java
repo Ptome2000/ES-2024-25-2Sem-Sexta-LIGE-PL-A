@@ -1,8 +1,8 @@
-package BuildPropertyGraph;
+package Services;
 
-import DetectAdjacentProperties.Polygon;
-import DetectAdjacentProperties.PropertyPolygon;
-import DetectAdjacentProperties.VertexCoordinate;
+import Models.Polygon;
+import Models.PropertyPolygon;
+import Models.VertexCoordinate;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Utility class providing helper methods for creating test data and graphs
- * used in unit tests for the {@link BuildPropertyGraph} package.
+ * used in unit tests for the {@link Services} package.
  *
  * <p>This class includes methods to create sample properties, polygons, and graphs
  * for testing purposes. It is designed to simplify the setup of test cases
