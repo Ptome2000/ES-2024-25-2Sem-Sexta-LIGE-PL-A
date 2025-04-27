@@ -39,9 +39,9 @@ public class CsvProcessor {
                 continue;
             }
 
-            String districtName = columns[9]; // "Ilha" or "Distrito"
-            String municipalityName = columns[8]; // "Municipio"
-            String parishName = columns[7]; // "Freguesia"
+            String districtName = columns[CsvColum.DISTRICT.getIndex()]; // "Ilha" or "Distrito"
+            String municipalityName = columns[CsvColum.MUNICIPALITY.getIndex()]; // "Municipio"
+            String parishName = columns[CsvColum.PARISH.getIndex()]; // "Freguesia"
 
             // Get or create the district
             District district = districtMap.computeIfAbsent(districtName, District::new);
