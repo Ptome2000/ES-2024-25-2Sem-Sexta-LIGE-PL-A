@@ -148,8 +148,9 @@ public class GraphViewer {
         graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(graphMouse);
 
+        // Remover o JScrollPane para testar se o problema está no painel
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(vv, BorderLayout.CENTER);
+        panel.add(vv, BorderLayout.CENTER);  // Adiciona o VisualizationViewer diretamente ao painel
         return panel;
     }
 

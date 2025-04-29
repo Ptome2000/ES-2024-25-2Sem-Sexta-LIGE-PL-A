@@ -22,5 +22,4 @@ public record Parish(String name) implements Region {
     public String name() {
         return name;
     }
-
 }

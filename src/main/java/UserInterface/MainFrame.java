@@ -23,11 +23,13 @@ import javax.swing.SwingWorker;
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private VisualizationViewer<PropertyPolygon, String> viewer;
+    private JLabel numPropsLabel;
+    private JLabel avgSizeLabel;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1224, 1024);
+        setSize(1400, 1024);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -49,23 +51,6 @@ public class MainFrame extends JFrame {
         logoLabel.setIcon(logoIcon);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(logoLabel);
-
-//        JCheckBox showOwnerIdCheckbox = new JCheckBox("Mostrar ID do proprietário");
-//        showOwnerIdCheckbox.setForeground(Color.WHITE);
-//        showOwnerIdCheckbox.setBackground(new Color(30, 30, 30));
-//        showOwnerIdCheckbox.setFont(new Font("SansSerif", Font.PLAIN, 16));
-//        showOwnerIdCheckbox.setAlignmentX(Component.CENTER_ALIGNMENT);
-//
-////        showOwnerIdCheckbox.addActionListener(e -> {
-////            boolean mostrar = showOwnerIdCheckbox.isSelected();
-////            if (viewer != null) {  // Verifica se viewer não é nulo
-////                // Configura o transformer de rótulo de vértices baseado no estado do checkbox
-////                viewer.getRenderContext().setVertexLabelTransformer(mostrar ?
-////                        (PropertyPolygon p) -> String.valueOf(p.getOwner()) :
-////                        (PropertyPolygon p) -> "");
-////                viewer.repaint();  // Atualiza o gráfico para refletir a mudança
-////            }
-////        });
 
 // Adiciona à sidebar
         sidebar.add(Box.createVerticalStrut(10));
@@ -152,7 +137,7 @@ public class MainFrame extends JFrame {
                         loading.dispose(); // Fecha o spinner
 //                        // Criar painel com o grafo
 //
-                        JPanel graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+                        JPanel graphPanel = GraphViewer.createGraphPanel(jungGraph, 800, 1024);
 //
                         // Substituir conteúdo atual do centro pelo grafo
                         SwingUtilities.invokeLater(() -> {
@@ -195,6 +180,35 @@ public class MainFrame extends JFrame {
         logoPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Alinhamento ao centro
         logoPanel.add(centerLogo);  // Adiciona o logo ao painel
         contentPanel.add(logoPanel, BorderLayout.CENTER);  // Adiciona o painel ao contentPanel
+
+        // Painel de informações (lado direito do MainFrame, separado do contentPanel)
+        JPanel graphInfoPanel = new JPanel();
+        graphInfoPanel.setLayout(new BoxLayout(graphInfoPanel, BoxLayout.Y_AXIS));
+        graphInfoPanel.setPreferredSize(new Dimension(300, getHeight()));
+        graphInfoPanel.setBackground(new Color(245, 245, 245)); // fundo claro
+
+        JLabel infoTitle = new JLabel("Informações do Grafo");
+        infoTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
+        infoTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        infoTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        numPropsLabel = new JLabel("Número de propriedades: -");
+        numPropsLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgSizeLabel = new JLabel("Tamanho médio das propriedades: -");
+        avgSizeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgSizeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        graphInfoPanel.add(Box.createVerticalStrut(20));
+        graphInfoPanel.add(infoTitle);
+        graphInfoPanel.add(Box.createVerticalStrut(10));
+        graphInfoPanel.add(numPropsLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgSizeLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        add(graphInfoPanel, BorderLayout.EAST); // Aqui é fora do contentPanel!
     }
 
     public void showSuccessDialog(String message) {
