@@ -1,9 +1,9 @@
-package BuildPropertyGraph;
+package Services;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
-import DetectAdjacentProperties.PropertyPolygon;
-import DetectAdjacentProperties.VertexCoordinate;
+import Models.PropertyPolygon;
+import Models.VertexCoordinate;
 import java.util.*;
 
 /**

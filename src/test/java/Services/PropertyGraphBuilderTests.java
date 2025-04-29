@@ -1,6 +1,6 @@
-package BuildPropertyGraph;
+package Services;
 
-import DetectAdjacentProperties.PropertyPolygon;
+import Models.PropertyPolygon;
 import io.qameta.allure.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;

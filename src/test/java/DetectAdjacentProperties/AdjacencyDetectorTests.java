@@ -1,5 +1,6 @@
 package DetectAdjacentProperties;
 
+import Models.PropertyPolygon;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

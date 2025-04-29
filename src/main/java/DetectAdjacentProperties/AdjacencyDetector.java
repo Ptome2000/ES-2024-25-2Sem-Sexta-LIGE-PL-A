@@ -1,6 +1,8 @@
 package DetectAdjacentProperties;
 
-import UploadCSV.CsvLogger;
+import Models.PropertyPolygon;
+import Models.VertexCoordinate;
+import Repository.CsvLogger;
 
 import java.util.*;
 

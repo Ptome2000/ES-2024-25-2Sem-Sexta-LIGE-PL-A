@@ -1,4 +1,4 @@
-package Regions;
+package Models;
 
 /**
  * The Region interface represents a geographical region with a name.

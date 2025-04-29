@@ -1,5 +1,7 @@
-package DetectAdjacentProperties;
+package Models;
 
+
+import Repository.CsvColum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,16 +113,16 @@ public class PropertyPolygon {
      */
     public static PropertyPolygon fromCsvRow(String[] row) {
         try {
-            int objectId = Integer.parseInt(row[0]);
-            double parId = Double.parseDouble(row[1]);
-            String parNum = row[2];
-            double shapeLength = Double.parseDouble(row[3]);
-            double shapeArea = Double.parseDouble(row[4]);
-            Polygon polygon = parseGeometry(row[5]);
-            String owner = row[6];
-            String freguesia = row[7];
-            String municipio = row[8];
-            String ilha = row[9];
+            int objectId = Integer.parseInt(row[CsvColum.OBJECT_ID.getIndex()]);
+            double parId = Double.parseDouble(row[CsvColum.PAR_ID.getIndex()]);
+            String parNum = row[CsvColum.PAR_NUM.getIndex()];
+            double shapeLength = Double.parseDouble(row[CsvColum.SHAPE_LENGTH.getIndex()]);
+            double shapeArea = Double.parseDouble(row[CsvColum.SHAPE_AREA.getIndex()]);
+            Polygon polygon = parseGeometry(row[CsvColum.POLYGON.getIndex()]);
+            String owner = row[CsvColum.OWNER.getIndex()];
+            String freguesia = row[CsvColum.PARISH.getIndex()];
+            String municipio = row[CsvColum.MUNICIPALITY.getIndex()];
+            String ilha = row[CsvColum.DISTRICT.getIndex()];
 
             return new PropertyPolygon(objectId, parId, parNum, shapeLength, shapeArea, polygon, owner, freguesia, municipio, ilha);
         } catch (Exception e) {
@@ -194,4 +196,5 @@ public class PropertyPolygon {
     public String toString() {
         return "ID: " + objectId + ", Owner: " + owner + ", Vertices: " + polygon.toString();
     }
+
 }
