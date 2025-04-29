@@ -1,12 +1,10 @@
 package UserInterface;
 
-import Models.District;
-import Repository.CsvProcessor;
-import Services.GraphViewer;
-import Services.PropertyCollector;
-import Services.PropertyGraphJungBuilder;
-import Models.PropertyPolygon;
-import Repository.CsvLogger;
+
+import Models.*;
+import Repository.*;
+import Services.*;
+
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 import javax.swing.*;
@@ -14,6 +12,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
 
@@ -21,18 +20,29 @@ public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
+    private JLabel numPropsLabel;
+    private JLabel numPropsByMunicipalityLabel;
+    private JLabel numPropsByParishLabel;
+    private JLabel avgPropsByMunicipalityLabel;
+    private JLabel avgPropsByParishLabel;
+    private JComboBox<String> districtJComboBox;
+    private JComboBox<String> municipalityJComboBox;
+    private JComboBox<String> parishJComboBox;
+    private JLabel avgSizeLabel;
+    private JPanel graphPanel;
+
 
     public MainFrame() {
         setTitle("GeoOrganizer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1224, 1024);
+        setSize(1400, 1024);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(300, getHeight()));
+        sidebar.setPreferredSize(new Dimension(200, getHeight()));
         sidebar.setBackground(new Color(30, 30, 30)); // cor escura
         add(sidebar, BorderLayout.WEST);
 
@@ -47,6 +57,23 @@ public class MainFrame extends JFrame {
         logoLabel.setIcon(logoIcon);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(logoLabel);
+
+        districtJComboBox = new JComboBox<>();
+        districtJComboBox.setVisible(false);
+        sidebar.add(districtJComboBox);
+        districtJComboBox.addItem(null);
+
+        municipalityJComboBox = new JComboBox<>();
+        municipalityJComboBox.setVisible(false);
+        municipalityJComboBox.addItem(null);
+        sidebar.add(municipalityJComboBox);
+
+
+        parishJComboBox = new JComboBox<>();
+        parishJComboBox.setVisible(false);
+        parishJComboBox.addItem(null);
+        sidebar.add(parishJComboBox);
+
 
 //        JCheckBox showOwnerIdCheckbox = new JCheckBox("Mostrar ID do proprietário");
 //        showOwnerIdCheckbox.setForeground(Color.WHITE);
@@ -130,7 +157,50 @@ public class MainFrame extends JFrame {
                             List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
                             collector = new PropertyCollector(properties);
                             jungGraph = PropertyGraphJungBuilder.buildGraph(collector.collectAllProperties());
+                            updateInfoGrafo(collector.collectAllProperties());
                             // Podes guardar os dados se quiseres
+                            List<String> district = collector.getDistrictNames();
+                            for (String d : district) {
+                                System.out.println("este é o output" + d);
+                                districtJComboBox.addItem(d);
+                            }
+                            districtJComboBox.setVisible(true);
+
+                            districtJComboBox.addActionListener(e -> {
+                                String selectedDistrict = (String) districtJComboBox.getSelectedItem();
+                                List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
+                                for (String m : municipalities) {
+                                    municipalityJComboBox.addItem(m);
+                                }
+                                municipalityJComboBox.setVisible(true);
+                            });
+
+                            municipalityJComboBox.addActionListener(e -> {
+                               String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
+                               if (selectedMunicipality != null) {
+                                   List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
+                                   updateGraph(p);
+                                   updateMunicipalityInfo(p);
+                               }
+                               List<String> parishes = collector.getParishNames(selectedMunicipality);
+
+
+                               for (String p : parishes) {
+                                   parishJComboBox.addItem(p);
+                               }
+                               parishJComboBox.setVisible(true);
+
+                            });
+
+                            parishJComboBox.addActionListener(e -> {
+                                String selectedParish = (String) parishJComboBox.getSelectedItem();
+                                if (selectedParish != null) {
+                                    List<PropertyPolygon> p = collector.filterByParish(selectedParish);
+                                    updateGraph(p);
+                                    updateParishInfo(p);
+                                }
+                            });
+
                         } catch (Exception ex) {
                             CsvLogger.logError("Erro ao importar: " + ex.getMessage());
                             JOptionPane.showMessageDialog(MainFrame.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -143,7 +213,7 @@ public class MainFrame extends JFrame {
                         loading.dispose(); // Fecha o spinner
 //                        // Criar painel com o grafo
 //
-                        JPanel graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+                        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
 //
                         // Substituir conteúdo atual do centro pelo grafo
                         SwingUtilities.invokeLater(() -> {
@@ -168,6 +238,7 @@ public class MainFrame extends JFrame {
         contentPanel.setLayout(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
 
+
 // Logo central (substituir "LOGO" por um JLabel com o logo)
         JLabel centerLogo = new JLabel();
         logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo.png"));  // Carregar o logo
@@ -186,7 +257,82 @@ public class MainFrame extends JFrame {
         logoPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Alinhamento ao centro
         logoPanel.add(centerLogo);  // Adiciona o logo ao painel
         contentPanel.add(logoPanel, BorderLayout.CENTER);  // Adiciona o painel ao contentPanel
+
+        // Painel de informações (lado direito do MainFrame, separado do contentPanel)
+
+        JPanel graphInfoPanel = new JPanel();
+
+        graphInfoPanel.setLayout(new BoxLayout(graphInfoPanel, BoxLayout.Y_AXIS));
+
+        graphInfoPanel.setPreferredSize(new Dimension(400, getHeight()));
+
+        graphInfoPanel.setBackground(new Color(245, 245, 245)); // fundo claro
+
+
+
+        JLabel infoTitle = new JLabel("Informações do Grafo");
+
+        infoTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
+
+        infoTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        infoTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+
+
+        numPropsLabel = new JLabel("Número de propriedades: -");
+        numPropsLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgSizeLabel = new JLabel("Tamanho médio das propriedades: -");
+        avgSizeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgSizeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        numPropsByMunicipalityLabel = new JLabel("Propriedades por município: -");
+        numPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgPropsByMunicipalityLabel = new JLabel("Propriedades por município: -");
+        avgPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        numPropsByParishLabel = new JLabel("Propriedades por freguesia: -");
+        numPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgPropsByParishLabel = new JLabel("Propriedades por freguesia: -");
+        avgPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+        graphInfoPanel.add(Box.createVerticalStrut(20));
+
+        graphInfoPanel.add(infoTitle);
+
+        graphInfoPanel.add(Box.createVerticalStrut(10));
+
+        graphInfoPanel.add(numPropsLabel);
+
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+
+        graphInfoPanel.add(avgSizeLabel);
+
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        graphInfoPanel.add(numPropsByMunicipalityLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgPropsByMunicipalityLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+        graphInfoPanel.add(numPropsByParishLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgPropsByParishLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        add(graphInfoPanel, BorderLayout.EAST); // Aqui é fora do contentPanel!
     }
+
+
+
 
     public void showSuccessDialog(String message) {
         JDialog dialog = new JDialog(this, "Sucesso", true);
@@ -220,6 +366,43 @@ public class MainFrame extends JFrame {
         dialog.add(bottomPanel, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
+    }
+
+    private void updateInfoGrafo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+
+        numPropsLabel.setText("Número de propriedades: " + total);
+        avgSizeLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+    }
+
+    private void updateMunicipalityInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByMunicipalityLabel.setText("Propriedades por município: " + total);
+        avgPropsByMunicipalityLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+        // numPropsByMunicipalityLabel.setText("Propriedades por município: " + ...);
+    }
+
+    private void updateParishInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByParishLabel.setText("Propriedades por freguesia: " + total);
+        avgPropsByParishLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+    }
+    private void updateGraph(List<PropertyPolygon> propriedades) {
+
+        graphPanel.removeAll();
+        graphPanel = GraphViewer.createGraphPanel(PropertyGraphJungBuilder.buildGraph(propriedades), 1024, 1024);
     }
 
     public static void main(String[] args) {
