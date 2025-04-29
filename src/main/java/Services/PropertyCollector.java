@@ -36,6 +36,9 @@ public class PropertyCollector {
      * @return A list of district names.
      */
     public List<String> getDistrictNames() {
+        if (districts == null || districts.isEmpty()) {
+            return new ArrayList<>();
+        }
         return districts.stream()
                 .map(District::name)
                 .collect(Collectors.toList());
@@ -48,6 +51,9 @@ public class PropertyCollector {
      * @return A list of municipality names in the specified district.
      */
     public List<String> getMunicipalityNames(String districtName) {
+        if (districtName == null || districtName.isBlank()) {
+            throw new IllegalArgumentException("District name cannot be null or empty");
+        }
         return districts.stream()
                 .filter(district -> district.name().equalsIgnoreCase(districtName))
                 .flatMap(district -> district.getMunicipalities().stream())
@@ -62,6 +68,9 @@ public class PropertyCollector {
      * @return A list of parish names in the specified municipality.
      */
     public List<String> getParishNames(String municipalityName) {
+        if (municipalityName == null || municipalityName.isBlank()) {
+            throw new IllegalArgumentException("Municipality name cannot be null or empty");
+        }
         return districts.stream()
                 .flatMap(district -> district.getMunicipalities().stream())
                 .filter(municipality -> municipality.name().equalsIgnoreCase(municipalityName))
@@ -77,6 +86,9 @@ public class PropertyCollector {
      * @return A list of PropertyPolygon objects in the specified district.
      */
     public List<PropertyPolygon> filterByDistrict(String districtName) {
+        if (districtName == null || districtName.isBlank()) {
+            throw new IllegalArgumentException("District name cannot be null or empty");
+        }
         return districts.stream()
                 .filter(district -> district.name().equalsIgnoreCase(districtName))
                 .flatMap(district -> district.getAllPropertyPolygons().stream())
@@ -90,6 +102,9 @@ public class PropertyCollector {
      * @return A list of PropertyPolygon objects in the specified municipality.
      */
     public List<PropertyPolygon> filterByMunicipality(String municipalityName) {
+        if (municipalityName == null || municipalityName.isBlank()) {
+            throw new IllegalArgumentException("Municipality name cannot be null or empty");
+        }
         return districts.stream()
                 .flatMap(district -> district.getMunicipalities().stream())
                 .filter(municipality -> municipality.name().equalsIgnoreCase(municipalityName))
@@ -104,6 +119,9 @@ public class PropertyCollector {
      * @return A list of PropertyPolygon objects in the specified parish.
      */
     public List<PropertyPolygon> filterByParish(String parishName) {
+        if (parishName == null || parishName.isBlank()) {
+            throw new IllegalArgumentException("Parish name cannot be null or empty");
+        }
         return districts.stream()
                 .flatMap(district -> district.getMunicipalities().stream())
                 .flatMap(municipality -> municipality.getParishes().stream())
