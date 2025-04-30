@@ -9,14 +9,19 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 /**
  * The GraphViewer class is responsible for visualizing a graph of property polygons
@@ -124,6 +129,25 @@ public class GraphViewer {
         graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(graphMouse);
 
+        vv.addGraphMouseListener(new GraphMouseListener<PropertyPolygon>() {
+            @Override
+            public void graphClicked(PropertyPolygon vertex, MouseEvent me) {
+                String info = String.format(
+                        "ID da Propriedade: %s\nID do Dono: %s\nÁrea: %.2f m²",
+                        vertex.getObjectId(),
+                        vertex.getOwner(),
+                        vertex.getShapeArea()
+                );
+                JOptionPane.showMessageDialog(vv, info, "Informações da Propriedade", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void graphPressed(PropertyPolygon vertex, MouseEvent me) {}
+
+            @Override
+            public void graphReleased(PropertyPolygon vertex, MouseEvent me) {}
+        });
+
         JFrame frame = new JFrame("Property Map");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(vv);
@@ -136,16 +160,55 @@ public class GraphViewer {
         Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, layoutMap::get);
         layout.setSize(new Dimension(width, height));
 
+
+        Map<String, MunicipioColor> municipioColorMap = new HashMap<>();
+        MunicipioColor[] allColors = MunicipioColor.values();
+        AtomicInteger colorIndex = new AtomicInteger();
+
+        Function<String, Color> getColorByMunicipio = rawMunicipio -> {
+            String municipio = Optional.ofNullable(rawMunicipio)
+                    .map(String::trim)
+                    .map(String::toLowerCase)
+                    .orElse("desconhecido");
+            MunicipioColor mc = municipioColorMap.computeIfAbsent(municipio, m ->
+                    allColors[colorIndex.getAndIncrement() % allColors.length]
+            );
+            return mc.getColor();
+        };
+
         VisualizationViewer<PropertyPolygon, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(width, height));
-        vv.getRenderContext().setVertexLabelTransformer(p -> null);
+        vv.getRenderContext().setVertexLabelTransformer(p ->  p.getOwner());
+        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         vv.getRenderContext().setEdgeLabelTransformer(e -> null);
-        vv.getRenderContext().setVertexFillPaintTransformer(v -> Color.GRAY);
-        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 8, 8));
+        vv.getRenderContext().setVertexFontTransformer(v -> new Font("SansSerif", Font.PLAIN, 8));
+        vv.getRenderContext().setVertexFillPaintTransformer(p ->
+                getColorByMunicipio.apply(p.getMunicipio())
+        );
+        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 16, 16));
 
         DefaultModalGraphMouse<PropertyPolygon, String> graphMouse = new DefaultModalGraphMouse<>();
         graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(graphMouse);
+
+        vv.addGraphMouseListener(new GraphMouseListener<PropertyPolygon>() {
+            @Override
+            public void graphClicked(PropertyPolygon vertex, MouseEvent me) {
+                String info = String.format(
+                        "ID da Propriedade: %s\nID do Dono: %s\nÁrea: %.2f m²",
+                        vertex.getObjectId(),
+                        vertex.getOwner(),
+                        vertex.getShapeArea()
+                );
+                JOptionPane.showMessageDialog(vv, info, "Informações da Propriedade", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void graphPressed(PropertyPolygon vertex, MouseEvent me) {}
+
+            @Override
+            public void graphReleased(PropertyPolygon vertex, MouseEvent me) {}
+        });
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(vv, BorderLayout.CENTER);
@@ -157,37 +220,37 @@ public class GraphViewer {
      *
      * @param args Command-line arguments (not used).
      */
-    public static void main(String[] args) {
-        System.out.println("Test start");
-
-        // Create a test graph
-        Graph<PropertyPolygon, String> testGraph = new SparseMultigraph<>();
-
-        Polygon polygon1 = new Polygon(List.of(
-                new VertexCoordinate(0, 0),
-                new VertexCoordinate(0, 10),
-                new VertexCoordinate(10, 10),
-                new VertexCoordinate(10, 0)
-        ));
-
-        Polygon polygon2 = new Polygon(List.of(
-                new VertexCoordinate(20, 20),
-                new VertexCoordinate(20, 30),
-                new VertexCoordinate(30, 30),
-                new VertexCoordinate(30, 20)
-        ));
-
-        PropertyPolygon property1 = new PropertyPolygon(
-                1, 1001.0, "P001", 40.0, 100.0, polygon1, "Owner1", "Parish1", "Municipality1", "Island1"
-        );
-
-        PropertyPolygon property2 = new PropertyPolygon(
-                2, 1002.0, "P002", 40.0, 100.0, polygon2, "Owner2", "Parish2", "Municipality2", "Island2"
-        );
-        testGraph.addVertex(property1);
-        testGraph.addVertex(property2);
-        testGraph.addEdge("e1", property1, property2);
-
-        showGraph(testGraph);
-    }
+//    public static void main(String[] args) {
+//        System.out.println("Test start");
+//
+//        // Create a test graph
+//        Graph<PropertyPolygon, String> testGraph = new SparseMultigraph<>();
+//
+//        Polygon polygon1 = new Polygon(List.of(
+//                new VertexCoordinate(0, 0),
+//                new VertexCoordinate(0, 10),
+//                new VertexCoordinate(10, 10),
+//                new VertexCoordinate(10, 0)
+//        ));
+//
+//        Polygon polygon2 = new Polygon(List.of(
+//                new VertexCoordinate(20, 20),
+//                new VertexCoordinate(20, 30),
+//                new VertexCoordinate(30, 30),
+//                new VertexCoordinate(30, 20)
+//        ));
+//
+//        PropertyPolygon property1 = new PropertyPolygon(
+//                1, 1001.0, "P001", 40.0, 100.0, polygon1, "Owner1", "Parish1", "Municipality1", "Island1"
+//        );
+//
+//        PropertyPolygon property2 = new PropertyPolygon(
+//                2, 1002.0, "P002", 40.0, 100.0, polygon2, "Owner2", "Parish2", "Municipality2", "Island2"
+//        );
+//        testGraph.addVertex(property1);
+//        testGraph.addVertex(property2);
+//        testGraph.addEdge("e1", property1, property2);
+//
+//        showGraph(testGraph);
+//    }
 }
