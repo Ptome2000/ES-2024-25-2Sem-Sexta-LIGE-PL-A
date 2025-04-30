@@ -44,6 +44,7 @@ public class CsvValidator {
         // Validate data rows (starting from the second row)
         for (int i = 1; i < data.size(); i++) {
             String[] row = data.get(i);
+            System.out.println(data.get(i));
 
             // Check if the row has 10 columns
             if (row.length != 10) {
