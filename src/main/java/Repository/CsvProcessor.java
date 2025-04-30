@@ -30,7 +30,7 @@ public class CsvProcessor {
         CsvLogger.logStart();
         List<String[]> csvData = validateCsvData(filePath);
 
-        for (int i = 1; i < csvData.size(); i++) { // Skip header row
+        for (int i = 1; i < csvData.size(); i++) {
             String[] columns = csvData.get(i);
 
             // Skip rows with invalid data

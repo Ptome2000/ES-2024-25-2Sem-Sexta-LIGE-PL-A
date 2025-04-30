@@ -45,7 +45,7 @@ public class PropertyGraphJungBuilder {
                     PropertyPolygon p2 = sharedProps.get(j);
                     if (!p1.equals(p2) && !graph.isNeighbor(p1, p2)) {
                         graph.addEdge("e" + (edgeId++), p1, p2);
-                        System.out.println("Added edge between " + p1.getObjectId() + " and " + p2.getObjectId());
+//                        System.out.println("Added edge between " + p1.getObjectId() + " and " + p2.getObjectId());
                     }
                 }
             }

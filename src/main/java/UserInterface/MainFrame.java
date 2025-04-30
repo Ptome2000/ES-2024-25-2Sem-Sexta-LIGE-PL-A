@@ -1,12 +1,9 @@
 package UserInterface;
 
-import Models.District;
-import Repository.CsvProcessor;
-import Services.GraphViewer;
-import Services.PropertyCollector;
-import Services.PropertyGraphJungBuilder;
-import Models.PropertyPolygon;
-import Repository.CsvLogger;
+import Models.*;
+import Repository.*;
+import Services.*;
+
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 import javax.swing.*;
@@ -14,123 +11,260 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicToggleButtonUI;
 
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
+    private JPanel contentPanelCenter;
     private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
+    private JLabel numPropsLabel;
+    private JLabel numPropsByMunicipalityLabel;
+    private JLabel numPropsByParishLabel;
+    private JLabel avgPropsByMunicipalityLabel;
+    private JLabel avgPropsByParishLabel;
+    private JComboBox<String> districtJComboBox;
+    private JComboBox<String> municipalityJComboBox;
+    private JComboBox<String> parishJComboBox;
+    private JLabel avgSizeLabel;
+    private JPanel graphPanel;
+    private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
+    private JLabel districtTitle;
+    private JLabel municipalityTitle;
+    private JLabel parishTitle;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1224, 1024);
+        setSize(1400, 1024);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Sidebar
+// === SIDEBAR ===
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(300, getHeight()));
-        sidebar.setBackground(new Color(30, 30, 30)); // cor escura
+        sidebar.setPreferredSize(new Dimension(250, getHeight()));
+        sidebar.setBackground(new Color(30, 30, 30)); // fundo escuro
         add(sidebar, BorderLayout.WEST);
 
-// Logo no topo da Sidebar
+// === LOGO NO TOPO ===
         JLabel logoLabel = new JLabel();
-        ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo_Side.png"));  // Carregar o logo
-// Redimensionar a imagem para o tamanho desejado (por exemplo, 150x150 pixels)
-        Image logoImage = logoIcon.getImage(); // Obtém a imagem do logo
-        Image resizedImageSide = logoImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH); // Redimensiona a imagem
-        logoIcon = new ImageIcon(resizedImageSide); // Cria um novo ImageIcon com a imagem redimensionada
-// Define o ícone redimensionado no JLabel
+        ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo_Side.png"));
+        Image logoImage = logoIcon.getImage();
+        Image resizedImageSide = logoImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(resizedImageSide);
         logoLabel.setIcon(logoIcon);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(logoLabel);
 
-//        JCheckBox showOwnerIdCheckbox = new JCheckBox("Mostrar ID do proprietário");
-//        showOwnerIdCheckbox.setForeground(Color.WHITE);
-//        showOwnerIdCheckbox.setBackground(new Color(30, 30, 30));
-//        showOwnerIdCheckbox.setFont(new Font("SansSerif", Font.PLAIN, 16));
-//        showOwnerIdCheckbox.setAlignmentX(Component.CENTER_ALIGNMENT);
-//
-////        showOwnerIdCheckbox.addActionListener(e -> {
-////            boolean mostrar = showOwnerIdCheckbox.isSelected();
-////            if (viewer != null) {  // Verifica se viewer não é nulo
-////                // Configura o transformer de rótulo de vértices baseado no estado do checkbox
-////                viewer.getRenderContext().setVertexLabelTransformer(mostrar ?
-////                        (PropertyPolygon p) -> String.valueOf(p.getOwner()) :
-////                        (PropertyPolygon p) -> "");
-////                viewer.repaint();  // Atualiza o gráfico para refletir a mudança
-////            }
-////        });
+// === COMBOBOXES COM LABELS ===
+        Color sidebarBg = new Color(30, 30, 30);
+        Color white = Color.WHITE;
+        Font labelFont = new Font("SansSerif", Font.BOLD, 13);
+        Font comboFont = new Font("SansSerif", Font.PLAIN, 14);
+        Dimension comboSize = new Dimension(220, 36);
 
-// Adiciona à sidebar
+        JLabel districtLabel = new JLabel("Distrito:");
+        districtLabel.setForeground(white);
+        districtLabel.setFont(labelFont);
+
+        JLabel municipalityLabel = new JLabel("Município:");
+        municipalityLabel.setForeground(white);
+        municipalityLabel.setFont(labelFont);
+
+        JLabel parishLabel = new JLabel("Freguesia:");
+        parishLabel.setForeground(white);
+        parishLabel.setFont(labelFont);
+
+        districtJComboBox = new JComboBox<>();
+        municipalityJComboBox = new JComboBox<>();
+        parishJComboBox = new JComboBox<>();
+
+        districtLabel.setVisible(false);
+        municipalityLabel.setVisible(false);
+        parishLabel.setVisible(false);
+        districtJComboBox.setVisible(false);
+        municipalityJComboBox.setVisible(false);
+        parishJComboBox.setVisible(false);
+
+        districtJComboBox.addItem(null);
+        municipalityJComboBox.addItem(null);
+        parishJComboBox.addItem(null);
+
+// Aplica estilo a cada combo
+        JComboBox<?>[] combos = {districtJComboBox, municipalityJComboBox, parishJComboBox};
+        for (JComboBox<?> combo : combos) {
+            combo.setBackground(sidebarBg);
+            combo.setForeground(white);
+            combo.setFont(comboFont);
+            combo.setPreferredSize(comboSize);
+            combo.setMaximumSize(comboSize);
+            combo.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(70, 70, 70), 1),
+                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            ));
+            combo.setFocusable(false);
+            combo.setOpaque(true);
+            combo.setUI(new BasicComboBoxUI() {
+                @Override
+                protected JButton createArrowButton() {
+                    JButton button = new JButton("\u25BC");
+                    button.setFont(new Font("SansSerif", Font.BOLD, 12));
+                    button.setForeground(white);
+                    button.setBackground(new Color(50, 50, 50));
+                    button.setBorder(BorderFactory.createEmptyBorder());
+                    return button;
+                }
+            });
+            combo.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                              boolean isSelected, boolean cellHasFocus) {
+                    Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    c.setBackground(isSelected ? new Color(50, 50, 50) : sidebarBg);
+                    c.setForeground(white);
+                    setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                    return c;
+                }
+            });
+            combo.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                              boolean isSelected, boolean cellHasFocus) {
+                    Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                    // Fundo branco quando dropdown está aberta
+                    list.setBackground(Color.WHITE);
+                    list.setSelectionBackground(new Color(220, 220, 220)); // cor ao selecionar
+                    list.setSelectionForeground(Color.BLACK);
+
+                    // Estilo da célula
+                    c.setBackground(isSelected ? new Color(220, 220, 220) : Color.WHITE);
+                    c.setForeground(Color.BLACK);
+                    setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                    return c;
+                }
+            });
+        }
+
+// Adiciona à sidebar com espaçamento
         sidebar.add(Box.createVerticalStrut(10));
-//        sidebar.add(showOwnerIdCheckbox);
+        sidebar.add(districtLabel);
+        sidebar.add(districtJComboBox);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(municipalityLabel);
+        sidebar.add(municipalityJComboBox);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(parishLabel);
+        sidebar.add(parishJComboBox);
 
-// Adiciona um espaçador para empurrar o botão para o fim
+// === ESPAÇADOR PARA EMPURRAR O BOTÃO PARA BAIXO ===
         sidebar.add(Box.createVerticalGlue());
 
-// Botão de Importar CSV
+// === BOTÃO DE IMPORTAR CSV ===
         JButton importCsvButton = new JButton("Importar CSV");
-
-// Configura o texto para ser branco
         importCsvButton.setForeground(Color.WHITE);
-
-// Define o fundo do botão para a cor da sidebar (escuro)
         importCsvButton.setOpaque(true);
-        importCsvButton.setBackground(new Color(30, 30, 30));  // Cor da sidebar
-        importCsvButton.setBorderPainted(false); // Remove a borda padrão
-        importCsvButton.setFocusPainted(false); // Remove o foco azul
-
-// Aumenta o tamanho do botão
+        importCsvButton.setBackground(new Color(30, 30, 30));
+        importCsvButton.setBorderPainted(false);
+        importCsvButton.setFocusPainted(false);
         importCsvButton.setPreferredSize(new Dimension(180, 50));
-
-// Ajusta a fonte para aumentar o texto
         importCsvButton.setFont(new Font("SansSerif", Font.BOLD, 18));
-
-// Configura o alinhamento do botão
         importCsvButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-// Adiciona o efeito de hover
+// Hover effect
         importCsvButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent evt) {
-                // Mudando a cor de fundo para um tom de cinza mais claro quando o mouse entra
-                importCsvButton.setBackground(new Color(50, 50, 50)); // Um tom de cinza mais claro
+                importCsvButton.setBackground(new Color(50, 50, 50));
             }
-
             @Override
             public void mouseExited(MouseEvent evt) {
-                // Voltando ao fundo escuro da sidebar quando o mouse sai
-                importCsvButton.setBackground(new Color(30, 30, 30)); // Cor original da sidebar
+                importCsvButton.setBackground(new Color(30, 30, 30));
             }
         });
 
+// === LÓGICA DE IMPORTAÇÃO DO CSV ===
         importCsvButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Selecionar ficheiro CSV");
             int result = fileChooser.showOpenDialog(MainFrame.this);
+
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-                String fileName = selectedFile.getName();
-                if (!fileName.toLowerCase().endsWith(".csv")) {
+                if (!selectedFile.getName().toLowerCase().endsWith(".csv")) {
                     JOptionPane.showMessageDialog(MainFrame.this, "Por favor, selecione um ficheiro CSV válido.", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return; // aborta a importação
+                    return;
                 }
 
-                // Mostra spinner
                 LoadingDialogSpinner loading = new LoadingDialogSpinner(MainFrame.this);
+
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                    edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
+
                     @Override
                     protected Void doInBackground() {
                         try {
                             List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
                             collector = new PropertyCollector(properties);
                             jungGraph = PropertyGraphJungBuilder.buildGraph(collector.collectAllProperties());
-                            // Podes guardar os dados se quiseres
+                            updateDistrictInfo(collector.collectAllProperties());
+
+                            List<String> districts = collector.getDistrictNames();
+                            for (String d : districts) districtJComboBox.addItem(d);
+                            districtLabel.setVisible(true);
+                            districtJComboBox.setVisible(true);
+
+                            districtJComboBox.addActionListener(e -> {
+                                String selectedDistrict = (String) districtJComboBox.getSelectedItem();
+                                setDistrictTitle("Distrito - " + selectedDistrict);
+                                List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
+                                municipalityJComboBox.removeAllItems();
+                                municipalityJComboBox.addItem(null);
+                                parishJComboBox.removeAllItems();
+                                parishJComboBox.addItem(null);
+                                for (String m : municipalities) municipalityJComboBox.addItem(m);
+                                municipalityLabel.setVisible(true);
+                                municipalityJComboBox.setVisible(true);
+                            });
+
+                            municipalityJComboBox.addActionListener(e -> {
+                                String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
+                                setMunicipalityTitle("Município - " + selectedMunicipality);
+                                if (selectedMunicipality != null) {
+                                    List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
+                                    updateGraph(p);
+                                    updateMunicipalityInfo(p);
+                                    List<String> parishes = collector.getParishNames(selectedMunicipality);
+                                    parishJComboBox.removeAllItems();
+                                    parishJComboBox.addItem(null);
+                                    for (String parish : parishes) parishJComboBox.addItem(parish);
+                                    parishLabel.setVisible(true);
+                                    parishJComboBox.setVisible(true);
+                                } else {
+                                    clearMunicipalityInfo(); // <--- limpa info
+                                    parishJComboBox.removeAllItems();
+                                    parishJComboBox.addItem(null);
+                                    clearParishInfo(); // <--- limpa info da freguesia também
+                                }
+                            });
+
+                            parishJComboBox.addActionListener(e -> {
+                                String selectedParish = (String) parishJComboBox.getSelectedItem();
+                                setParishTitle("Freguesia - " + selectedParish);
+                                if (selectedParish != null) {
+                                    List<PropertyPolygon> p = collector.filterByParish(selectedParish);
+                                    updateGraph(p);
+                                    updateParishInfo(p);
+                                } else {
+                                    clearParishInfo(); // <--- limpa info da freguesia
+                                }
+                            });
+
                         } catch (Exception ex) {
                             CsvLogger.logError("Erro ao importar: " + ex.getMessage());
                             JOptionPane.showMessageDialog(MainFrame.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -140,54 +274,169 @@ public class MainFrame extends JFrame {
 
                     @Override
                     protected void done() {
-                        loading.dispose(); // Fecha o spinner
-//                        // Criar painel com o grafo
-//
-                        JPanel graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
-//
-                        // Substituir conteúdo atual do centro pelo grafo
+                        loading.dispose();
+                        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+
                         SwingUtilities.invokeLater(() -> {
-                            contentPanel.removeAll();
-                            contentPanel.add(graphPanel, BorderLayout.CENTER);
-                            contentPanel.revalidate();
-                            contentPanel.repaint();
+                            contentPanelCenter.removeAll(); // <- substitui só o centro
+                            contentPanelCenter.setLayout(new BorderLayout()); // se precisares de layout diferente
+                            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
+                            contentPanelCenter.revalidate();
+                            contentPanelCenter.repaint();
                         });
-                        showSuccessDialog("CSV importado com sucesso!");                    }
+
+                        showSuccessDialog("CSV importado com sucesso!");
+                    }
                 };
 
                 worker.execute();
-                loading.setVisible(true); // Mostra enquanto processa
+                loading.setVisible(true);
             }
         });
 
-// Adiciona o botão à sidebar
+// === ADICIONA BOTÃO À SIDEBAR ===
         sidebar.add(importCsvButton);
 
-        // Content panel (centro da tela)
-        contentPanel = new JPanel(); // USA O CAMPO DA CLASSE
+//######################################################################################################################//
+
+// === CONTENT PANEL ===
+// Content panel (centro da tela)
+        contentPanel = new JPanel(); // Usa o campo da classe
         contentPanel.setLayout(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
+        contentPanel = new JPanel(new BorderLayout());
+        add(contentPanel, BorderLayout.CENTER);
 
-// Logo central (substituir "LOGO" por um JLabel com o logo)
+// Subpainel central dentro do contentPanel para conteúdo dinâmico (ex: logo ou grafo)
+        contentPanelCenter = new JPanel();
+        contentPanelCenter.setLayout(new FlowLayout(FlowLayout.CENTER)); // layout inicial
+        contentPanel.add(contentPanelCenter, BorderLayout.CENTER);
+
+// === LOGO CENTRAL ===
         JLabel centerLogo = new JLabel();
-        logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo.png"));  // Carregar o logo
+        logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo.png")); // Carrega o logo
 
-// Redimensionar a imagem para o tamanho desejado
-// Aqui ajustamos para um logo que ocupe uma parte significativa da tela (exemplo 500x500 pixels)
-        logoImage = logoIcon.getImage(); // Obtém a imagem do logo
-        Image resizedImageCenter = logoImage.getScaledInstance(500, 500, Image.SCALE_SMOOTH); // Redimensiona a imagem
-        logoIcon = new ImageIcon(resizedImageCenter); // Cria um novo ImageIcon com a imagem redimensionada
+// Redimensionar a imagem do logo para 500x500 pixels
+        logoImage = logoIcon.getImage();
+        Image resizedImageCenter = logoImage.getScaledInstance(500, 500, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(resizedImageCenter);
+        centerLogo.setIcon(logoIcon); // Define o ícone redimensionado no JLabel
 
-// Define o ícone redimensionado no JLabel
-        centerLogo.setIcon(logoIcon);
+// Painel centralizado com o logo
+        JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        logoPanel.add(centerLogo);
+        contentPanelCenter.add(logoPanel); // Adiciona o logo ao contentPanelCenter
 
-// Centralizando o logo no painel
-        JPanel logoPanel = new JPanel();
-        logoPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Alinhamento ao centro
-        logoPanel.add(centerLogo);  // Adiciona o logo ao painel
-        contentPanel.add(logoPanel, BorderLayout.CENTER);  // Adiciona o painel ao contentPanel
+// === BOTÃO TOGGLE INFO ===
+        JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JToggleButton toggleInfoToggle = new JToggleButton("Esconder Info");
+        toggleInfoToggle.setSelected(true);
+
+// Estilo inspirado no botão "Importar CSV"
+        toggleInfoToggle.setForeground(Color.WHITE);
+        toggleInfoToggle.setOpaque(true);
+        toggleInfoToggle.setBackground(new Color(30, 30, 30));
+        toggleInfoToggle.setBorderPainted(false);
+        toggleInfoToggle.setFocusPainted(false);
+        toggleInfoToggle.setPreferredSize(new Dimension(140, 30));
+        toggleInfoToggle.setFont(new Font("SansSerif", Font.BOLD, 12));
+        toggleInfoToggle.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Impede sombreamento ou efeitos visuais de clique/hover
+        toggleInfoToggle.setUI(new BasicToggleButtonUI());
+        toggleInfoToggle.setContentAreaFilled(false);
+        toggleInfoToggle.setOpaque(true); // Garante que o fundo seja visível
+        toggleInfoToggle.addChangeListener(e -> {
+            toggleInfoToggle.setBackground(new Color(30, 30, 30));
+        });
+
+        bottomRightPanel.add(toggleInfoToggle);
+        contentPanel.add(bottomRightPanel, BorderLayout.SOUTH); // Adiciona ao sul do contentPanel
+//######################################################################################################################//
+
+// === INFO PANEL ===
+        JPanel graphInfoPanel = new JPanel();
+        graphInfoPanel.setLayout(new BoxLayout(graphInfoPanel, BoxLayout.Y_AXIS));
+        graphInfoPanel.setPreferredSize(new Dimension(400, getHeight()));
+        graphInfoPanel.setBackground(new Color(245, 245, 245)); // Fundo claro
+
+// Título
+        JLabel infoTitle = new JLabel("Informações do Grafo");
+        infoTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
+        infoTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        infoTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+// Labels
+        districtTitle = new JLabel("Distrito - NA");
+        districtTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+        districtTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        numPropsLabel = new JLabel("Número de propriedades: - NA");
+        numPropsLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgSizeLabel = new JLabel("Tamanho médio das propriedades: - NA");
+        avgSizeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgSizeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        municipalityTitle = new JLabel("Município - NA");
+        municipalityTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+        municipalityTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        numPropsByMunicipalityLabel = new JLabel("Número de propriedades: - NA");
+        numPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgPropsByMunicipalityLabel = new JLabel("Tamanho médio das propriedades: - NA");
+        avgPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        parishTitle = new JLabel("Freguesia - NA");
+        parishTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+        parishTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        numPropsByParishLabel = new JLabel("Número de propriedades: - NA");
+        numPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        avgPropsByParishLabel = new JLabel("Tamanho médio das propriedades: - NA");
+        avgPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+// Toggle de visibilidade
+        toggleInfoToggle.addActionListener(e -> {
+            boolean isSelected = toggleInfoToggle.isSelected();
+            graphInfoPanel.setVisible(isSelected);
+            toggleInfoToggle.setText(isSelected ? "Esconder Info" : "Mostrar Info");
+            MainFrame.this.revalidate();
+            MainFrame.this.repaint();
+        });
+
+// Adiciona os componentes ao painel
+        graphInfoPanel.add(Box.createVerticalStrut(20));
+        graphInfoPanel.add(infoTitle);
+        graphInfoPanel.add(Box.createVerticalStrut(10));
+
+        graphInfoPanel.add(districtTitle);
+        graphInfoPanel.add(numPropsLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgSizeLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        graphInfoPanel.add(municipalityTitle);
+        graphInfoPanel.add(numPropsByMunicipalityLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgPropsByMunicipalityLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        graphInfoPanel.add(parishTitle);
+        graphInfoPanel.add(numPropsByParishLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgPropsByParishLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+// Adiciona ao MainFrame
+        add(graphInfoPanel, BorderLayout.EAST);
     }
 
+    //FUNÇÕES AUXILIARES
     public void showSuccessDialog(String message) {
         JDialog dialog = new JDialog(this, "Sucesso", true);
         dialog.setSize(350, 150);
@@ -220,6 +469,73 @@ public class MainFrame extends JFrame {
         dialog.add(bottomPanel, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
+    }
+
+    private void updateDistrictInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+
+        numPropsLabel.setText("Número de propriedades: " + total);
+        avgSizeLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+    }
+
+    private void updateMunicipalityInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByMunicipalityLabel.setText("Número de propriedades: " + total);
+        avgPropsByMunicipalityLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+    }
+
+    private void updateParishInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByParishLabel.setText("Número de propriedades: " + total);
+        avgPropsByParishLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+    }
+
+    private void updateGraph(List<PropertyPolygon> propriedades) {
+        jungGraph = PropertyGraphJungBuilder.buildGraph(propriedades);
+        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+        SwingUtilities.invokeLater(() -> {
+            contentPanelCenter.removeAll();
+            contentPanelCenter.setLayout(new BorderLayout());
+            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
+            contentPanelCenter.revalidate();
+            contentPanelCenter.repaint();
+        });
+    }
+
+    public void setDistrictTitle(String text) {
+        if (districtTitle != null) districtTitle.setText(text);
+    }
+
+    public void setMunicipalityTitle(String text) {
+        if (municipalityTitle != null) municipalityTitle.setText(text);
+    }
+
+    public void setParishTitle(String text) {
+        if (parishTitle != null) parishTitle.setText(text);
+    }
+
+    private void clearMunicipalityInfo() {
+        municipalityTitle.setText("Município - NA");
+        numPropsByMunicipalityLabel.setText("Número de propriedades: - NA");
+        avgPropsByMunicipalityLabel.setText("Tamanho médio das propriedades: - NA");
+    }
+
+    private void clearParishInfo() {
+        parishTitle.setText("Freguesia - NA");
+        numPropsByParishLabel.setText("Número de propriedades: - NA");
+        avgPropsByParishLabel.setText("Tamanho médio das propriedades: - NA");
     }
 
     public static void main(String[] args) {
