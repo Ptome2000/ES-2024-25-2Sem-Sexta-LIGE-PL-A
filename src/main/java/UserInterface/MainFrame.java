@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
@@ -32,6 +33,7 @@ public class MainFrame extends JFrame {
     private JComboBox<String> parishJComboBox;
     private JLabel avgSizeLabel;
     private JPanel graphPanel;
+    private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
 
 
     public MainFrame() {
@@ -201,7 +203,6 @@ public class MainFrame extends JFrame {
                 LoadingDialogSpinner loading = new LoadingDialogSpinner(MainFrame.this);
 
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                    edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
 
                     @Override
                     protected Void doInBackground() {
@@ -488,8 +489,15 @@ public class MainFrame extends JFrame {
     }
 
     private void updateGraph(List<PropertyPolygon> propriedades) {
-        graphPanel.removeAll();
-        graphPanel = GraphViewer.createGraphPanel(PropertyGraphJungBuilder.buildGraph(propriedades), 1024, 1024);
+        jungGraph = PropertyGraphJungBuilder.buildGraph(propriedades);
+        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+        SwingUtilities.invokeLater(() -> {
+            contentPanelCenter.removeAll();
+            contentPanelCenter.setLayout(new BorderLayout());
+            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
+            contentPanelCenter.revalidate();
+            contentPanelCenter.repaint();
+        });
     }
 
     public static void main(String[] args) {
