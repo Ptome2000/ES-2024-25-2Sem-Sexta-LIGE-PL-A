@@ -34,7 +34,9 @@ public class MainFrame extends JFrame {
     private JLabel avgSizeLabel;
     private JPanel graphPanel;
     private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
-
+    private JLabel districtTitle;
+    private JLabel municipalityTitle;
+    private JLabel parishTitle;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
@@ -219,9 +221,12 @@ public class MainFrame extends JFrame {
 
                             districtJComboBox.addActionListener(e -> {
                                 String selectedDistrict = (String) districtJComboBox.getSelectedItem();
+                                setDistrictTitle("Distrito - " + selectedDistrict);
                                 List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
                                 municipalityJComboBox.removeAllItems();
                                 municipalityJComboBox.addItem(null);
+                                parishJComboBox.removeAllItems();
+                                parishJComboBox.addItem(null);
                                 for (String m : municipalities) municipalityJComboBox.addItem(m);
                                 municipalityLabel.setVisible(true);
                                 municipalityJComboBox.setVisible(true);
@@ -229,26 +234,34 @@ public class MainFrame extends JFrame {
 
                             municipalityJComboBox.addActionListener(e -> {
                                 String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
+                                setMunicipalityTitle("Município - " + selectedMunicipality);
                                 if (selectedMunicipality != null) {
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
                                     updateMunicipalityInfo(p);
-
                                     List<String> parishes = collector.getParishNames(selectedMunicipality);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
                                     for (String parish : parishes) parishJComboBox.addItem(parish);
                                     parishLabel.setVisible(true);
                                     parishJComboBox.setVisible(true);
+                                } else {
+                                    clearMunicipalityInfo(); // <--- limpa info
+                                    parishJComboBox.removeAllItems();
+                                    parishJComboBox.addItem(null);
+                                    clearParishInfo(); // <--- limpa info da freguesia também
                                 }
                             });
 
                             parishJComboBox.addActionListener(e -> {
                                 String selectedParish = (String) parishJComboBox.getSelectedItem();
+                                setParishTitle("Freguesia - " + selectedParish);
                                 if (selectedParish != null) {
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
                                     updateParishInfo(p);
+                                } else {
+                                    clearParishInfo(); // <--- limpa info da freguesia
                                 }
                             });
 
@@ -354,7 +367,7 @@ public class MainFrame extends JFrame {
         infoTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
 // Labels
-        JLabel districtTitle = new JLabel("Distrito - NA");
+        districtTitle = new JLabel("Distrito - NA");
         districtTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         districtTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         numPropsLabel = new JLabel("Número de propriedades: - NA");
@@ -365,7 +378,7 @@ public class MainFrame extends JFrame {
         avgSizeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         avgSizeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel municipalityTitle = new JLabel("Município - NA");
+        municipalityTitle = new JLabel("Município - NA");
         municipalityTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         municipalityTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         numPropsByMunicipalityLabel = new JLabel("Número de propriedades: - NA");
@@ -376,7 +389,7 @@ public class MainFrame extends JFrame {
         avgPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         avgPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel parishTitle = new JLabel("Freguesia - NA");
+        parishTitle = new JLabel("Freguesia - NA");
         parishTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         parishTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         numPropsByParishLabel = new JLabel("Número de propriedades: - NA");
@@ -422,7 +435,8 @@ public class MainFrame extends JFrame {
 // Adiciona ao MainFrame
         add(graphInfoPanel, BorderLayout.EAST);
     }
-    
+
+    //FUNÇÕES AUXILIARES
     public void showSuccessDialog(String message) {
         JDialog dialog = new JDialog(this, "Sucesso", true);
         dialog.setSize(350, 150);
@@ -498,6 +512,30 @@ public class MainFrame extends JFrame {
             contentPanelCenter.revalidate();
             contentPanelCenter.repaint();
         });
+    }
+
+    public void setDistrictTitle(String text) {
+        if (districtTitle != null) districtTitle.setText(text);
+    }
+
+    public void setMunicipalityTitle(String text) {
+        if (municipalityTitle != null) municipalityTitle.setText(text);
+    }
+
+    public void setParishTitle(String text) {
+        if (parishTitle != null) parishTitle.setText(text);
+    }
+
+    private void clearMunicipalityInfo() {
+        municipalityTitle.setText("Município - NA");
+        numPropsByMunicipalityLabel.setText("Número de propriedades: - NA");
+        avgPropsByMunicipalityLabel.setText("Tamanho médio das propriedades: - NA");
+    }
+
+    private void clearParishInfo() {
+        parishTitle.setText("Freguesia - NA");
+        numPropsByParishLabel.setText("Número de propriedades: - NA");
+        avgPropsByParishLabel.setText("Tamanho médio das propriedades: - NA");
     }
 
     public static void main(String[] args) {
