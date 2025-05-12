@@ -14,6 +14,7 @@ import java.io.File;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.swing.SwingWorker;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
@@ -37,6 +38,9 @@ public class MainFrame extends JFrame {
     private JLabel districtTitle;
     private JLabel municipalityTitle;
     private JLabel parishTitle;
+
+    private boolean showOwnerIds = false;
+    private List<PropertyPolygon> currentDisplayedProperties;
 
     public MainFrame() {
         setTitle("GeoOrganizer");
@@ -211,8 +215,7 @@ public class MainFrame extends JFrame {
                         try {
                             List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
                             collector = new PropertyCollector(properties);
-                            jungGraph = PropertyGraphJungBuilder.buildGraph(collector.collectAllProperties());
-                            updateDistrictInfo(collector.collectAllProperties());
+                            updateGraph(collector.collectAllProperties());
 
                             List<String> districts = collector.getDistrictNames();
                             for (String d : districts) districtJComboBox.addItem(d);
@@ -222,14 +225,25 @@ public class MainFrame extends JFrame {
                             districtJComboBox.addActionListener(e -> {
                                 String selectedDistrict = (String) districtJComboBox.getSelectedItem();
                                 setDistrictTitle("Distrito - " + selectedDistrict);
-                                List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
-                                municipalityJComboBox.removeAllItems();
-                                municipalityJComboBox.addItem(null);
-                                parishJComboBox.removeAllItems();
-                                parishJComboBox.addItem(null);
-                                for (String m : municipalities) municipalityJComboBox.addItem(m);
-                                municipalityLabel.setVisible(true);
-                                municipalityJComboBox.setVisible(true);
+
+                                if (selectedDistrict != null) {
+                                    List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
+                                    updateGraph(p);
+                                    updateDistrictInfo(p); // ← só atualiza aqui
+                                    List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
+                                    municipalityJComboBox.removeAllItems();
+                                    municipalityJComboBox.addItem(null);
+                                    parishJComboBox.removeAllItems();
+                                    parishJComboBox.addItem(null);
+                                    for (String m : municipalities) municipalityJComboBox.addItem(m);
+                                    municipalityLabel.setVisible(true);
+                                    municipalityJComboBox.setVisible(true);
+                                } else {
+                                    // Limpa também os dados do distrito se quiseres
+                                    setDistrictTitle("Distrito - NA");
+                                    numPropsLabel.setText("Número de propriedades: - NA");
+                                    avgSizeLabel.setText("Tamanho médio das propriedades: - NA");
+                                }
                             });
 
                             municipalityJComboBox.addActionListener(e -> {
@@ -275,7 +289,7 @@ public class MainFrame extends JFrame {
                     @Override
                     protected void done() {
                         loading.dispose();
-                        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+                        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
 
                         SwingUtilities.invokeLater(() -> {
                             contentPanelCenter.removeAll(); // <- substitui só o centro
@@ -327,31 +341,62 @@ public class MainFrame extends JFrame {
         logoPanel.add(centerLogo);
         contentPanelCenter.add(logoPanel); // Adiciona o logo ao contentPanelCenter
 
-// === BOTÃO TOGGLE INFO ===
+// === PAINEL INFERIOR COM DOIS LADOS ===
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+
+// Painel da esquerda (para toggle de IDs)
+        JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JCheckBox toggleShowOwnerId = new JCheckBox("Mostrar ID's Proprietários");
+        toggleShowOwnerId.setSelected(false);
+
+// Estilo básico do checkbox para parecer moderno
+        toggleShowOwnerId.setForeground(Color.WHITE);
+        toggleShowOwnerId.setBackground(new Color(30, 30, 30));
+        toggleShowOwnerId.setFocusPainted(false);
+        toggleShowOwnerId.setFont(new Font("SansSerif", Font.BOLD, 12));
+        toggleShowOwnerId.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        toggleShowOwnerId.setOpaque(true);
+
+        Dimension toggleShowOwnerIdSize = toggleShowOwnerId.getPreferredSize();
+        toggleShowOwnerId.setPreferredSize(new Dimension(toggleShowOwnerIdSize.width, 30));
+        bottomLeftPanel.add(toggleShowOwnerId);
+
+        toggleShowOwnerId.addActionListener(e -> {
+            showOwnerIds = toggleShowOwnerId.isSelected();
+            updateGraph(currentDisplayedProperties);
+        });
+
+// Painel da direita (para toggle de info)
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JToggleButton toggleInfoToggle = new JToggleButton("Esconder Info");
         toggleInfoToggle.setSelected(true);
 
-// Estilo inspirado no botão "Importar CSV"
+// Estilo do botão de info
         toggleInfoToggle.setForeground(Color.WHITE);
         toggleInfoToggle.setOpaque(true);
         toggleInfoToggle.setBackground(new Color(30, 30, 30));
         toggleInfoToggle.setBorderPainted(false);
         toggleInfoToggle.setFocusPainted(false);
-        toggleInfoToggle.setPreferredSize(new Dimension(140, 30));
+        Dimension toggleInfoToggleSize = toggleInfoToggle.getPreferredSize();
+        toggleInfoToggle.setPreferredSize(new Dimension(toggleInfoToggleSize.width, 30));
         toggleInfoToggle.setFont(new Font("SansSerif", Font.BOLD, 12));
         toggleInfoToggle.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Impede sombreamento ou efeitos visuais de clique/hover
         toggleInfoToggle.setUI(new BasicToggleButtonUI());
         toggleInfoToggle.setContentAreaFilled(false);
-        toggleInfoToggle.setOpaque(true); // Garante que o fundo seja visível
+        toggleInfoToggle.setOpaque(true);
         toggleInfoToggle.addChangeListener(e -> {
             toggleInfoToggle.setBackground(new Color(30, 30, 30));
         });
 
         bottomRightPanel.add(toggleInfoToggle);
-        contentPanel.add(bottomRightPanel, BorderLayout.SOUTH); // Adiciona ao sul do contentPanel
+
+// Junta os dois lados ao painel inferior
+        bottomPanel.add(bottomLeftPanel, BorderLayout.WEST);
+        bottomPanel.add(bottomRightPanel, BorderLayout.EAST);
+
+// Adiciona o painel inferior ao contentPanel
+        contentPanel.add(bottomPanel, BorderLayout.SOUTH);
+
 //######################################################################################################################//
 
 // === INFO PANEL ===
@@ -502,9 +547,11 @@ public class MainFrame extends JFrame {
         avgPropsByParishLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
     }
 
-    private void updateGraph(List<PropertyPolygon> propriedades) {
+    public void updateGraph(List<PropertyPolygon> propriedades) {
+        currentDisplayedProperties = propriedades;
         jungGraph = PropertyGraphJungBuilder.buildGraph(propriedades);
-        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024);
+        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
+
         SwingUtilities.invokeLater(() -> {
             contentPanelCenter.removeAll();
             contentPanelCenter.setLayout(new BorderLayout());
@@ -538,6 +585,7 @@ public class MainFrame extends JFrame {
         avgPropsByParishLabel.setText("Tamanho médio das propriedades: - NA");
     }
 
+    //MAIN
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new MainFrame().setVisible(true);

@@ -86,8 +86,8 @@ class SpatialGrid {
                 double xEnd = xStart + CELL_SIZE;
                 double yEnd = yStart + CELL_SIZE;
 
-                System.out.printf("Cell (%d, %d): X = [%.2f, %.2f], Y = [%.2f, %.2f]%n",
-                        i, j, xStart, xEnd, yStart, yEnd);
+//                System.out.printf("Cell (%d, %d): X = [%.2f, %.2f], Y = [%.2f, %.2f]%n",
+//                        i, j, xStart, xEnd, yStart, yEnd);
             }
         }
     }
@@ -102,7 +102,7 @@ class SpatialGrid {
         for (Map.Entry<String, List<PropertyPolygon>> entry : grid.entrySet()) {
             String cellKey = entry.getKey();
             List<PropertyPolygon> propertiesInCell = entry.getValue();
-            System.out.println("Cell " + cellKey + " has " + propertiesInCell.size() + " properties.");
+//            System.out.println("Cell " + cellKey + " has " + propertiesInCell.size() + " properties.");
         }
     }
 

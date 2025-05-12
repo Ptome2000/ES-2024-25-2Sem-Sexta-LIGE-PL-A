@@ -77,9 +77,6 @@ public class CsvProcessor {
                     CsvLogger.logError("Polygon without owner in row " + (i + 1));
                     continue;
                 }
-                if (Stream.of(property.getFreguesia(), property.getMunicipio(), property.getIlha()).anyMatch(val -> val.equalsIgnoreCase("NA"))) {
-                    continue; // Skip properties with "NA" in key fields
-                }
                 parish.addPropertyPolygon(property);
             }
         }

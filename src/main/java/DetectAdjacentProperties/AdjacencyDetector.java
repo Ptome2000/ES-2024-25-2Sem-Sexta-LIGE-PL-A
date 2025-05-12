@@ -73,8 +73,8 @@ public class AdjacencyDetector {
         for (PropertyPolygon prop1 : properties) {
             List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
 
-            System.out.println("Testing property: " + prop1.getObjectId() +
-                    " | Nearby properties: " + nearbyProperties.size());
+//            System.out.println("Testing property: " + prop1.getObjectId() +
+//                    " | Nearby properties: " + nearbyProperties.size());
 
             for (PropertyPolygon prop2 : nearbyProperties) {
 
