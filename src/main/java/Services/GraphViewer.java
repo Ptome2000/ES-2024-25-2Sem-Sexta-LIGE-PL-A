@@ -3,6 +3,7 @@ package Services;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
@@ -21,11 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GraphViewer {
-
-    public static void showGraph(Graph<PropertyPolygon, String> graph) {
-        Map<PropertyPolygon, Point2D> locationMap = calculateGraphLayout(graph, 1024, 1024);
-        renderGraph(locationMap, graph, 1024, 1024);
-    }
 
     public static Map<PropertyPolygon, Point2D> calculateGraphLayout(Graph<PropertyPolygon, String> graph, int windowWidth, int windowHeight) {
         Map<PropertyPolygon, Point2D> rawCentroids = new HashMap<>();
@@ -68,36 +64,6 @@ public class GraphViewer {
         return locationMap;
     }
 
-    private static void renderGraph(Map<PropertyPolygon, Point2D> locationMap, Graph<PropertyPolygon, String> graph,
-                                    int windowWidth, int windowHeight) {
-
-        Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, locationMap::get);
-        layout.setSize(new Dimension(windowWidth, windowHeight));
-
-        VisualizationViewer<PropertyPolygon, String> vv = new VisualizationViewer<>(layout);
-        vv.setPreferredSize(new Dimension(windowWidth, windowHeight));
-        vv.getRenderContext().setVertexLabelTransformer(p -> null);
-        vv.getRenderContext().setEdgeLabelTransformer(e -> null);
-        vv.getRenderContext().setVertexFillPaintTransformer(v -> Color.GRAY);
-        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 8, 8));
-        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-
-        // Melhoria de performance: desligar suavização
-        vv.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        vv.getRenderingHints().put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-
-        // Interações leves
-        DefaultModalGraphMouse<PropertyPolygon, String> graphMouse = new DefaultModalGraphMouse<>();
-        graphMouse.setMode(DefaultModalGraphMouse.Mode.PICKING);
-        vv.setGraphMouse(graphMouse);
-
-        JFrame frame = new JFrame("Property Map");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(vv);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
     public static JPanel createGraphPanel(Graph<PropertyPolygon, String> graph, int width, int height, boolean showOwnerIds) {
         Map<PropertyPolygon, Point2D> layoutMap = calculateGraphLayout(graph, width, height);
         Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, layoutMap::get);
@@ -105,10 +71,12 @@ public class GraphViewer {
 
         VisualizationViewer<PropertyPolygon, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(width, height));
+        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         vv.getRenderContext().setVertexLabelTransformer(p -> showOwnerIds ? p.getOwner() : null);
         vv.getRenderContext().setEdgeLabelTransformer(e -> null);
         vv.getRenderContext().setVertexFillPaintTransformer(v -> Color.GRAY);
-        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 8, 8));
+        vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 16, 16));
+        vv.getRenderContext().setVertexFontTransformer(v -> new Font("SansSerif", Font.PLAIN, 8));
         vv.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         vv.getRenderingHints().put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         vv.getRenderingHints().put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
@@ -120,38 +88,5 @@ public class GraphViewer {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(vv, BorderLayout.CENTER);
         return panel;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Test start");
-
-        Graph<PropertyPolygon, String> testGraph = new SparseMultigraph<>();
-
-        Polygon polygon1 = new Polygon(List.of(
-                new VertexCoordinate(0, 0),
-                new VertexCoordinate(0, 10),
-                new VertexCoordinate(10, 10),
-                new VertexCoordinate(10, 0)
-        ));
-
-        Polygon polygon2 = new Polygon(List.of(
-                new VertexCoordinate(20, 20),
-                new VertexCoordinate(20, 30),
-                new VertexCoordinate(30, 30),
-                new VertexCoordinate(30, 20)
-        ));
-
-        PropertyPolygon property1 = new PropertyPolygon(
-                1, 1001.0, "P001", 40.0, 100.0, polygon1, "Owner1", "Parish1", "Municipality1", "Island1"
-        );
-
-        PropertyPolygon property2 = new PropertyPolygon(
-                2, 1002.0, "P002", 40.0, 100.0, polygon2, "Owner2", "Parish2", "Municipality2", "Island2"
-        );
-        testGraph.addVertex(property1);
-        testGraph.addVertex(property2);
-        testGraph.addEdge("e1", property1, property2);
-
-        showGraph(testGraph);
     }
 }

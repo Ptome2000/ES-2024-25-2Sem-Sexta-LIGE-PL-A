@@ -31,6 +31,63 @@ public class PropertyCollector {
     }
 
     /**
+     * Returns all properties of the selected owner.
+     *
+     * @param id The id of the owner to filter properties by.
+     * @return A list of properties.
+     */
+    public List<PropertyPolygon> collectAllPropertiesByOwner(String id) {
+        List<PropertyPolygon> ownerProperties = new ArrayList<>();
+        for (District district : districts) {
+            for (PropertyPolygon property : district.getAllPropertyPolygons()) {
+                if (property.getOwner().equals(id)) {
+                    ownerProperties.add(property);
+                }
+            }
+        }
+        return ownerProperties;
+    }
+
+    public List<PropertyPolygon> collectPropertiesByOwnerAndDistrict(String ownerId, String districtName) {
+        return districts.stream()
+                .filter(d -> d.name().equalsIgnoreCase(districtName))
+                .flatMap(d -> d.getMunicipalities().stream())
+                .flatMap(m -> m.getParishes().stream())
+                .flatMap(p -> p.getPropertyPolygons().stream())
+                .filter(prop -> prop.getOwner().equals(ownerId))
+                .collect(Collectors.toList());
+    }
+
+    public List<PropertyPolygon> collectPropertiesByOwnerAndMunicipality(String ownerId, String municipalityName) {
+        return districts.stream()
+                .flatMap(d -> d.getMunicipalities().stream())
+                .filter(m -> m.name().equalsIgnoreCase(municipalityName))
+                .flatMap(m -> m.getParishes().stream())
+                .flatMap(p -> p.getPropertyPolygons().stream())
+                .filter(prop -> prop.getOwner().equals(ownerId))
+                .collect(Collectors.toList());
+    }
+
+    public List<PropertyPolygon> collectPropertiesByOwnerAndParish(String ownerId, String parishName) {
+        return districts.stream()
+                .flatMap(d -> d.getMunicipalities().stream())
+                .flatMap(m -> m.getParishes().stream())
+                .filter(p -> p.name().equalsIgnoreCase(parishName))
+                .flatMap(p -> p.getPropertyPolygons().stream())
+                .filter(prop -> prop.getOwner().equals(ownerId))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getOwnerIds() {
+        return districts.stream()
+                .flatMap(district -> district.getAllPropertyPolygons().stream())
+                .map(PropertyPolygon::getOwner)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+
+    /**
      * Returns the names of all districts.
      *
      * @return A list of district names.

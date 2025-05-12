@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.swing.SwingWorker;
@@ -24,20 +25,31 @@ public class MainFrame extends JFrame {
     private JPanel contentPanelCenter;
     private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
-    private JLabel numPropsLabel;
-    private JLabel numPropsByMunicipalityLabel;
-    private JLabel numPropsByParishLabel;
-    private JLabel avgPropsByMunicipalityLabel;
-    private JLabel avgPropsByParishLabel;
-    private JComboBox<String> districtJComboBox;
-    private JComboBox<String> municipalityJComboBox;
-    private JComboBox<String> parishJComboBox;
-    private JLabel avgSizeLabel;
-    private JPanel graphPanel;
-    private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
+
     private JLabel districtTitle;
     private JLabel municipalityTitle;
     private JLabel parishTitle;
+    private JLabel ownerTitle;
+
+    private JLabel numPropsByDistrictLabel;
+    private JLabel numPropsByMunicipalityLabel;
+    private JLabel numPropsByParishLabel;
+    private JLabel numPropsByOwnerLabel;
+
+    private JLabel avgPropsByDistrictLabel;
+    private JLabel avgPropsByMunicipalityLabel;
+    private JLabel avgPropsByParishLabel;
+    private JLabel avgPropsByOwnerLabel;
+
+    private JComboBox<String> districtJComboBox;
+    private JComboBox<String> municipalityJComboBox;
+    private JComboBox<String> parishJComboBox;
+    private JComboBox<String> ownerJComboBox;
+
+    private JCheckBox toggleShowOwnerId;
+
+    private JPanel graphPanel;
+    private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
 
     private boolean showOwnerIds = false;
     private List<PropertyPolygon> currentDisplayedProperties;
@@ -73,35 +85,43 @@ public class MainFrame extends JFrame {
         Font comboFont = new Font("SansSerif", Font.PLAIN, 14);
         Dimension comboSize = new Dimension(220, 36);
 
-        JLabel districtLabel = new JLabel("Distrito:");
+        JLabel districtLabel = new JLabel("District:");
         districtLabel.setForeground(white);
         districtLabel.setFont(labelFont);
 
-        JLabel municipalityLabel = new JLabel("Município:");
+        JLabel municipalityLabel = new JLabel("Municipality:");
         municipalityLabel.setForeground(white);
         municipalityLabel.setFont(labelFont);
 
-        JLabel parishLabel = new JLabel("Freguesia:");
+        JLabel parishLabel = new JLabel("Parish:");
         parishLabel.setForeground(white);
         parishLabel.setFont(labelFont);
+
+        JLabel ownerLabel = new JLabel("Owner ID:");
+        ownerLabel.setForeground(white);
+        ownerLabel.setFont(labelFont);
 
         districtJComboBox = new JComboBox<>();
         municipalityJComboBox = new JComboBox<>();
         parishJComboBox = new JComboBox<>();
+        ownerJComboBox = new JComboBox<>();
 
         districtLabel.setVisible(false);
         municipalityLabel.setVisible(false);
         parishLabel.setVisible(false);
+        ownerLabel.setVisible(false);
         districtJComboBox.setVisible(false);
         municipalityJComboBox.setVisible(false);
         parishJComboBox.setVisible(false);
+        ownerJComboBox.setVisible(false);
 
         districtJComboBox.addItem(null);
         municipalityJComboBox.addItem(null);
         parishJComboBox.addItem(null);
+        ownerJComboBox.addItem(null);
 
 // Aplica estilo a cada combo
-        JComboBox<?>[] combos = {districtJComboBox, municipalityJComboBox, parishJComboBox};
+        JComboBox<?>[] combos = {districtJComboBox, municipalityJComboBox, parishJComboBox, ownerJComboBox};
         for (JComboBox<?> combo : combos) {
             combo.setBackground(sidebarBg);
             combo.setForeground(white);
@@ -166,12 +186,15 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(parishLabel);
         sidebar.add(parishJComboBox);
+        sidebar.add(Box.createVerticalStrut(30));
+        sidebar.add(ownerLabel);
+        sidebar.add(ownerJComboBox);
 
 // === ESPAÇADOR PARA EMPURRAR O BOTÃO PARA BAIXO ===
         sidebar.add(Box.createVerticalGlue());
 
 // === BOTÃO DE IMPORTAR CSV ===
-        JButton importCsvButton = new JButton("Importar CSV");
+        JButton importCsvButton = new JButton("Import CSV");
         importCsvButton.setForeground(Color.WHITE);
         importCsvButton.setOpaque(true);
         importCsvButton.setBackground(new Color(30, 30, 30));
@@ -196,7 +219,7 @@ public class MainFrame extends JFrame {
 // === LÓGICA DE IMPORTAÇÃO DO CSV ===
         importCsvButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Selecionar ficheiro CSV");
+            fileChooser.setDialogTitle("Select CSV File");
             int result = fileChooser.showOpenDialog(MainFrame.this);
 
             if (result == JFileChooser.APPROVE_OPTION) {
@@ -217,19 +240,71 @@ public class MainFrame extends JFrame {
                             collector = new PropertyCollector(properties);
                             updateGraph(collector.collectAllProperties());
 
-                            List<String> districts = collector.getDistrictNames();
-                            for (String d : districts) districtJComboBox.addItem(d);
+                            toggleShowOwnerId.setVisible(true);
+                            ownerLabel.setVisible(true);
+                            ownerJComboBox.setVisible(true);
                             districtLabel.setVisible(true);
                             districtJComboBox.setVisible(true);
 
+                            collector.getOwnerIds().stream()
+                                    .map(Integer::parseInt)
+                                    .sorted()
+                                    .map(String::valueOf)
+                                    .forEach(ownerJComboBox::addItem);
+
+                            ownerJComboBox.addActionListener(e -> {
+                                String selectedOwnerId = (String) ownerJComboBox.getSelectedItem();
+                                if (selectedOwnerId != null) {
+                                    String selectedDistrict = (String) districtJComboBox.getSelectedItem();
+                                    String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
+                                    String selectedParish = (String) parishJComboBox.getSelectedItem();
+
+                                    List<PropertyPolygon> filtered;
+
+                                    if (selectedParish != null) {
+                                        filtered = collector.collectPropertiesByOwnerAndParish(selectedOwnerId, selectedParish);
+                                    } else if (selectedMunicipality != null) {
+                                        filtered = collector.collectPropertiesByOwnerAndMunicipality(selectedOwnerId, selectedMunicipality);
+                                    } else if (selectedDistrict != null) {
+                                        filtered = collector.collectPropertiesByOwnerAndDistrict(selectedOwnerId, selectedDistrict);
+                                    } else {
+                                        // Nenhum filtro geográfico → mostra tudo e limpa campos geográficos
+                                        filtered = collector.collectAllPropertiesByOwner(selectedOwnerId);
+                                        districtJComboBox.setSelectedItem(null);
+                                        municipalityJComboBox.setSelectedItem(null);
+                                        parishJComboBox.setSelectedItem(null);
+                                        setDistrictTitle("District - NA");
+                                        clearMunicipalityInfo();
+                                        clearParishInfo();
+                                    }
+                                    ownerTitle.setText("Owner - " + selectedOwnerId);
+                                    numPropsByOwnerLabel.setText("Amount of Properties: " + filtered.size());
+
+                                    double avgSize = filtered.stream()
+                                            .mapToDouble(PropertyPolygon::getShapeArea)
+                                            .average()
+                                            .orElse(0.0);
+                                    avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", avgSize));
+
+                                    updateGraph(filtered);
+                                }
+                            });
+
+                            List<String> districts = collector.getDistrictNames();
+                            for (String d : districts) districtJComboBox.addItem(d);
+
                             districtJComboBox.addActionListener(e -> {
                                 String selectedDistrict = (String) districtJComboBox.getSelectedItem();
-                                setDistrictTitle("Distrito - " + selectedDistrict);
+
+                                ownerJComboBox.setSelectedItem(null);
+                                clearOwnerInfo();
 
                                 if (selectedDistrict != null) {
+                                    setDistrictTitle("District - " + selectedDistrict);
                                     List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
                                     updateGraph(p);
-                                    updateDistrictInfo(p); // ← só atualiza aqui
+                                    updateDistrictInfo(p);
+
                                     List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
                                     municipalityJComboBox.removeAllItems();
                                     municipalityJComboBox.addItem(null);
@@ -239,16 +314,24 @@ public class MainFrame extends JFrame {
                                     municipalityLabel.setVisible(true);
                                     municipalityJComboBox.setVisible(true);
                                 } else {
-                                    // Limpa também os dados do distrito se quiseres
-                                    setDistrictTitle("Distrito - NA");
-                                    numPropsLabel.setText("Número de propriedades: - NA");
-                                    avgSizeLabel.setText("Tamanho médio das propriedades: - NA");
+                                    clearDistrictInfo();
+                                    clearMunicipalityInfo();
+                                    clearParishInfo();
+                                    municipalityJComboBox.removeAllItems();
+                                    municipalityJComboBox.setSelectedItem(null);
+                                    parishJComboBox.removeAllItems();
+                                    parishJComboBox.addItem(null);
+
                                 }
                             });
 
                             municipalityJComboBox.addActionListener(e -> {
                                 String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
-                                setMunicipalityTitle("Município - " + selectedMunicipality);
+
+                                ownerJComboBox.setSelectedItem(null);
+                                clearOwnerInfo();
+
+                                setMunicipalityTitle("Municipality - " + selectedMunicipality);
                                 if (selectedMunicipality != null) {
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
@@ -260,22 +343,27 @@ public class MainFrame extends JFrame {
                                     parishLabel.setVisible(true);
                                     parishJComboBox.setVisible(true);
                                 } else {
-                                    clearMunicipalityInfo(); // <--- limpa info
+                                    clearMunicipalityInfo();
+                                    municipalityJComboBox.setSelectedItem(null);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
-                                    clearParishInfo(); // <--- limpa info da freguesia também
+                                    clearParishInfo();
                                 }
                             });
 
                             parishJComboBox.addActionListener(e -> {
                                 String selectedParish = (String) parishJComboBox.getSelectedItem();
-                                setParishTitle("Freguesia - " + selectedParish);
+
+                                ownerJComboBox.setSelectedItem(null);
+                                clearOwnerInfo();
+
+                                setParishTitle("Parish - " + selectedParish);
                                 if (selectedParish != null) {
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
                                     updateParishInfo(p);
                                 } else {
-                                    clearParishInfo(); // <--- limpa info da freguesia
+                                    clearParishInfo();
                                 }
                             });
 
@@ -346,8 +434,9 @@ public class MainFrame extends JFrame {
 
 // Painel da esquerda (para toggle de IDs)
         JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JCheckBox toggleShowOwnerId = new JCheckBox("Mostrar ID's Proprietários");
+        toggleShowOwnerId = new JCheckBox("Show Owner's ID");
         toggleShowOwnerId.setSelected(false);
+        toggleShowOwnerId.setVisible(false);
 
 // Estilo básico do checkbox para parecer moderno
         toggleShowOwnerId.setForeground(Color.WHITE);
@@ -368,7 +457,7 @@ public class MainFrame extends JFrame {
 
 // Painel da direita (para toggle de info)
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JToggleButton toggleInfoToggle = new JToggleButton("Esconder Info");
+        JToggleButton toggleInfoToggle = new JToggleButton("Hide Info");
         toggleInfoToggle.setSelected(true);
 
 // Estilo do botão de info
@@ -406,50 +495,62 @@ public class MainFrame extends JFrame {
         graphInfoPanel.setBackground(new Color(245, 245, 245)); // Fundo claro
 
 // Título
-        JLabel infoTitle = new JLabel("Informações do Grafo");
+        JLabel infoTitle = new JLabel("Graph Informations");
         infoTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
         infoTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         infoTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
 // Labels
-        districtTitle = new JLabel("Distrito - NA");
+        districtTitle = new JLabel("District - NA");
         districtTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         districtTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        numPropsLabel = new JLabel("Número de propriedades: - NA");
-        numPropsLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        numPropsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        numPropsByDistrictLabel = new JLabel("Amount of Properties: - NA");
+        numPropsByDistrictLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByDistrictLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        avgPropsByDistrictLabel = new JLabel("Average Area: - NA");
+        avgPropsByDistrictLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByDistrictLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        avgSizeLabel = new JLabel("Tamanho médio das propriedades: - NA");
-        avgSizeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        avgSizeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        municipalityTitle = new JLabel("Município - NA");
+        municipalityTitle = new JLabel("Municipality - NA");
         municipalityTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         municipalityTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        numPropsByMunicipalityLabel = new JLabel("Número de propriedades: - NA");
+        numPropsByMunicipalityLabel = new JLabel("Amount of Properties: - NA");
         numPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         numPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        avgPropsByMunicipalityLabel = new JLabel("Tamanho médio das propriedades: - NA");
+        avgPropsByMunicipalityLabel = new JLabel("Average Area: - NA");
         avgPropsByMunicipalityLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         avgPropsByMunicipalityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        parishTitle = new JLabel("Freguesia - NA");
+        parishTitle = new JLabel("Parish - NA");
         parishTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
         parishTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        numPropsByParishLabel = new JLabel("Número de propriedades: - NA");
+        numPropsByParishLabel = new JLabel("Amount of Properties: - NA");
         numPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         numPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        avgPropsByParishLabel = new JLabel("Tamanho médio das propriedades: - NA");
+        avgPropsByParishLabel = new JLabel("Average Area: - NA");
         avgPropsByParishLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         avgPropsByParishLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JSeparator ownerSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+        ownerSeparator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1)); // largura total, altura fina
+        ownerSeparator.setForeground(new Color(30, 30, 30)); // cor da linha
+
+        // Owner Section
+        ownerTitle = new JLabel("Owner - NA");
+        ownerTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+        ownerTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        numPropsByOwnerLabel = new JLabel("Amount of Properties: - NA");
+        numPropsByOwnerLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        numPropsByOwnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        avgPropsByOwnerLabel = new JLabel("Average Area: - NA");
+        avgPropsByOwnerLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        avgPropsByOwnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 // Toggle de visibilidade
         toggleInfoToggle.addActionListener(e -> {
             boolean isSelected = toggleInfoToggle.isSelected();
             graphInfoPanel.setVisible(isSelected);
-            toggleInfoToggle.setText(isSelected ? "Esconder Info" : "Mostrar Info");
+            toggleInfoToggle.setText(isSelected ? "Hide Info" : "Show Info");
             MainFrame.this.revalidate();
             MainFrame.this.repaint();
         });
@@ -460,9 +561,9 @@ public class MainFrame extends JFrame {
         graphInfoPanel.add(Box.createVerticalStrut(10));
 
         graphInfoPanel.add(districtTitle);
-        graphInfoPanel.add(numPropsLabel);
+        graphInfoPanel.add(numPropsByDistrictLabel);
         graphInfoPanel.add(Box.createVerticalStrut(5));
-        graphInfoPanel.add(avgSizeLabel);
+        graphInfoPanel.add(avgPropsByDistrictLabel);
         graphInfoPanel.add(Box.createVerticalGlue());
 
         graphInfoPanel.add(municipalityTitle);
@@ -475,6 +576,16 @@ public class MainFrame extends JFrame {
         graphInfoPanel.add(numPropsByParishLabel);
         graphInfoPanel.add(Box.createVerticalStrut(5));
         graphInfoPanel.add(avgPropsByParishLabel);
+        graphInfoPanel.add(Box.createVerticalGlue());
+
+        graphInfoPanel.add(Box.createVerticalStrut(10)); // Espaço antes da linha
+        graphInfoPanel.add(ownerSeparator);
+        graphInfoPanel.add(Box.createVerticalStrut(10)); // Espaço após a linha
+
+        graphInfoPanel.add(ownerTitle);
+        graphInfoPanel.add(numPropsByOwnerLabel);
+        graphInfoPanel.add(Box.createVerticalStrut(5));
+        graphInfoPanel.add(avgPropsByOwnerLabel);
         graphInfoPanel.add(Box.createVerticalGlue());
 
 // Adiciona ao MainFrame
@@ -523,8 +634,8 @@ public class MainFrame extends JFrame {
                 .average()
                 .orElse(0.0);
 
-        numPropsLabel.setText("Número de propriedades: " + total);
-        avgSizeLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+        numPropsByDistrictLabel.setText("Amount of Properties: " + total);
+        avgPropsByDistrictLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
     private void updateMunicipalityInfo(List<PropertyPolygon> propriedades) {
@@ -533,8 +644,8 @@ public class MainFrame extends JFrame {
                 .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
                 .average()
                 .orElse(0.0);
-        numPropsByMunicipalityLabel.setText("Número de propriedades: " + total);
-        avgPropsByMunicipalityLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+        numPropsByMunicipalityLabel.setText("Amount of Properties: " + total);
+        avgPropsByMunicipalityLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
     private void updateParishInfo(List<PropertyPolygon> propriedades) {
@@ -543,8 +654,8 @@ public class MainFrame extends JFrame {
                 .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
                 .average()
                 .orElse(0.0);
-        numPropsByParishLabel.setText("Número de propriedades: " + total);
-        avgPropsByParishLabel.setText(String.format("Tamanho médio das propriedades: %.2f m²", media));
+        numPropsByParishLabel.setText("Amount of Properties: " + total);
+        avgPropsByParishLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
     public void updateGraph(List<PropertyPolygon> propriedades) {
@@ -573,16 +684,28 @@ public class MainFrame extends JFrame {
         if (parishTitle != null) parishTitle.setText(text);
     }
 
+    private void clearDistrictInfo() {
+        districtTitle.setText("District - NA");
+        numPropsByDistrictLabel.setText("Amount of Properties: - NA");
+        avgPropsByDistrictLabel.setText("Average Area: - NA");
+    }
+
     private void clearMunicipalityInfo() {
-        municipalityTitle.setText("Município - NA");
-        numPropsByMunicipalityLabel.setText("Número de propriedades: - NA");
-        avgPropsByMunicipalityLabel.setText("Tamanho médio das propriedades: - NA");
+        municipalityTitle.setText("Municipality - NA");
+        numPropsByMunicipalityLabel.setText("Amount of Properties: - NA");
+        avgPropsByMunicipalityLabel.setText("Average Area: - NA");
     }
 
     private void clearParishInfo() {
-        parishTitle.setText("Freguesia - NA");
-        numPropsByParishLabel.setText("Número de propriedades: - NA");
-        avgPropsByParishLabel.setText("Tamanho médio das propriedades: - NA");
+        parishTitle.setText("Parish - NA");
+        numPropsByParishLabel.setText("Amount of Properties: - NA");
+        avgPropsByParishLabel.setText("Average Area: - NA");
+    }
+
+    private void clearOwnerInfo() {
+        ownerTitle.setText("Owner - NA");
+        numPropsByOwnerLabel.setText("Amount of Properties: - NA");
+        avgPropsByOwnerLabel.setText("Average Area: - NA");
     }
 
     //MAIN
