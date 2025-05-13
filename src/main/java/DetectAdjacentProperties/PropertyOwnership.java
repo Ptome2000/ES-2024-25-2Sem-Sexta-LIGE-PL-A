@@ -44,6 +44,7 @@ public class PropertyOwnership {
      * @param owner The name of the owner to filter by.
      * @return A list of PropertyPolygon objects owned by the specified owner, or null if the owner does not exist.
      */
+    @Deprecated
     public List<PropertyPolygon> filterByOwner(String owner) {
         return propertiesByOwner.getOrDefault(owner, java.util.Collections.emptyList());
     }
@@ -75,7 +76,6 @@ public class PropertyOwnership {
 
             // Convert CSV data to property polygons and detect adjacency
             List<PropertyPolygon> properties = AdjacencyDetector.convertToProperties(data);
-            List<AdjacentPropertyPair> adjacentProperties = AdjacencyDetector.findAdjacentProperties(properties);
 
             // Print the number of adjacent properties
             PropertyOwnership ownership = new PropertyOwnership(properties);

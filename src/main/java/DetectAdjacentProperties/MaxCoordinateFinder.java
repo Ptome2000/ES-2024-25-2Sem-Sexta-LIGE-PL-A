@@ -6,9 +6,12 @@ import Models.VertexCoordinate;
 import java.util.List;
 
 /**
- * This class is responsible for finding the maximum coordinates (X and Y) from a list of PropertyPolygon objects.
+ * @deprecated This class is deprecated and will be removed in a future release.
+ * Use {@link CoordinateFinder#findMaxCoordinates(List)} instead.
+ * This class provides methods to find the maximum coordinates (X and Y) from a list of PropertyPolygon objects.
  * It iterates through the vertices of each property polygon and identifies the highest X and Y values.
  */
+@Deprecated
 public class MaxCoordinateFinder {
 
     /**
@@ -17,7 +20,9 @@ public class MaxCoordinateFinder {
      *
      * @param properties A list of PropertyPolygon objects representing the properties.
      * @return An array containing the maximum X and Y coordinates, where the first element is maxX and the second is maxY.
+     * @deprecated Use {@link CoordinateFinder#findMaxCoordinates(List)} instead.
      */
+    @Deprecated
     public static double[] findMaxCoordinates(List<PropertyPolygon> properties) {
         double maxX = Double.MIN_VALUE;
         double maxY = Double.MIN_VALUE;
