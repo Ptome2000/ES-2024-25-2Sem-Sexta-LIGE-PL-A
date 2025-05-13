@@ -99,6 +99,59 @@ public class AdjacencyDetector {
         return adjacentPairs;
     }
 
+
+    public static List<AdjacentPropertyPair> findValidAdjacentPairs(List<PropertyPolygon> properties) {
+        List<AdjacentPropertyPair> adjacentPairs = new ArrayList<>();
+        Set<String> seenPairs = new HashSet<>();
+        int adjacentCount = 0;
+
+        SpatialGrid spatialGrid = new SpatialGrid(properties);
+        for (PropertyPolygon property : properties) {
+            spatialGrid.insert(property);
+        }
+
+        for (PropertyPolygon prop1 : properties) {
+            if (!isValidProperty(prop1)) continue;
+
+            List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
+
+            for (PropertyPolygon prop2 : nearbyProperties) {
+                if (prop1 == prop2 || !isValidProperty(prop2)) continue;
+
+                // Verifica se os donos são diferentes
+                if (prop1.getOwner().equals(prop2.getOwner())) continue;
+
+                // Verifica se partilham pelo menos um vértice
+                if (shareVertex(prop1, prop2)) {
+                    String key1 = prop1.getObjectId() + "-" + prop2.getObjectId();
+                    String key2 = prop2.getObjectId() + "-" + prop1.getObjectId();
+
+                    if (!seenPairs.contains(key1) && !seenPairs.contains(key2)) {
+                        adjacentPairs.add(new AdjacentPropertyPair(prop1.getObjectId(), prop2.getObjectId()));
+                        seenPairs.add(key1);
+                        adjacentCount++;
+                    }
+                }
+            }
+        }
+
+        System.out.println("Total number of adjacent properties: " + adjacentCount);
+        return adjacentPairs;
+    }
+
+
+    private static boolean isValidProperty(PropertyPolygon property) {
+        return property != null &&
+                property.getPolygon() != null &&
+                property.getPolygon().getVertices() != null &&
+                !property.getPolygon().getVertices().isEmpty() &&
+                property.getShapeArea() > 0;
+    }
+
+
+
+
+
     /**
      * Checks if two properties share at least one vertex.
      *
