@@ -7,14 +7,18 @@ package Models;
 public class ExchangeSuggestion {
     private final int propertyFromA;
     private final int propertyFromB;
+    private final double feasibility;
 
-    public ExchangeSuggestion(int propertyFromA, int propertyFromB) {
+
+    public ExchangeSuggestion(int propertyFromA, int propertyFromB, double feasibility) {
         this.propertyFromA = propertyFromA;
         this.propertyFromB = propertyFromB;
+        this.feasibility = feasibility;
     }
 
     public int getPropertyFromA() { return propertyFromA; }
     public int getPropertyFromB() { return propertyFromB; }
+    public double getFeasibility() { return feasibility; }
 
     @Override
     public String toString() {

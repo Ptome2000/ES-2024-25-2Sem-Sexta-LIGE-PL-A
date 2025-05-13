@@ -139,7 +139,7 @@ public class AdjacencyDetector {
             }
         }
 
-        LOGGER.info("Total number of adjacent properties: " + adjacentCount);
+        System.out.println("Total number of adjacent properties: " + adjacentCount);
         return adjacentPairs;
     }
 
