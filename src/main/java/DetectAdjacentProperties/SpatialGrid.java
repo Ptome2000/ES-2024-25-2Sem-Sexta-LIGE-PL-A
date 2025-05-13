@@ -12,11 +12,11 @@ import java.util.*;
 class SpatialGrid {
 
     private static final int CELL_SIZE = 150;
-    private double minX;
-    private double minY;
-    private int MAX_GRID_X;
-    private int MAX_GRID_Y;
-    private Map<String, List<PropertyPolygon>> grid;
+    private final double minX;
+    private final double minY;
+    private final int MAX_GRID_X;
+    private final int MAX_GRID_Y;
+    private final Map<String, List<PropertyPolygon>> grid;
 
     /**
      * Constructs a spatial grid using a list of properties.
@@ -27,8 +27,8 @@ class SpatialGrid {
     public SpatialGrid(List<PropertyPolygon> properties) {
         this.grid = new HashMap<>();
 
-        double[] minCoordinates = MinCoordinateFinder.findMinCoordinates(properties);
-        double[] maxCoordinates = MaxCoordinateFinder.findMaxCoordinates(properties);
+        double[] minCoordinates = CoordinateFinder.findMinCoordinates(properties);
+        double[] maxCoordinates = CoordinateFinder.findMaxCoordinates(properties);
 
         this.minX = minCoordinates[0];
         this.minY = minCoordinates[1];
