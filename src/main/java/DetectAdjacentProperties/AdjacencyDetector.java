@@ -100,6 +100,13 @@ public class AdjacencyDetector {
     }
 
 
+    /**
+     * Finds valid adjacent property pairs by checking if two properties share at least one vertex
+     * and belong to different owners.
+     *
+     * @param properties A list of PropertyPolygon objects to check for adjacency.
+     * @return A list of AdjacentPropertyPair objects, representing pairs of adjacent properties.
+     */
     public static List<AdjacentPropertyPair> findValidAdjacentPairs(List<PropertyPolygon> properties) {
         List<AdjacentPropertyPair> adjacentPairs = new ArrayList<>();
         Set<String> seenPairs = new HashSet<>();
@@ -140,6 +147,12 @@ public class AdjacencyDetector {
     }
 
 
+    /**
+     * Checks if a property is valid based on its polygon and area.
+     *
+     * @param property The PropertyPolygon object to check.
+     * @return True if the property is valid, false otherwise.
+     */
     private static boolean isValidProperty(PropertyPolygon property) {
         return property != null &&
                 property.getPolygon() != null &&

@@ -1,5 +1,7 @@
 package DetectAdjacentProperties;
+import Models.PropertyPolygon;
 
+import java.util.List;
 
 /**
  * Represents a pair of adjacent properties identified by their unique property IDs.
@@ -20,6 +22,29 @@ public class AdjacentPropertyPair {
     public AdjacentPropertyPair(int propertyId1, int propertyId2) {
         this.propertyId1 = propertyId1;
         this.propertyId2 = propertyId2;
+    }
+
+    /**
+     * Retrieves the owners of the properties in the pair.
+     *
+     * @param properties List of PropertyPolygon objects to search for owners.
+     * @return An array containing the owners of the two properties.
+     */
+    public String[] getOwners(List<PropertyPolygon> properties) {
+        String owner1 = null;
+        String owner2 = null;
+
+        for (PropertyPolygon property : properties) {
+            if (property.getObjectId() == propertyId1) {
+                owner1 = property.getOwner();
+            } else if (property.getObjectId() == propertyId2) {
+                owner2 = property.getOwner();
+            }
+
+            if (owner1 != null && owner2 != null) break;
+        }
+
+        return new String[]{ owner1, owner2 };
     }
 
 
