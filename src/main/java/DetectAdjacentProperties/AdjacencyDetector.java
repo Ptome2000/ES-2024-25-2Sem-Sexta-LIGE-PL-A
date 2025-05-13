@@ -5,6 +5,7 @@ import Models.VertexCoordinate;
 import Repository.CsvLogger;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * This class is responsible for detecting adjacent properties based on their polygons.
@@ -33,9 +34,8 @@ public class AdjacencyDetector {
                     CsvLogger.logError("Polygon without owner in row " + (i + 1));
                     continue;
                 }
-                if (Arrays.asList(property.getFreguesia(), property.getMunicipio(), property.getIlha())
-                        .stream().anyMatch(val -> val.equalsIgnoreCase("NA"))) {
-//                    CsvLogger.logError("Propriedade ignorada por ter NA em freguesia, município ou ilha na linha " + (i + 1));
+                if (Stream.of(property.getFreguesia(), property.getMunicipio(), property.getIlha()).anyMatch(val -> val.equalsIgnoreCase("NA"))) {
+                    CsvLogger.logError("Propriedade ignorada por ter NA em freguesia, município ou ilha na linha " + (i + 1));
                     continue;
                 }
                 properties.add(property);
@@ -72,9 +72,6 @@ public class AdjacencyDetector {
 
         for (PropertyPolygon prop1 : properties) {
             List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
-
-//            System.out.println("Testing property: " + prop1.getObjectId() +
-//                    " | Nearby properties: " + nearbyProperties.size());
 
             for (PropertyPolygon prop2 : nearbyProperties) {
 
