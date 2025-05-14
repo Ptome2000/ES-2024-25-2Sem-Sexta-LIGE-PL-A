@@ -79,10 +79,16 @@ public class SuggestionGenerator {
                 for (PropertyPolygon a : groupA) {
                     for (PropertyPolygon b : groupB) {
                         double diff = Math.abs(a.getShapeArea() - b.getShapeArea());
-                        if (diff < minDiff) {
-                            minDiff = diff;
-                            bestSuggestion = new ExchangeSuggestion(a.getObjectId(), b.getObjectId());
+                        double maxArea = Math.max(a.getShapeArea(), b.getShapeArea());
+                        if (maxArea == 0) continue;
+
+                        double feasibility = calculateFeasibility(a.getShapeArea(), b.getShapeArea());
+
+                        if (feasibility >= 0.85 && feasibility > minDiff) {
+                            minDiff = feasibility;
+                            bestSuggestion = new ExchangeSuggestion(a.getObjectId(), b.getObjectId(), feasibility);
                         }
+
                     }
                 }
 
@@ -94,4 +100,11 @@ public class SuggestionGenerator {
 
         return suggestions;
     }
+
+
+    public static double calculateFeasibility(double area1, double area2) {
+        if (area1 <= 0 || area2 <= 0) return 0.0;
+        return 1.0 - (Math.abs(area1 - area2) / Math.max(area1, area2));
+    }
+
 }
