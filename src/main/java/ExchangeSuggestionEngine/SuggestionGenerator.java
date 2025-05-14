@@ -6,11 +6,6 @@ import Models.PropertyPolygon;
 
 import java.util.*;
 
-/**
- * This class is responsible for generating exchange suggestions based on adjacent properties.
- * It takes a list of adjacent property pairs and a list of property polygons, and generates
- * suggestions for property exchanges that could be beneficial for the owners.
- */
 public class SuggestionGenerator {
 
     public static List<ExchangeSuggestion> generateSuggestions(
@@ -44,7 +39,6 @@ public class SuggestionGenerator {
 
         for (List<AdjacentPropertyPair> pairList : pairsByOwnerPair.values()) {
             if (pairList.size() >= 2) {
-                // Obter os 4 IDs únicos envolvidos
                 Set<Integer> allIds = new HashSet<>();
                 for (AdjacentPropertyPair pair : pairList.subList(0, 2)) {
                     allIds.add((int) pair.getPropertyId1());
@@ -53,7 +47,6 @@ public class SuggestionGenerator {
 
                 if (allIds.size() < 4) continue;
 
-                // Separar os terrenos por dono
                 List<PropertyPolygon> groupA = new ArrayList<>();
                 List<PropertyPolygon> groupB = new ArrayList<>();
 
@@ -72,22 +65,29 @@ public class SuggestionGenerator {
 
                 if (groupA.size() != 2 || groupB.size() != 2) continue;
 
-                // Procurar a combinação com áreas mais semelhantes
-                double minDiff = Double.MAX_VALUE;
+                double bestFeasibility = -1;
                 ExchangeSuggestion bestSuggestion = null;
 
                 for (PropertyPolygon a : groupA) {
                     for (PropertyPolygon b : groupB) {
-                        double diff = Math.abs(a.getShapeArea() - b.getShapeArea());
-                        double maxArea = Math.max(a.getShapeArea(), b.getShapeArea());
-                        if (maxArea == 0) continue;
-
                         double feasibility = calculateFeasibility(a.getShapeArea(), b.getShapeArea());
+                        if (feasibility < 0.85 || feasibility <= bestFeasibility) continue;
 
-                        if (feasibility >= 0.85 && feasibility > minDiff) {
-                            minDiff = feasibility;
-                            bestSuggestion = new ExchangeSuggestion(a.getObjectId(), b.getObjectId(), feasibility);
-                        }
+                        PropertyPolygon outroDeA = groupA.get(0).equals(a) ? groupA.get(1) : groupA.get(0);
+                        PropertyPolygon outroDeB = groupB.get(0).equals(b) ? groupB.get(1) : groupB.get(0);
+
+                        double percentA = calculateGroupedGrowth(outroDeA.getShapeArea(), b.getShapeArea());
+                        double percentB = calculateGroupedGrowth(outroDeB.getShapeArea(), a.getShapeArea());
+
+                        ExchangeSuggestion suggestion = new ExchangeSuggestion(
+                                a.getObjectId(), b.getObjectId(), feasibility
+                        );
+                        suggestion.setPercentChangeA(percentA);
+                        suggestion.setPercentChangeB(percentB);
+                        suggestion.setScore((percentA + percentB) * feasibility);
+
+                        bestSuggestion = suggestion;
+                        bestFeasibility = feasibility;
 
                     }
                 }
@@ -97,14 +97,17 @@ public class SuggestionGenerator {
                 }
             }
         }
-
+        suggestions.sort(Comparator.comparingDouble(ExchangeSuggestion::getScore).reversed());
         return suggestions;
     }
-
 
     public static double calculateFeasibility(double area1, double area2) {
         if (area1 <= 0 || area2 <= 0) return 0.0;
         return 1.0 - (Math.abs(area1 - area2) / Math.max(area1, area2));
     }
 
+    private static double calculateGroupedGrowth(double remainingArea, double receivedArea) {
+        if (remainingArea <= 0) return 0.0;
+        return receivedArea / remainingArea;
+    }
 }
