@@ -1,21 +1,25 @@
 package Repository;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 
+@Feature("CSV Importation")
 class CsvReaderTests {
 
-    /**
-     * Tests the readCsv method with a valid CSV file.
-     * Ensures that the method returns non-null data with the expected number of rows and correct headers.
-     */
     @Test
+    @DisplayName("Validate Reading Valid CSV File")
+    @Description("Ensures that the readCsv method correctly reads a valid CSV file and returns the expected data.")
+    @Severity(SeverityLevel.CRITICAL)
     void validFile() {
         String filePath = "src/main/resources/teste.csv";
-
         CsvReader reader = new CsvReader();
         try {
             List<String[]> result = reader.readCsv(filePath);
@@ -29,14 +33,12 @@ class CsvReaderTests {
         }
     }
 
-    /**
-     * Tests the readCsv method with an empty CSV file.
-     * Ensures that the method returns non-null, empty data.
-     */
     @Test
+    @DisplayName("Validate Reading Empty CSV File")
+    @Description("Ensures that the readCsv method correctly handles an empty CSV file and returns an empty list.")
+    @Severity(SeverityLevel.NORMAL)
     void emptyFile() {
         String filePath = "src/main/resources/empty_teste.csv";
-
         CsvReader reader = new CsvReader();
         try {
             List<String[]> result = reader.readCsv(filePath);
@@ -48,14 +50,12 @@ class CsvReaderTests {
         }
     }
 
-    /**
-     * Tests the readCsv method with an invalid file path.
-     * Ensures that the method throws an IOException.
-     */
     @Test
+    @DisplayName("Validate Handling of Invalid File Path")
+    @Description("Ensures that the readCsv method throws an IOException when provided with an invalid file path.")
+    @Severity(SeverityLevel.CRITICAL)
     void invalidFilePath() {
         String filePath = "src/main/resources/non_existent_file.csv";
-
         CsvReader reader = new CsvReader();
         assertThrows(IOException.class, () -> {
             reader.readCsv(filePath);
