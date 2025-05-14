@@ -99,7 +99,7 @@ public class PropertyMerger {
             }
 
             PropertyPolygon merged = new PropertyPolygon(
-                    -group.hashCode(),             // Temporary ID for merged property
+                    group.stream().min(Integer::compare).orElse(-1),            // Temporary ID for merged property
                     base.getParId(),
                     base.getParNum(),
                     totalLength,

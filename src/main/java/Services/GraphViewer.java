@@ -10,11 +10,13 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -99,17 +101,40 @@ public class GraphViewer {
         vv.setPreferredSize(new Dimension(width, height));
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         vv.getRenderContext().setVertexLabelTransformer(p -> showOwnerIds ? p.getOwner() : null);
+
         vv.getRenderContext().setEdgeLabelTransformer(e -> null);
-        vv.getRenderContext().setVertexFillPaintTransformer(v -> Color.GRAY);
+        vv.getRenderContext().setVertexFillPaintTransformer(v -> v.getObjectId() < 0 ? Color.RED : Color.GRAY);
         vv.getRenderContext().setVertexShapeTransformer(v -> new Ellipse2D.Double(-4, -4, 16, 16));
+
         vv.getRenderContext().setVertexFontTransformer(v -> new Font("SansSerif", Font.PLAIN, 8));
         vv.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         vv.getRenderingHints().put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         vv.getRenderingHints().put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
+        vv.setDoubleBuffered(true);
+        vv.getRenderingHints().put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        vv.getRenderingHints().put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+
         DefaultModalGraphMouse<PropertyPolygon, String> graphMouse = new DefaultModalGraphMouse<>();
         graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(graphMouse);
+
+        vv.addGraphMouseListener(new GraphMouseListener<PropertyPolygon>() {
+            @Override
+            public void graphClicked(PropertyPolygon vertex, MouseEvent me) {
+                SwingUtilities.invokeLater(() -> {
+                    Component parent = SwingUtilities.getWindowAncestor(vv);
+                    PropertyInfoDialog dialog = new PropertyInfoDialog((JFrame) parent, vertex);
+                    dialog.setVisible(true);
+                });
+            }
+
+            @Override
+            public void graphPressed(PropertyPolygon vertex, MouseEvent me) {}
+
+            @Override
+            public void graphReleased(PropertyPolygon vertex, MouseEvent me) {}
+        });
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(vv, BorderLayout.CENTER);
