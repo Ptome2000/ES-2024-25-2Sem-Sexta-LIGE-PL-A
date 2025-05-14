@@ -27,6 +27,7 @@ import javax.swing.plaf.basic.BasicToggleButtonUI;
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private JPanel contentPanelCenter;
+    private JPanel graphInfoPanel;
     private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
 
@@ -52,6 +53,8 @@ public class MainFrame extends JFrame {
 
     String activeFilterType = null;
     String activeFilterValue = null;
+
+    private JLabel currentlyDisplayingLabel = new JLabel("Currently displaying: ");
 
     private JCheckBox toggleShowOwnerId;
     private JCheckBox toggleMergeSameOwnerProperties;
@@ -265,13 +268,13 @@ public class MainFrame extends JFrame {
 // === LÓGICA DE IMPORTAÇÃO DO CSV ===
         importCsvButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Select CSV File");
+            fileChooser.setDialogTitle("Select a CSV File");
             int result = fileChooser.showOpenDialog(MainFrame.this);
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 if (!selectedFile.getName().toLowerCase().endsWith(".csv")) {
-                    JOptionPane.showMessageDialog(MainFrame.this, "Por favor, selecione um ficheiro CSV válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(MainFrame.this, "Please select a valid CSV file.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -328,6 +331,7 @@ public class MainFrame extends JFrame {
                                 if (selectedOwnerId != null) {
                                     activeFilterType = "Owner";
                                     activeFilterValue = selectedOwnerId;
+                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
 
                                     setOwnerTitle("Owner - " + selectedOwnerId);
 
@@ -369,6 +373,9 @@ public class MainFrame extends JFrame {
                                 if (selectedDistrict != null) {
                                     activeFilterType = "District";
                                     activeFilterValue = selectedDistrict;
+                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
+
+                                    currentlyDisplayingLabel.setVisible(true);
 
                                     setDistrictTitle("District - " + selectedDistrict);
                                     List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
@@ -388,6 +395,7 @@ public class MainFrame extends JFrame {
                                     municipalityJComboBox.setVisible(true);
                                     changeSuggestions.setVisible(true);
                                 } else {
+                                    currentlyDisplayingLabel.setVisible(false);
                                     clearDistrictInfo();
                                     clearMunicipalityInfo();
                                     clearParishInfo();
@@ -413,6 +421,7 @@ public class MainFrame extends JFrame {
                                 if (selectedMunicipality != null) {
                                     activeFilterType = "Municipality";
                                     activeFilterValue = selectedMunicipality;
+                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
 
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
@@ -441,6 +450,7 @@ public class MainFrame extends JFrame {
                                 if (selectedParish != null) {
                                     activeFilterType = "Parish";
                                     activeFilterValue = selectedParish;
+                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
 
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
@@ -450,8 +460,8 @@ public class MainFrame extends JFrame {
                             });
 
                         } catch (Exception ex) {
-                            CsvLogger.logError("Erro ao importar: " + ex.getMessage());
-                            JOptionPane.showMessageDialog(MainFrame.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            CsvLogger.logError("Error importing: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(MainFrame.this, "Error: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                         return null;
                     }
@@ -469,7 +479,7 @@ public class MainFrame extends JFrame {
                             contentPanelCenter.repaint();
                         });
 
-                        showSuccessDialog("CSV importado com sucesso!");
+                        showSuccessDialog("CSV imported successfully!");
                     }
                 };
 
@@ -491,6 +501,11 @@ public class MainFrame extends JFrame {
         add(contentPanel, BorderLayout.CENTER);
         contentPanel = new JPanel(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topPanel.add(currentlyDisplayingLabel);
+        contentPanel.add(topPanel, BorderLayout.NORTH);
+        currentlyDisplayingLabel.setVisible(false);
 
 // Subpainel central dentro do contentPanel para conteúdo dinâmico (ex: logo ou grafo)
         contentPanelCenter = new JPanel();
@@ -538,7 +553,7 @@ public class MainFrame extends JFrame {
             updateGraph(currentDisplayedProperties);
         });
 
-        toggleMergeSameOwnerProperties = new JCheckBox("Merge Owner Adjacent Properties");
+        toggleMergeSameOwnerProperties = new JCheckBox("Merge Same Owner Adjacent Properties");
         toggleMergeSameOwnerProperties.setSelected(false);
         toggleMergeSameOwnerProperties.setVisible(false);
 
@@ -559,28 +574,56 @@ public class MainFrame extends JFrame {
             updateGraph(currentDisplayedProperties);
         });
 
-// Painel da direita (para toggle de info)
+// Right panel (for toggling info visibility)
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+// Creating the toggle button
         JToggleButton toggleInfoToggle = new JToggleButton("Hide Info");
         toggleInfoToggle.setSelected(true);
 
-// Estilo do botão de info
+// Customizing the toggle button appearance
         toggleInfoToggle.setForeground(Color.WHITE);
         toggleInfoToggle.setOpaque(true);
         toggleInfoToggle.setBackground(new Color(30, 30, 30));
         toggleInfoToggle.setBorderPainted(false);
         toggleInfoToggle.setFocusPainted(false);
-        Dimension toggleInfoToggleSize = toggleInfoToggle.getPreferredSize();
-        toggleInfoToggle.setPreferredSize(new Dimension(toggleInfoToggleSize.width, 30));
+
+// Setting the font and cursor style
         toggleInfoToggle.setFont(new Font("SansSerif", Font.BOLD, 12));
         toggleInfoToggle.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+// Removing content area fill and setting the UI style
         toggleInfoToggle.setUI(new BasicToggleButtonUI());
         toggleInfoToggle.setContentAreaFilled(false);
         toggleInfoToggle.setOpaque(true);
+
+// Define a minimum width for the button to ensure it fits both "Hide Info" and "Show Info"
+        toggleInfoToggle.setMinimumSize(new Dimension(120, 30)); // Set a minimum width
+        toggleInfoToggle.setPreferredSize(new Dimension(120, 30)); // Set preferred size with sufficient width
+
+// Dynamically adjusting the size based on the text
         toggleInfoToggle.addChangeListener(e -> {
             toggleInfoToggle.setBackground(new Color(30, 30, 30));
+            toggleInfoToggle.revalidate(); // Revalidate to update the button size
+            toggleInfoToggle.repaint();    // Repaint to apply the new size
         });
 
+// Adding an action listener to toggle info panel visibility
+        toggleInfoToggle.addActionListener(e -> {
+            boolean isSelected = toggleInfoToggle.isSelected();
+            graphInfoPanel.setVisible(isSelected);  // Show or hide the info panel
+            toggleInfoToggle.setText(isSelected ? "Hide Info" : "Show Info");  // Update button text
+
+            // Revalidate and repaint the button to adjust its size
+            toggleInfoToggle.revalidate();
+            toggleInfoToggle.repaint();
+
+            // Revalidate and repaint the main frame
+            MainFrame.this.revalidate();
+            MainFrame.this.repaint();
+        });
+
+// Adding the button to the right panel
         bottomRightPanel.add(toggleInfoToggle);
 
 // Junta os dois lados ao painel inferior
@@ -593,7 +636,7 @@ public class MainFrame extends JFrame {
 //######################################################################################################################//
 
 // === INFO PANEL ===
-        JPanel graphInfoPanel = new JPanel();
+        graphInfoPanel = new JPanel();
         graphInfoPanel.setLayout(new BoxLayout(graphInfoPanel, BoxLayout.Y_AXIS));
         graphInfoPanel.setPreferredSize(new Dimension(400, getHeight()));
         graphInfoPanel.setBackground(new Color(245, 245, 245)); // Fundo claro
@@ -651,13 +694,7 @@ public class MainFrame extends JFrame {
         avgPropsByOwnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 // Toggle de visibilidade
-        toggleInfoToggle.addActionListener(e -> {
-            boolean isSelected = toggleInfoToggle.isSelected();
-            graphInfoPanel.setVisible(isSelected);
-            toggleInfoToggle.setText(isSelected ? "Hide Info" : "Show Info");
-            MainFrame.this.revalidate();
-            MainFrame.this.repaint();
-        });
+
 
 // Adiciona os componentes ao painel
         graphInfoPanel.add(Box.createVerticalStrut(20));
