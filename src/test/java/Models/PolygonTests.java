@@ -1,7 +1,5 @@
-package DetectAdjacentProperties;
+package Models;
 
-import Models.Polygon;
-import Models.VertexCoordinate;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -27,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * <ul>
  *     <li>Constructor: 1</li>
  *     <li>getVertices: 1</li>
- *     <li>toString: 1</li>
+ *     <li>toString: 2</li>
  * </ul>
  */
-@Feature("Detect adjacent properties")
+@Feature("Object Models")
 class PolygonTests {
 
     @Test

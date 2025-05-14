@@ -1,5 +1,9 @@
 package Repository;
 
+/**
+ * Enum representing the columns in a CSV file.
+ * Each enum constant corresponds to a specific column in the CSV.
+ */
 public enum CsvColum {
 
     OBJECT_ID(0),
@@ -15,6 +19,11 @@ public enum CsvColum {
 
     private final int index;
 
+    /**
+     * Constructor to initialize the CsvColum enum with the column index.
+     *
+     * @param index The index of the column in the CSV file.
+     */
     CsvColum(int index) {
         this.index = index;
     }

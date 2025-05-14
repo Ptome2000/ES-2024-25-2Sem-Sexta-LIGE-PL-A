@@ -1,6 +1,5 @@
-package DetectAdjacentProperties;
+package Models;
 
-import Models.VertexCoordinate;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,16 +19,16 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Cyclomatic Complexity:</strong></p>
  * <ul>
- *     <li>VertexCoordinate (constructor): 1</li>
+ *     <li>constructor: 1</li>
  *     <li>getX: 1</li>
  *     <li>getY: 1</li>
- *     <li>equals: 2</li>
+ *     <li>equals: 4</li>
  *     <li>hashCode: 1</li>
  *     <li>toString: 1</li>
  * </ul>
  */
 
-@Feature("Detect adjacent properties")
+@Feature("Object Models")
 class VertexCoordinateTests {
 
     @Test
@@ -72,7 +71,7 @@ class VertexCoordinateTests {
         VertexCoordinate vertex1 = new VertexCoordinate(10.0, 20.0);
         VertexCoordinate vertex2 = new VertexCoordinate(10.0, 20.0);
 
-        assertTrue(vertex1.equals(vertex2), "equals should return true for objects with the same coordinates.");
+        assertEquals(vertex1, vertex2, "equals should return true for objects with the same coordinates.");
     }
 
     @Test
@@ -83,7 +82,7 @@ class VertexCoordinateTests {
         VertexCoordinate vertex1 = new VertexCoordinate(10.0, 20.0);
         VertexCoordinate vertex2 = new VertexCoordinate(15.0, 25.0);
 
-        assertFalse(vertex1.equals(vertex2), "equals should return false for objects with different coordinates.");
+        assertNotEquals(vertex1, vertex2, "equals should return false for objects with different coordinates.");
     }
 
     @Test
