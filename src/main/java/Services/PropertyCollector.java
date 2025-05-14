@@ -8,11 +8,18 @@ import Models.District;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * Service responsible for collecting and filtering property data from a list of districts.
+ */
 public class PropertyCollector {
 
     private final List<District> districts;
 
+    /**
+     * Constructs a PropertyCollector with the given list of districts.
+     *
+     * @param districts The list of districts containing property data.
+     */
     public PropertyCollector(List<District> districts) {
         this.districts = districts;
     }
@@ -48,6 +55,13 @@ public class PropertyCollector {
         return ownerProperties;
     }
 
+    /**
+     * Collects all properties belonging to a specific owner within a specific district.
+     *
+     * @param ownerId      The ID of the owner.
+     * @param districtName The name of the district.
+     * @return A list of PropertyPolygon objects owned by the owner within the district.
+     */
     public List<PropertyPolygon> collectPropertiesByOwnerAndDistrict(String ownerId, String districtName) {
         return districts.stream()
                 .filter(d -> d.name().equalsIgnoreCase(districtName))
@@ -58,6 +72,13 @@ public class PropertyCollector {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Collects all properties belonging to a specific owner within a specific municipality.
+     *
+     * @param ownerId          The ID of the owner.
+     * @param municipalityName The name of the municipality.
+     * @return A list of PropertyPolygon objects owned by the owner within the municipality.
+     */
     public List<PropertyPolygon> collectPropertiesByOwnerAndMunicipality(String ownerId, String municipalityName) {
         return districts.stream()
                 .flatMap(d -> d.getMunicipalities().stream())
@@ -68,6 +89,13 @@ public class PropertyCollector {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Collects all properties belonging to a specific owner within a specific parish.
+     *
+     * @param ownerId    The ID of the owner.
+     * @param parishName The name of the parish.
+     * @return A list of PropertyPolygon objects owned by the owner within the parish.
+     */
     public List<PropertyPolygon> collectPropertiesByOwnerAndParish(String ownerId, String parishName) {
         return districts.stream()
                 .flatMap(d -> d.getMunicipalities().stream())
@@ -78,6 +106,11 @@ public class PropertyCollector {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns a list of all unique owner IDs present in the property data.
+     *
+     * @return A list of unique owner IDs.
+     */
     public List<String> getOwnerIds() {
         return districts.stream()
                 .flatMap(district -> district.getAllPropertyPolygons().stream())

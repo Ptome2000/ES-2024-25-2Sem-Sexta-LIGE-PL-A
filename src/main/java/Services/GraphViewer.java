@@ -21,8 +21,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The {@code GraphViewer} class provides utility methods to visualize
+ * a graph of {@link PropertyPolygon} nodes using the JUNG library.
+ * It includes methods to compute a static layout and render the graph
+ * in a Swing {@link JPanel}.
+ */
 public class GraphViewer {
 
+    /**
+     * Calculates the positions (layout) of each {@link PropertyPolygon} node
+     * based on the centroid of its polygon, scaling and translating them to fit
+     * within the given window dimensions.
+     *
+     * @param graph        the graph containing property polygons as vertices
+     * @param windowWidth  the width of the visualization window in pixels
+     * @param windowHeight the height of the visualization window in pixels
+     * @return a map associating each {@link PropertyPolygon} with a scaled screen position
+     */
     public static Map<PropertyPolygon, Point2D> calculateGraphLayout(Graph<PropertyPolygon, String> graph, int windowWidth, int windowHeight) {
         Map<PropertyPolygon, Point2D> rawCentroids = new HashMap<>();
         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
@@ -64,6 +80,16 @@ public class GraphViewer {
         return locationMap;
     }
 
+    /**
+     * Creates and returns a {@link JPanel} containing a graphical visualization
+     * of the given {@link Graph}, using a static layout based on centroid positions.
+     *
+     * @param graph         the graph of property polygons to be visualized
+     * @param width         the width of the panel in pixels
+     * @param height        the height of the panel in pixels
+     * @param showOwnerIds  if true, shows the owner ID as the label on each node
+     * @return a {@link JPanel} containing the interactive graph visualization
+     */
     public static JPanel createGraphPanel(Graph<PropertyPolygon, String> graph, int width, int height, boolean showOwnerIds) {
         Map<PropertyPolygon, Point2D> layoutMap = calculateGraphLayout(graph, width, height);
         Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, layoutMap::get);

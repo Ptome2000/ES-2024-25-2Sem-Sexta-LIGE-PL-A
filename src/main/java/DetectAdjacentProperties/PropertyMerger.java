@@ -5,10 +5,20 @@ import Models.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class responsible for merging adjacent properties that belong to the same owner.
+ */
 public class PropertyMerger {
 
+    /**
+     * Merges adjacent properties with the same owner into single unified properties.
+     * Properties are considered adjacent if they share at least one vertex.
+     *
+     * @param properties A list of {@link PropertyPolygon} representing all original properties.
+     * @return A list of {@link PropertyPolygon} with merged properties, replacing the original adjacent groups.
+     */
     public static List<PropertyPolygon> mergeOwnerAdjacentProperties(List<PropertyPolygon> properties) {
-        // Mapa: vértice -> propriedades com esse vértice
+        // Map from vertex to the list of properties that contain that vertex
         Map<VertexCoordinate, List<PropertyPolygon>> vertexMap = new HashMap<>();
         for (PropertyPolygon property : properties) {
             for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
@@ -16,7 +26,7 @@ public class PropertyMerger {
             }
         }
 
-        // Criar grafo de adjacência (por ID)
+        // Build adjacency graph based on shared vertices and matching owners
         Map<Integer, Set<Integer>> adjacencyMap = new HashMap<>();
         for (List<PropertyPolygon> sharedProps : vertexMap.values()) {
             for (int i = 0; i < sharedProps.size(); i++) {
@@ -34,7 +44,7 @@ public class PropertyMerger {
             }
         }
 
-        // Explorar componentes ligadas (por owner)
+        // Identify connected components of adjacent properties with the same owner
         Set<Integer> visited = new HashSet<>();
         List<List<Integer>> groups = new ArrayList<>();
 
@@ -64,11 +74,11 @@ public class PropertyMerger {
             if (group.size() > 1) groups.add(group);
         }
 
-        // Map ID to Property
+        // Map from property ID to the PropertyPolygon instance
         Map<Integer, PropertyPolygon> idToProperty = properties.stream()
                 .collect(Collectors.toMap(PropertyPolygon::getObjectId, p -> p));
 
-        // Gerar propriedades mescladas
+        // Merge grouped properties into new PropertyPolygon instances
         Set<Integer> mergedIds = new HashSet<>();
         List<PropertyPolygon> mergedList = new ArrayList<>();
 
@@ -89,7 +99,7 @@ public class PropertyMerger {
             }
 
             PropertyPolygon merged = new PropertyPolygon(
-                    -group.hashCode(),             // ID fictício
+                    -group.hashCode(),             // Temporary ID for merged property
                     base.getParId(),
                     base.getParNum(),
                     totalLength,
@@ -105,7 +115,7 @@ public class PropertyMerger {
             mergedIds.addAll(group);
         }
 
-        // Adicionar propriedades não mescladas
+        // Add non-merged properties to the final list
         for (PropertyPolygon p : properties) {
             if (!mergedIds.contains(p.getObjectId())) {
                 mergedList.add(p);

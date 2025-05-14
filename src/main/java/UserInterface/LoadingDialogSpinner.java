@@ -3,7 +3,19 @@ package UserInterface;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A modal dialog that displays a loading animation and message while a process is running.
+ * <p>
+ * This dialog is intended to be shown during long-running operations, such as importing or validating a file,
+ * to inform the user that the application is busy.
+ */
 public class LoadingDialogSpinner extends JDialog {
+
+    /**
+     * Constructs a new {@code LoadingDialogSpinner} attached to a parent frame.
+     *
+     * @param parent the parent {@link JFrame} to which this dialog is modal.
+     */
     public LoadingDialogSpinner(JFrame parent) {
         super(parent, "A processar...", true);
         setLayout(new BorderLayout());

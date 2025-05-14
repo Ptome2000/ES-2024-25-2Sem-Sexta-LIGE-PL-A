@@ -54,7 +54,7 @@ public class MainFrame extends JFrame {
     String activeFilterType = null;
     String activeFilterValue = null;
 
-    private JLabel currentlyDisplayingLabel = new JLabel("Currently displaying: ");
+    private JLabel currentlyDisplayingLabel = new JLabel();
 
     private JCheckBox toggleShowOwnerId;
     private JCheckBox toggleMergeSameOwnerProperties;
@@ -331,7 +331,10 @@ public class MainFrame extends JFrame {
                                 if (selectedOwnerId != null) {
                                     activeFilterType = "Owner";
                                     activeFilterValue = selectedOwnerId;
-                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
 
                                     setOwnerTitle("Owner - " + selectedOwnerId);
 
@@ -373,9 +376,10 @@ public class MainFrame extends JFrame {
                                 if (selectedDistrict != null) {
                                     activeFilterType = "District";
                                     activeFilterValue = selectedDistrict;
-                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
-
-                                    currentlyDisplayingLabel.setVisible(true);
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );                                    currentlyDisplayingLabel.setVisible(true);
 
                                     setDistrictTitle("District - " + selectedDistrict);
                                     List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
@@ -421,7 +425,10 @@ public class MainFrame extends JFrame {
                                 if (selectedMunicipality != null) {
                                     activeFilterType = "Municipality";
                                     activeFilterValue = selectedMunicipality;
-                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
 
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
@@ -450,8 +457,10 @@ public class MainFrame extends JFrame {
                                 if (selectedParish != null) {
                                     activeFilterType = "Parish";
                                     activeFilterValue = selectedParish;
-                                    currentlyDisplayingLabel.setText("Currently displaying: " + activeFilterType + " = " + activeFilterValue);
-
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
                                 } else {
@@ -502,10 +511,14 @@ public class MainFrame extends JFrame {
         contentPanel = new JPanel(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
 
+        // === TOPO DO PAINEL COM TEXTO DINÂMICO ===
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        topPanel.add(currentlyDisplayingLabel);
-        contentPanel.add(topPanel, BorderLayout.NORTH);
+        currentlyDisplayingLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         currentlyDisplayingLabel.setVisible(false);
+
+        topPanel.add(currentlyDisplayingLabel);
+
+        contentPanel.add(topPanel, BorderLayout.NORTH);
 
 // Subpainel central dentro do contentPanel para conteúdo dinâmico (ex: logo ou grafo)
         contentPanelCenter = new JPanel();
