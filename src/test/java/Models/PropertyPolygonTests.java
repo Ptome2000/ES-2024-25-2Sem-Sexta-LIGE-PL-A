@@ -1,18 +1,18 @@
-package DetectAdjacentProperties;
+package Models;
 
-import Models.Polygon;
-import Models.PropertyPolygon;
-import Models.VertexCoordinate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class contains unit tests for the {@link PropertyPolygon} class.
@@ -38,13 +38,13 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>getMunicipio: 1</li>
  *     <li>getIlha: 1</li>
  *     <li>fromCsvRow: 2</li>
- *     <li>parseGeometry: 2</li>
- *     <li>equals: 2</li>
+ *     <li>parseGeometry: 5</li>
+ *     <li>equals: 4</li>
  *     <li>hashCode: 1</li>
  *     <li>toString: 1</li>
  * </ul>
  */
-@Feature("Detect adjacent properties")
+@Feature("Object Models")
 class PropertyPolygonTests {
 
     @Test
@@ -212,7 +212,7 @@ class PropertyPolygonTests {
         Polygon polygon = new Polygon(List.of(new VertexCoordinate(0, 0)));
         PropertyPolygon property = new PropertyPolygon(1, polygon);
 
-        assertTrue(property.equals(property), "An object should be equal to itself.");
+        assertEquals(property, property, "An object should be equal to itself.");
     }
 
     @Test
