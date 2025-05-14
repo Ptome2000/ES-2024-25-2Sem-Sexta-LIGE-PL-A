@@ -76,19 +76,34 @@ public class SuggestionGenerator {
                         PropertyPolygon outroDeA = groupA.get(0).equals(a) ? groupA.get(1) : groupA.get(0);
                         PropertyPolygon outroDeB = groupB.get(0).equals(b) ? groupB.get(1) : groupB.get(0);
 
-                        double percentA = calculateGroupedGrowth(outroDeA.getShapeArea(), b.getShapeArea());
-                        double percentB = calculateGroupedGrowth(outroDeB.getShapeArea(), a.getShapeArea());
+                        // NOVOS CÁLCULOS DE PERCENTAGEM
+                        double beforeA = a.getShapeArea() + outroDeA.getShapeArea();
+                        double afterA = b.getShapeArea() + outroDeA.getShapeArea();
+                        double percentA = calculateNetAreaChange(beforeA, afterA);
+
+                        double beforeB = b.getShapeArea() + outroDeB.getShapeArea();
+                        double afterB = a.getShapeArea() + outroDeB.getShapeArea();
+                        double percentB = calculateNetAreaChange(beforeB, afterB);
 
                         ExchangeSuggestion suggestion = new ExchangeSuggestion(
                                 a.getObjectId(), b.getObjectId(), feasibility
                         );
                         suggestion.setPercentChangeA(percentA);
                         suggestion.setPercentChangeB(percentB);
-                        suggestion.setScore((percentA + percentB) * feasibility);
+
+                        double equidade = 100.0 - Math.abs(percentA * 100.0 - percentB * 100.0);
+
+                        double areaMedia = (a.getShapeArea() + b.getShapeArea()) / 2.0;
+                        double areaFactor = Math.min(1.0, areaMedia / 1000.0); // até 1000 m² conta a 100%
+
+                        double viabilidadeFactor = feasibility;
+
+                        double score = equidade * areaFactor * viabilidadeFactor;
+
+                        suggestion.setScore(score);
 
                         bestSuggestion = suggestion;
                         bestFeasibility = feasibility;
-
                     }
                 }
 
@@ -97,6 +112,7 @@ public class SuggestionGenerator {
                 }
             }
         }
+
         suggestions.sort(Comparator.comparingDouble(ExchangeSuggestion::getScore).reversed());
         return suggestions;
     }
@@ -106,8 +122,8 @@ public class SuggestionGenerator {
         return 1.0 - (Math.abs(area1 - area2) / Math.max(area1, area2));
     }
 
-    private static double calculateGroupedGrowth(double remainingArea, double receivedArea) {
-        if (remainingArea <= 0) return 0.0;
-        return receivedArea / remainingArea;
+    private static double calculateNetAreaChange(double before, double after) {
+        if (before <= 0) return 0.0;
+        return (after - before) / before;
     }
 }

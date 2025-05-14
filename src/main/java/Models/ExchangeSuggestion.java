@@ -47,10 +47,16 @@ public class ExchangeSuggestion {
 
     @Override
     public String toString() {
-        return " \n Sugestão: Terreno " + propertyFromA + " ↔ " + propertyFromB +
+        return "\nSugestão: [Terreno A: " + propertyFromA + "] ↔ [Terreno B: " + propertyFromB + "]" +
                 " | Viabilidade: " + String.format("%.2f", feasibility) +
-                " | % A: " + String.format("%.2f%%", percentChangeA * 100) +
-                " | % B: " + String.format("%.2f%%", percentChangeB * 100);
+                " | % A: " + formatPercentage(percentChangeA) +
+                " | % B: " + formatPercentage(percentChangeB) +
+                " | Score: " + String.format("%.2f", score);
+    }
+
+    private String formatPercentage(double value) {
+        if (Double.isNaN(value)) return "N/A";
+        return String.format("%.2f%%", value * 100);
     }
 }
 
