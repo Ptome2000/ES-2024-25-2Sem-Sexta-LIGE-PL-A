@@ -19,7 +19,7 @@ class CsvUploaderTests {
     @Severity(SeverityLevel.CRITICAL)
     void uploadValidCsv() {
         CsvUploader uploader = new CsvUploader();
-        String filePath = "src/main/resources/teste.csv";
+        String filePath = "src/main/resources/tests/valid.csv";
 
         try {
             List<String[]> data = uploader.uploadCsv(filePath);

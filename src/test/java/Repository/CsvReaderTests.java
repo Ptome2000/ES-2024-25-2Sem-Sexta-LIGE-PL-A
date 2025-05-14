@@ -19,7 +19,7 @@ class CsvReaderTests {
     @Description("Ensures that the readCsv method correctly reads a valid CSV file and returns the expected data.")
     @Severity(SeverityLevel.CRITICAL)
     void validFile() {
-        String filePath = "src/main/resources/teste.csv";
+        String filePath = "src/main/resources/tests/valid.csv";
         CsvReader reader = new CsvReader();
         try {
             List<String[]> result = reader.readCsv(filePath);
