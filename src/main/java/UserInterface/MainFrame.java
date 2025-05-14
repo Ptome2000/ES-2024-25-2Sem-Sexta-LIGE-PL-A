@@ -120,6 +120,7 @@ public class MainFrame extends JFrame {
         parishJComboBox.addItem(null);
         ownerJComboBox.addItem(null);
 
+
 // Aplica estilo a cada combo
         JComboBox<?>[] combos = {districtJComboBox, municipalityJComboBox, parishJComboBox, ownerJComboBox};
         for (JComboBox<?> combo : combos) {
