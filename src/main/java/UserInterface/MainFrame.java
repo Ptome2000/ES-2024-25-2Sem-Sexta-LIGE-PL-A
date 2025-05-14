@@ -6,6 +6,7 @@ import ExchangeSuggestionEngine.SuggestionGenerator;
 import Models.*;
 import Repository.*;
 import Services.*;
+import DetectAdjacentProperties.*;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -49,12 +50,17 @@ public class MainFrame extends JFrame {
     private JComboBox<String> parishJComboBox;
     private JComboBox<String> ownerJComboBox;
 
+    String activeFilterType = null;
+    String activeFilterValue = null;
+
     private JCheckBox toggleShowOwnerId;
+    private JCheckBox toggleMergeSameOwnerProperties;
 
     private JPanel graphPanel;
     private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
 
     private boolean showOwnerIds = false;
+    private boolean mergeActive = false;
     private List<PropertyPolygon> currentDisplayedProperties;
 
     public List<PropertyPolygon> getCurrentDisplayedProperties() {
@@ -304,10 +310,12 @@ public class MainFrame extends JFrame {
 
 
                             toggleShowOwnerId.setVisible(true);
-                            ownerLabel.setVisible(true);
-                            ownerJComboBox.setVisible(true);
+
                             districtLabel.setVisible(true);
                             districtJComboBox.setVisible(true);
+
+                            ownerLabel.setVisible(true);
+                            ownerJComboBox.setVisible(true);
 
                             collector.getOwnerIds().stream()
                                     .map(Integer::parseInt)
@@ -318,6 +326,11 @@ public class MainFrame extends JFrame {
                             ownerJComboBox.addActionListener(e -> {
                                 String selectedOwnerId = (String) ownerJComboBox.getSelectedItem();
                                 if (selectedOwnerId != null) {
+                                    activeFilterType = "Owner";
+                                    activeFilterValue = selectedOwnerId;
+
+                                    setOwnerTitle("Owner - " + selectedOwnerId);
+
                                     String selectedDistrict = (String) districtJComboBox.getSelectedItem();
                                     String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
                                     String selectedParish = (String) parishJComboBox.getSelectedItem();
@@ -340,15 +353,6 @@ public class MainFrame extends JFrame {
                                         clearMunicipalityInfo();
                                         clearParishInfo();
                                     }
-                                    ownerTitle.setText("Owner - " + selectedOwnerId);
-                                    numPropsByOwnerLabel.setText("Amount of Properties: " + filtered.size());
-
-                                    double avgSize = filtered.stream()
-                                            .mapToDouble(PropertyPolygon::getShapeArea)
-                                            .average()
-                                            .orElse(0.0);
-                                    avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", avgSize));
-                                    changeSuggestions.setVisible(false);
                                     updateGraph(filtered);
                                 }
                             });
@@ -363,12 +367,18 @@ public class MainFrame extends JFrame {
                                 clearOwnerInfo();
 
                                 if (selectedDistrict != null) {
+                                    activeFilterType = "District";
+                                    activeFilterValue = selectedDistrict;
+
                                     setDistrictTitle("District - " + selectedDistrict);
                                     List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
                                     updateGraph(p);
-                                    updateDistrictInfo(p);
+
+                                    toggleMergeSameOwnerProperties.setVisible(true);
 
                                     List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
+                                    municipalityLabel.setVisible(true);
+                                    municipalityJComboBox.setVisible(true);
                                     municipalityJComboBox.removeAllItems();
                                     municipalityJComboBox.addItem(null);
                                     parishJComboBox.removeAllItems();
@@ -381,8 +391,12 @@ public class MainFrame extends JFrame {
                                     clearDistrictInfo();
                                     clearMunicipalityInfo();
                                     clearParishInfo();
+                                    municipalityLabel.setVisible(false);
+                                    municipalityJComboBox.setVisible(false);
                                     municipalityJComboBox.removeAllItems();
                                     municipalityJComboBox.setSelectedItem(null);
+                                    parishLabel.setVisible(true);
+                                    parishJComboBox.setVisible(true);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
                                     changeSuggestions.setVisible(false);
@@ -397,9 +411,11 @@ public class MainFrame extends JFrame {
 
                                 setMunicipalityTitle("Municipality - " + selectedMunicipality);
                                 if (selectedMunicipality != null) {
+                                    activeFilterType = "Municipality";
+                                    activeFilterValue = selectedMunicipality;
+
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
-                                    updateMunicipalityInfo(p);
                                     List<String> parishes = collector.getParishNames(selectedMunicipality);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
@@ -423,9 +439,11 @@ public class MainFrame extends JFrame {
 
                                 setParishTitle("Parish - " + selectedParish);
                                 if (selectedParish != null) {
+                                    activeFilterType = "Parish";
+                                    activeFilterValue = selectedParish;
+
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
-                                    updateParishInfo(p);
                                 } else {
                                     clearParishInfo();
                                 }
@@ -517,6 +535,27 @@ public class MainFrame extends JFrame {
 
         toggleShowOwnerId.addActionListener(e -> {
             showOwnerIds = toggleShowOwnerId.isSelected();
+            updateGraph(currentDisplayedProperties);
+        });
+
+        toggleMergeSameOwnerProperties = new JCheckBox("Merge Owner Adjacent Properties");
+        toggleMergeSameOwnerProperties.setSelected(false);
+        toggleMergeSameOwnerProperties.setVisible(false);
+
+// Estilo básico do checkbox para parecer moderno
+        toggleMergeSameOwnerProperties.setForeground(Color.WHITE);
+        toggleMergeSameOwnerProperties.setBackground(new Color(30, 30, 30));
+        toggleMergeSameOwnerProperties.setFocusPainted(false);
+        toggleMergeSameOwnerProperties.setFont(new Font("SansSerif", Font.BOLD, 12));
+        toggleMergeSameOwnerProperties.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        toggleMergeSameOwnerProperties.setOpaque(true);
+
+        Dimension toggleMergeSameOwnerPropertiesSize = toggleMergeSameOwnerProperties.getPreferredSize();
+        toggleMergeSameOwnerProperties.setPreferredSize(new Dimension(toggleMergeSameOwnerPropertiesSize.width, 30));
+        bottomLeftPanel.add(toggleMergeSameOwnerProperties);
+
+        toggleMergeSameOwnerProperties.addActionListener(e -> {
+            mergeActive = toggleMergeSameOwnerProperties.isSelected();
             updateGraph(currentDisplayedProperties);
         });
 
@@ -723,18 +762,14 @@ public class MainFrame extends JFrame {
         avgPropsByParishLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
-    public void updateGraph(List<PropertyPolygon> propriedades) {
-        currentDisplayedProperties = propriedades;
-        jungGraph = PropertyGraphJungBuilder.buildGraph(propriedades);
-        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
-
-        SwingUtilities.invokeLater(() -> {
-            contentPanelCenter.removeAll();
-            contentPanelCenter.setLayout(new BorderLayout());
-            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
-            contentPanelCenter.revalidate();
-            contentPanelCenter.repaint();
-        });
+    private void updateOwnerInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByOwnerLabel.setText("Amount of Properties: " + total);
+        avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
     public void setDistrictTitle(String text) {
@@ -747,6 +782,10 @@ public class MainFrame extends JFrame {
 
     public void setParishTitle(String text) {
         if (parishTitle != null) parishTitle.setText(text);
+    }
+
+    public void setOwnerTitle(String text) {
+        if (ownerTitle != null) ownerTitle.setText(text);
     }
 
     private void clearDistrictInfo() {
@@ -771,6 +810,44 @@ public class MainFrame extends JFrame {
         ownerTitle.setText("Owner - NA");
         numPropsByOwnerLabel.setText("Amount of Properties: - NA");
         avgPropsByOwnerLabel.setText("Average Area: - NA");
+    }
+
+    public void updateGraph(List<PropertyPolygon> propriedades) {
+        currentDisplayedProperties = propriedades;
+
+        List<PropertyPolygon> toDisplay = mergeActive
+                ? PropertyMerger.mergeOwnerAdjacentProperties(propriedades)
+                : propriedades;
+
+        jungGraph = PropertyGraphJungBuilder.buildGraph(toDisplay);
+        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
+
+        if (activeFilterType != null) {
+            switch (activeFilterType) {
+                case "Owner":
+                    updateOwnerInfo(toDisplay);
+                    break;
+                case "District":
+                    updateDistrictInfo(toDisplay);
+                    break;
+                case "Municipality":
+                    updateMunicipalityInfo(toDisplay);
+                    break;
+                case "Parish":
+                    updateParishInfo(toDisplay);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            contentPanelCenter.removeAll();
+            contentPanelCenter.setLayout(new BorderLayout());
+            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
+            contentPanelCenter.revalidate();
+            contentPanelCenter.repaint();
+        });
     }
 
     //MAIN

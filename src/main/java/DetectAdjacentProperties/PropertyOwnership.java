@@ -70,7 +70,7 @@ public class PropertyOwnership {
             CsvLogger.logStart();
 
             // Upload and validate the CSV file
-            List<String[]> data = uploader.uploadCsv("src/main/resources/Madeira-Moodle-1.1.csv");
+            List<String[]> data = uploader.uploadCsv("src/main/resources/teste6250.csv");
             validator.validate(data);
             System.out.println("Ficheiro carregado e validado com sucesso!");
 
