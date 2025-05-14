@@ -47,9 +47,10 @@ public class ExchangeSuggestion {
 
     @Override
     public String toString() {
-        return "Sugestão: Terreno " + propertyFromA + " ↔ " + propertyFromB +
+        return " \n Sugestão: Terreno " + propertyFromA + " ↔ " + propertyFromB +
                 " | Viabilidade: " + String.format("%.2f", feasibility) +
                 " | % A: " + String.format("%.2f%%", percentChangeA * 100) +
-                " | % B: " + String.format("%.2f%%", percentChangeB * 100);    }
+                " | % B: " + String.format("%.2f%%", percentChangeB * 100);
+    }
 }
 
