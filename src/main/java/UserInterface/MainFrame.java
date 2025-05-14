@@ -57,6 +57,12 @@ public class MainFrame extends JFrame {
     private boolean showOwnerIds = false;
     private List<PropertyPolygon> currentDisplayedProperties;
 
+    public List<PropertyPolygon> getCurrentDisplayedProperties() {
+        return currentDisplayedProperties;
+    }
+
+
+
     public MainFrame() {
         setTitle("GeoOrganizer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -207,6 +213,18 @@ public class MainFrame extends JFrame {
         importCsvButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         importCsvButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+// === BOTÃO DE IMPORTAR CSV ===
+        JButton changeSuggestions = new JButton("Changes Suggested");
+        changeSuggestions.setForeground(Color.WHITE);
+        changeSuggestions.setOpaque(true);
+        changeSuggestions.setBackground(new Color(30, 30, 30));
+        changeSuggestions.setBorderPainted(false);
+        changeSuggestions.setFocusPainted(false);
+        changeSuggestions.setPreferredSize(new Dimension(180, 50));
+        changeSuggestions.setFont(new Font("SansSerif", Font.BOLD, 18));
+        changeSuggestions.setAlignmentX(Component.CENTER_ALIGNMENT);
+        changeSuggestions.setVisible(false);
+
 // Hover effect
         importCsvButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -217,6 +235,25 @@ public class MainFrame extends JFrame {
             public void mouseExited(MouseEvent evt) {
                 importCsvButton.setBackground(new Color(30, 30, 30));
             }
+        });
+
+        // Hover effect
+        changeSuggestions.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent evt) {
+                changeSuggestions.setBackground(new Color(50, 50, 50));
+            }
+            @Override
+            public void mouseExited(MouseEvent evt) {
+                changeSuggestions.setBackground(new Color(30, 30, 30));
+            }
+        });
+
+        changeSuggestions.addActionListener(e -> {
+            List<PropertyPolygon> propriedades = collector.collectAllProperties();
+            List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
+            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(getCurrentDisplayedProperties(), adjacentPairs, "Location");
+            csf.setVisible(true);
         });
 
 // === LÓGICA DE IMPORTAÇÃO DO CSV ===
@@ -243,27 +280,27 @@ public class MainFrame extends JFrame {
                             collector = new PropertyCollector(properties);
                             updateGraph(collector.collectAllProperties());
 
-                            // Obter propriedades
-                            List<PropertyPolygon> propriedades = collector.collectAllProperties();
-
-// 1. Encontrar pares adjacentes válidos
-                            List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
-
-// 2. Gerar sugestões de trocas com base nesses pares
-                            List<ExchangeSuggestion> sugestoes = SuggestionGenerator.generateSuggestions(adjacentPairs, propriedades);
-
-// 3. Mostrar sugestões na consola (ou GUI futuramente)
-                            System.out.println("Sugestões geradas:");
-                            for (ExchangeSuggestion s : sugestoes) {
-                                System.out.printf("Troca: %d ↔ %d | Feasibility: %.2f | ↑A: %.2f%% | ↑B: %.2f%% | Score: %.2f\n",
-                                        s.getPropertyFromA(),
-                                        s.getPropertyFromB(),
-                                        s.getFeasibility(),
-                                        s.getPercentChangeA() * 100,
-                                        s.getPercentChangeB() * 100,
-                                        s.getScore()
-                                );
-                            }
+//                            // Obter propriedades
+//                            List<PropertyPolygon> propriedades = collector.collectAllProperties();
+//
+//// 1. Encontrar pares adjacentes válidos
+//                            List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
+//
+//// 2. Gerar sugestões de trocas com base nesses pares
+//                            List<ExchangeSuggestion> sugestoes = SuggestionGenerator.generateSuggestions(adjacentPairs, propriedades);
+//
+//// 3. Mostrar sugestões na consola (ou GUI futuramente)
+//                            System.out.println("Sugestões geradas:");
+//                            for (ExchangeSuggestion s : sugestoes) {
+//                                System.out.printf("Troca: %d ↔ %d | Feasibility: %.2f | ↑A: %.2f%% | ↑B: %.2f%% | Score: %.2f\n",
+//                                        s.getPropertyFromA(),
+//                                        s.getPropertyFromB(),
+//                                        s.getFeasibility(),
+//                                        s.getPercentChangeA() * 100,
+//                                        s.getPercentChangeB() * 100,
+//                                        s.getScore()
+//                                );
+//                            }
 
 
                             toggleShowOwnerId.setVisible(true);
@@ -311,7 +348,7 @@ public class MainFrame extends JFrame {
                                             .average()
                                             .orElse(0.0);
                                     avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", avgSize));
-
+                                    changeSuggestions.setVisible(false);
                                     updateGraph(filtered);
                                 }
                             });
@@ -339,6 +376,7 @@ public class MainFrame extends JFrame {
                                     for (String m : municipalities) municipalityJComboBox.addItem(m);
                                     municipalityLabel.setVisible(true);
                                     municipalityJComboBox.setVisible(true);
+                                    changeSuggestions.setVisible(true);
                                 } else {
                                     clearDistrictInfo();
                                     clearMunicipalityInfo();
@@ -347,7 +385,7 @@ public class MainFrame extends JFrame {
                                     municipalityJComboBox.setSelectedItem(null);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
-
+                                    changeSuggestions.setVisible(false);
                                 }
                             });
 
@@ -423,6 +461,7 @@ public class MainFrame extends JFrame {
         });
 
 // === ADICIONA BOTÃO À SIDEBAR ===
+        sidebar.add(changeSuggestions);
         sidebar.add(importCsvButton);
 
 //######################################################################################################################//
