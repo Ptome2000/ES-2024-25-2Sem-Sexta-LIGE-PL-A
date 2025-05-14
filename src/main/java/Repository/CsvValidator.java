@@ -7,6 +7,8 @@ import java.util.List;
  */
 public class CsvValidator {
 
+    //TODO: Divide validate into or more functions to reduce cyclomatic complexity (current is 20)
+
     /**
      * Validates the contents of the CSV file.
      *
