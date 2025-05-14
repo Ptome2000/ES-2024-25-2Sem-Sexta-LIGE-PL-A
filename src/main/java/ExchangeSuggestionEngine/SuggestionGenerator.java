@@ -82,7 +82,7 @@ public class SuggestionGenerator {
                         double maxArea = Math.max(a.getShapeArea(), b.getShapeArea());
                         if (maxArea == 0) continue;
 
-                        double feasibility = 1 - (Math.abs(a.getShapeArea() - b.getShapeArea()) / maxArea);
+                        double feasibility = calculateFeasibility(a.getShapeArea(), b.getShapeArea());
 
                         if (feasibility >= 0.85 && feasibility > minDiff) {
                             minDiff = feasibility;
@@ -100,4 +100,11 @@ public class SuggestionGenerator {
 
         return suggestions;
     }
+
+
+    public static double calculateFeasibility(double area1, double area2) {
+        if (area1 <= 0 || area2 <= 0) return 0.0;
+        return 1.0 - (Math.abs(area1 - area2) / Math.max(area1, area2));
+    }
+
 }
