@@ -261,7 +261,7 @@ public class MainFrame extends JFrame {
         changeSuggestions.addActionListener(e -> {
             List<PropertyPolygon> propriedades = collector.collectAllProperties();
             List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
-            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(getCurrentDisplayedProperties(), adjacentPairs, "Location");
+            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(getCurrentDisplayedProperties(), adjacentPairs, activeFilterValue);
             csf.setVisible(true);
         });
 
@@ -288,29 +288,6 @@ public class MainFrame extends JFrame {
                             List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
                             collector = new PropertyCollector(properties);
                             updateGraph(collector.collectAllProperties());
-
-//                            // Obter propriedades
-//                            List<PropertyPolygon> propriedades = collector.collectAllProperties();
-//
-//// 1. Encontrar pares adjacentes válidos
-//                            List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
-//
-//// 2. Gerar sugestões de trocas com base nesses pares
-//                            List<ExchangeSuggestion> sugestoes = SuggestionGenerator.generateSuggestions(adjacentPairs, propriedades);
-//
-//// 3. Mostrar sugestões na consola (ou GUI futuramente)
-//                            System.out.println("Sugestões geradas:");
-//                            for (ExchangeSuggestion s : sugestoes) {
-//                                System.out.printf("Troca: %d ↔ %d | Feasibility: %.2f | ↑A: %.2f%% | ↑B: %.2f%% | Score: %.2f\n",
-//                                        s.getPropertyFromA(),
-//                                        s.getPropertyFromB(),
-//                                        s.getFeasibility(),
-//                                        s.getPercentChangeA() * 100,
-//                                        s.getPercentChangeB() * 100,
-//                                        s.getScore()
-//                                );
-//                            }
-
 
                             toggleShowOwnerId.setVisible(true);
 

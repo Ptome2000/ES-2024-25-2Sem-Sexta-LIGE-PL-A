@@ -12,7 +12,7 @@ import java.util.List;
 public class ChangeSuggestionsFrame extends JFrame {
 
     public ChangeSuggestionsFrame(List<PropertyPolygon> displayedProperties, List<AdjacentPropertyPair> adjacentPairs, String location) {
-        setTitle(location);
+        setTitle("Suggested changes to: " + location);
         setSize(500, 600);
         setLocationRelativeTo(null); // centra a janela
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // fecha só esta janela
@@ -22,6 +22,26 @@ public class ChangeSuggestionsFrame extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(Color.LIGHT_GRAY);
+
+        if (suggestions.isEmpty()) {
+            JLabel noSuggestionsLabel = new JLabel("No suggestions available.");
+            noSuggestionsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            mainPanel.add(noSuggestionsLabel);
+
+        } else {
+            for (ExchangeSuggestion sugestao : suggestions) {
+                JPanel sugestaoPanel = criarSugestaoPanel(sugestao);
+                sugestaoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                sugestaoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, sugestaoPanel.getPreferredSize().height));
+                sugestaoPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                mainPanel.add(sugestaoPanel);
+                mainPanel.add(Box.createVerticalStrut(10)); // espaço entre sugestões
+            }
+
+            JScrollPane scrollPane = new JScrollPane(mainPanel);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            add(scrollPane, BorderLayout.CENTER);
+        }
 
         for (ExchangeSuggestion sugestao : suggestions) {
             JPanel sugestaoPanel = criarSugestaoPanel(sugestao);
