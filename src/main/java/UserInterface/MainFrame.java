@@ -6,6 +6,7 @@ import ExchangeSuggestionEngine.SuggestionGenerator;
 import Models.*;
 import Repository.*;
 import Services.*;
+import DetectAdjacentProperties.*;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -26,6 +27,7 @@ import javax.swing.plaf.basic.BasicToggleButtonUI;
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private JPanel contentPanelCenter;
+    private JPanel graphInfoPanel;
     private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
 
@@ -49,12 +51,19 @@ public class MainFrame extends JFrame {
     private JComboBox<String> parishJComboBox;
     private JComboBox<String> ownerJComboBox;
 
+    String activeFilterType = null;
+    String activeFilterValue = null;
+
+    private JLabel currentlyDisplayingLabel = new JLabel();
+
     private JCheckBox toggleShowOwnerId;
+    private JCheckBox toggleMergeSameOwnerProperties;
 
     private JPanel graphPanel;
     private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
 
     private boolean showOwnerIds = false;
+    private boolean mergeActive = false;
     private List<PropertyPolygon> currentDisplayedProperties;
 
     public List<PropertyPolygon> getCurrentDisplayedProperties() {
@@ -259,13 +268,13 @@ public class MainFrame extends JFrame {
 // === LÓGICA DE IMPORTAÇÃO DO CSV ===
         importCsvButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Select CSV File");
+            fileChooser.setDialogTitle("Select a CSV File");
             int result = fileChooser.showOpenDialog(MainFrame.this);
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 if (!selectedFile.getName().toLowerCase().endsWith(".csv")) {
-                    JOptionPane.showMessageDialog(MainFrame.this, "Por favor, selecione um ficheiro CSV válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(MainFrame.this, "Please select a valid CSV file.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -304,10 +313,12 @@ public class MainFrame extends JFrame {
 
 
                             toggleShowOwnerId.setVisible(true);
-                            ownerLabel.setVisible(true);
-                            ownerJComboBox.setVisible(true);
+
                             districtLabel.setVisible(true);
                             districtJComboBox.setVisible(true);
+
+                            ownerLabel.setVisible(true);
+                            ownerJComboBox.setVisible(true);
 
                             collector.getOwnerIds().stream()
                                     .map(Integer::parseInt)
@@ -318,6 +329,15 @@ public class MainFrame extends JFrame {
                             ownerJComboBox.addActionListener(e -> {
                                 String selectedOwnerId = (String) ownerJComboBox.getSelectedItem();
                                 if (selectedOwnerId != null) {
+                                    activeFilterType = "Owner";
+                                    activeFilterValue = selectedOwnerId;
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
+
+                                    setOwnerTitle("Owner - " + selectedOwnerId);
+
                                     String selectedDistrict = (String) districtJComboBox.getSelectedItem();
                                     String selectedMunicipality = (String) municipalityJComboBox.getSelectedItem();
                                     String selectedParish = (String) parishJComboBox.getSelectedItem();
@@ -340,15 +360,6 @@ public class MainFrame extends JFrame {
                                         clearMunicipalityInfo();
                                         clearParishInfo();
                                     }
-                                    ownerTitle.setText("Owner - " + selectedOwnerId);
-                                    numPropsByOwnerLabel.setText("Amount of Properties: " + filtered.size());
-
-                                    double avgSize = filtered.stream()
-                                            .mapToDouble(PropertyPolygon::getShapeArea)
-                                            .average()
-                                            .orElse(0.0);
-                                    avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", avgSize));
-                                    changeSuggestions.setVisible(false);
                                     updateGraph(filtered);
                                 }
                             });
@@ -363,12 +374,22 @@ public class MainFrame extends JFrame {
                                 clearOwnerInfo();
 
                                 if (selectedDistrict != null) {
+                                    activeFilterType = "District";
+                                    activeFilterValue = selectedDistrict;
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );                                    currentlyDisplayingLabel.setVisible(true);
+
                                     setDistrictTitle("District - " + selectedDistrict);
                                     List<PropertyPolygon> p = collector.filterByDistrict(selectedDistrict);
                                     updateGraph(p);
-                                    updateDistrictInfo(p);
+
+                                    toggleMergeSameOwnerProperties.setVisible(true);
 
                                     List<String> municipalities = collector.getMunicipalityNames(selectedDistrict);
+                                    municipalityLabel.setVisible(true);
+                                    municipalityJComboBox.setVisible(true);
                                     municipalityJComboBox.removeAllItems();
                                     municipalityJComboBox.addItem(null);
                                     parishJComboBox.removeAllItems();
@@ -378,11 +399,16 @@ public class MainFrame extends JFrame {
                                     municipalityJComboBox.setVisible(true);
                                     changeSuggestions.setVisible(true);
                                 } else {
+                                    currentlyDisplayingLabel.setVisible(false);
                                     clearDistrictInfo();
                                     clearMunicipalityInfo();
                                     clearParishInfo();
+                                    municipalityLabel.setVisible(false);
+                                    municipalityJComboBox.setVisible(false);
                                     municipalityJComboBox.removeAllItems();
                                     municipalityJComboBox.setSelectedItem(null);
+                                    parishLabel.setVisible(true);
+                                    parishJComboBox.setVisible(true);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
                                     changeSuggestions.setVisible(false);
@@ -397,9 +423,15 @@ public class MainFrame extends JFrame {
 
                                 setMunicipalityTitle("Municipality - " + selectedMunicipality);
                                 if (selectedMunicipality != null) {
+                                    activeFilterType = "Municipality";
+                                    activeFilterValue = selectedMunicipality;
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
+
                                     List<PropertyPolygon> p = collector.filterByMunicipality(selectedMunicipality);
                                     updateGraph(p);
-                                    updateMunicipalityInfo(p);
                                     List<String> parishes = collector.getParishNames(selectedMunicipality);
                                     parishJComboBox.removeAllItems();
                                     parishJComboBox.addItem(null);
@@ -423,17 +455,22 @@ public class MainFrame extends JFrame {
 
                                 setParishTitle("Parish - " + selectedParish);
                                 if (selectedParish != null) {
+                                    activeFilterType = "Parish";
+                                    activeFilterValue = selectedParish;
+                                    currentlyDisplayingLabel.setText(
+                                            "<html><span style='color: rgb(50,72,75); font-weight: bold;'>" + activeFilterValue + "</span> " +
+                                                    "<span style='color: rgb(101,104,69);'>(" + activeFilterType + ")</span></html>"
+                                    );
                                     List<PropertyPolygon> p = collector.filterByParish(selectedParish);
                                     updateGraph(p);
-                                    updateParishInfo(p);
                                 } else {
                                     clearParishInfo();
                                 }
                             });
 
                         } catch (Exception ex) {
-                            CsvLogger.logError("Erro ao importar: " + ex.getMessage());
-                            JOptionPane.showMessageDialog(MainFrame.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            CsvLogger.logError("Error importing: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(MainFrame.this, "Error: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                         return null;
                     }
@@ -451,7 +488,7 @@ public class MainFrame extends JFrame {
                             contentPanelCenter.repaint();
                         });
 
-                        showSuccessDialog("CSV importado com sucesso!");
+                        showSuccessDialog("CSV imported successfully!");
                     }
                 };
 
@@ -473,6 +510,15 @@ public class MainFrame extends JFrame {
         add(contentPanel, BorderLayout.CENTER);
         contentPanel = new JPanel(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
+
+        // === TOPO DO PAINEL COM TEXTO DINÂMICO ===
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        currentlyDisplayingLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        currentlyDisplayingLabel.setVisible(false);
+
+        topPanel.add(currentlyDisplayingLabel);
+
+        contentPanel.add(topPanel, BorderLayout.NORTH);
 
 // Subpainel central dentro do contentPanel para conteúdo dinâmico (ex: logo ou grafo)
         contentPanelCenter = new JPanel();
@@ -520,28 +566,77 @@ public class MainFrame extends JFrame {
             updateGraph(currentDisplayedProperties);
         });
 
-// Painel da direita (para toggle de info)
+        toggleMergeSameOwnerProperties = new JCheckBox("Merge Same Owner Adjacent Properties");
+        toggleMergeSameOwnerProperties.setSelected(false);
+        toggleMergeSameOwnerProperties.setVisible(false);
+
+// Estilo básico do checkbox para parecer moderno
+        toggleMergeSameOwnerProperties.setForeground(Color.WHITE);
+        toggleMergeSameOwnerProperties.setBackground(new Color(30, 30, 30));
+        toggleMergeSameOwnerProperties.setFocusPainted(false);
+        toggleMergeSameOwnerProperties.setFont(new Font("SansSerif", Font.BOLD, 12));
+        toggleMergeSameOwnerProperties.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        toggleMergeSameOwnerProperties.setOpaque(true);
+
+        Dimension toggleMergeSameOwnerPropertiesSize = toggleMergeSameOwnerProperties.getPreferredSize();
+        toggleMergeSameOwnerProperties.setPreferredSize(new Dimension(toggleMergeSameOwnerPropertiesSize.width, 30));
+        bottomLeftPanel.add(toggleMergeSameOwnerProperties);
+
+        toggleMergeSameOwnerProperties.addActionListener(e -> {
+            mergeActive = toggleMergeSameOwnerProperties.isSelected();
+            updateGraph(currentDisplayedProperties);
+        });
+
+// Right panel (for toggling info visibility)
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+// Creating the toggle button
         JToggleButton toggleInfoToggle = new JToggleButton("Hide Info");
         toggleInfoToggle.setSelected(true);
 
-// Estilo do botão de info
+// Customizing the toggle button appearance
         toggleInfoToggle.setForeground(Color.WHITE);
         toggleInfoToggle.setOpaque(true);
         toggleInfoToggle.setBackground(new Color(30, 30, 30));
         toggleInfoToggle.setBorderPainted(false);
         toggleInfoToggle.setFocusPainted(false);
-        Dimension toggleInfoToggleSize = toggleInfoToggle.getPreferredSize();
-        toggleInfoToggle.setPreferredSize(new Dimension(toggleInfoToggleSize.width, 30));
+
+// Setting the font and cursor style
         toggleInfoToggle.setFont(new Font("SansSerif", Font.BOLD, 12));
         toggleInfoToggle.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+// Removing content area fill and setting the UI style
         toggleInfoToggle.setUI(new BasicToggleButtonUI());
         toggleInfoToggle.setContentAreaFilled(false);
         toggleInfoToggle.setOpaque(true);
+
+// Define a minimum width for the button to ensure it fits both "Hide Info" and "Show Info"
+        toggleInfoToggle.setMinimumSize(new Dimension(120, 30)); // Set a minimum width
+        toggleInfoToggle.setPreferredSize(new Dimension(120, 30)); // Set preferred size with sufficient width
+
+// Dynamically adjusting the size based on the text
         toggleInfoToggle.addChangeListener(e -> {
             toggleInfoToggle.setBackground(new Color(30, 30, 30));
+            toggleInfoToggle.revalidate(); // Revalidate to update the button size
+            toggleInfoToggle.repaint();    // Repaint to apply the new size
         });
 
+// Adding an action listener to toggle info panel visibility
+        toggleInfoToggle.addActionListener(e -> {
+            boolean isSelected = toggleInfoToggle.isSelected();
+            graphInfoPanel.setVisible(isSelected);  // Show or hide the info panel
+            toggleInfoToggle.setText(isSelected ? "Hide Info" : "Show Info");  // Update button text
+
+            // Revalidate and repaint the button to adjust its size
+            toggleInfoToggle.revalidate();
+            toggleInfoToggle.repaint();
+
+            // Revalidate and repaint the main frame
+            MainFrame.this.revalidate();
+            MainFrame.this.repaint();
+        });
+
+// Adding the button to the right panel
         bottomRightPanel.add(toggleInfoToggle);
 
 // Junta os dois lados ao painel inferior
@@ -554,7 +649,7 @@ public class MainFrame extends JFrame {
 //######################################################################################################################//
 
 // === INFO PANEL ===
-        JPanel graphInfoPanel = new JPanel();
+        graphInfoPanel = new JPanel();
         graphInfoPanel.setLayout(new BoxLayout(graphInfoPanel, BoxLayout.Y_AXIS));
         graphInfoPanel.setPreferredSize(new Dimension(400, getHeight()));
         graphInfoPanel.setBackground(new Color(245, 245, 245)); // Fundo claro
@@ -612,13 +707,7 @@ public class MainFrame extends JFrame {
         avgPropsByOwnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 // Toggle de visibilidade
-        toggleInfoToggle.addActionListener(e -> {
-            boolean isSelected = toggleInfoToggle.isSelected();
-            graphInfoPanel.setVisible(isSelected);
-            toggleInfoToggle.setText(isSelected ? "Hide Info" : "Show Info");
-            MainFrame.this.revalidate();
-            MainFrame.this.repaint();
-        });
+
 
 // Adiciona os componentes ao painel
         graphInfoPanel.add(Box.createVerticalStrut(20));
@@ -723,18 +812,14 @@ public class MainFrame extends JFrame {
         avgPropsByParishLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
-    public void updateGraph(List<PropertyPolygon> propriedades) {
-        currentDisplayedProperties = propriedades;
-        jungGraph = PropertyGraphJungBuilder.buildGraph(propriedades);
-        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
-
-        SwingUtilities.invokeLater(() -> {
-            contentPanelCenter.removeAll();
-            contentPanelCenter.setLayout(new BorderLayout());
-            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
-            contentPanelCenter.revalidate();
-            contentPanelCenter.repaint();
-        });
+    private void updateOwnerInfo(List<PropertyPolygon> propriedades) {
+        int total = propriedades.size();
+        double media = propriedades.stream()
+                .mapToDouble(PropertyPolygon::getShapeArea) // assumes getArea() exists
+                .average()
+                .orElse(0.0);
+        numPropsByOwnerLabel.setText("Amount of Properties: " + total);
+        avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
     public void setDistrictTitle(String text) {
@@ -747,6 +832,10 @@ public class MainFrame extends JFrame {
 
     public void setParishTitle(String text) {
         if (parishTitle != null) parishTitle.setText(text);
+    }
+
+    public void setOwnerTitle(String text) {
+        if (ownerTitle != null) ownerTitle.setText(text);
     }
 
     private void clearDistrictInfo() {
@@ -771,6 +860,44 @@ public class MainFrame extends JFrame {
         ownerTitle.setText("Owner - NA");
         numPropsByOwnerLabel.setText("Amount of Properties: - NA");
         avgPropsByOwnerLabel.setText("Average Area: - NA");
+    }
+
+    public void updateGraph(List<PropertyPolygon> propriedades) {
+        currentDisplayedProperties = propriedades;
+
+        List<PropertyPolygon> toDisplay = mergeActive
+                ? PropertyMerger.mergeOwnerAdjacentProperties(propriedades)
+                : propriedades;
+
+        jungGraph = PropertyGraphJungBuilder.buildGraph(toDisplay);
+        graphPanel = GraphViewer.createGraphPanel(jungGraph, 1024, 1024, showOwnerIds);
+
+        if (activeFilterType != null) {
+            switch (activeFilterType) {
+                case "Owner":
+                    updateOwnerInfo(toDisplay);
+                    break;
+                case "District":
+                    updateDistrictInfo(toDisplay);
+                    break;
+                case "Municipality":
+                    updateMunicipalityInfo(toDisplay);
+                    break;
+                case "Parish":
+                    updateParishInfo(toDisplay);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            contentPanelCenter.removeAll();
+            contentPanelCenter.setLayout(new BorderLayout());
+            contentPanelCenter.add(graphPanel, BorderLayout.CENTER);
+            contentPanelCenter.revalidate();
+            contentPanelCenter.repaint();
+        });
     }
 
     //MAIN

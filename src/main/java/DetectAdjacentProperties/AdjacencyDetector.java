@@ -96,7 +96,6 @@ public class AdjacencyDetector {
         return adjacentPairs;
     }
 
-
     /**
      * Finds valid adjacent property pairs by checking if two properties share at least one vertex
      * and belong to different owners.
@@ -143,7 +142,6 @@ public class AdjacencyDetector {
         return adjacentPairs;
     }
 
-
     /**
      * Checks if a property is valid based on its polygon and area.
      *
@@ -157,10 +155,6 @@ public class AdjacencyDetector {
                 !property.getPolygon().getVertices().isEmpty() &&
                 property.getShapeArea() > 0;
     }
-
-
-
-
 
     /**
      * Checks if two properties share at least one vertex.

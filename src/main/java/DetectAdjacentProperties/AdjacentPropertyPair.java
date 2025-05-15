@@ -47,7 +47,6 @@ public class AdjacentPropertyPair {
         return new String[]{ owner1, owner2 };
     }
 
-
     /**
      * Retrieves the ID of the first property in the pair.
      *
