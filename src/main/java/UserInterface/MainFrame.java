@@ -275,7 +275,7 @@ public class MainFrame extends JFrame {
                         List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
 
                         SwingUtilities.invokeLater(() -> {
-                            showSuccessDialog("Sugestions generated sucessfully to " + activeFilterValue);
+                            showSuccessDialog("Suggestions generated successfully to " + activeFilterValue);
                             ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(propriedades, adjacentPairs, "Location");
                             csf.setVisible(true);
                         });
