@@ -259,10 +259,40 @@ public class MainFrame extends JFrame {
         });
 
         changeSuggestions.addActionListener(e -> {
-            List<PropertyPolygon> propriedades = collector.collectAllProperties();
-            List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
-            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(getCurrentDisplayedProperties(), adjacentPairs, activeFilterValue);
-            csf.setVisible(true);
+            LoadingDialogSpinner loading = new LoadingDialogSpinner(MainFrame.this);
+
+            SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() {
+                    try {
+                        if (collector == null) {
+                            System.out.println("⚠️ collector is null");
+                            return null;
+                        }
+
+                        List<PropertyPolygon> propriedades = collector.collectAllProperties();
+
+                        List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
+
+                        SwingUtilities.invokeLater(() -> {
+                            showSuccessDialog("Sugestions generated sucessfully to " + activeFilterValue);
+                            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(propriedades, adjacentPairs, "Location");
+                            csf.setVisible(true);
+                        });
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    loading.dispose();
+                }
+            };
+
+            worker.execute();
+            loading.setVisible(true);
         });
 
 // === LÓGICA DE IMPORTAÇÃO DO CSV ===
@@ -683,9 +713,6 @@ public class MainFrame extends JFrame {
         avgPropsByOwnerLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         avgPropsByOwnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-// Toggle de visibilidade
-
-
 // Adiciona os componentes ao painel
         graphInfoPanel.add(Box.createVerticalStrut(20));
         graphInfoPanel.add(infoTitle);
@@ -747,6 +774,10 @@ public class MainFrame extends JFrame {
         okButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         okButton.setFocusPainted(false);
         okButton.addActionListener(e -> dialog.dispose());
+        okButton.setBackground(new Color(30, 30, 30));
+        okButton.setForeground(Color.WHITE);
+        okButton.setOpaque(true);
+        okButton.setBorderPainted(false);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(okButton);
