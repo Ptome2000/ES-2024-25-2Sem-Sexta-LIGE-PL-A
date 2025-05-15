@@ -17,7 +17,7 @@ public class LoadingDialogSpinner extends JDialog {
      * @param parent the parent {@link JFrame} to which this dialog is modal.
      */
     public LoadingDialogSpinner(JFrame parent) {
-        super(parent, "A processar...", true);
+        super(parent, "Processing...", true);
         setLayout(new BorderLayout());
         setUndecorated(true);
 
@@ -33,7 +33,7 @@ public class LoadingDialogSpinner extends JDialog {
         iconLabel.setBackground(Color.WHITE); // só se necessário
 
         // Texto
-        JLabel loadingLabel = new JLabel("A importar e validar o ficheiro...", JLabel.CENTER);
+        JLabel loadingLabel = new JLabel("Loading...", JLabel.CENTER);
         loadingLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         loadingLabel.setOpaque(false);
         loadingLabel.setForeground(Color.BLACK);
