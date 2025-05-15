@@ -18,7 +18,7 @@ public class PropertyPolygon {
     private final double shapeLength;
     private final double shapeArea;
     private final Polygon polygon; // Using Polygon instead of List<double[]>
-    private final String owner;
+    private String owner;
     private final String freguesia;
     private final String municipio;
     private final String ilha;
@@ -49,20 +49,6 @@ public class PropertyPolygon {
         this.freguesia = freguesia;
         this.municipio = municipio;
         this.ilha = ilha;
-    }
-
-    // For Testing purposes
-    public PropertyPolygon(int objectId, Polygon polygon) {
-        this.objectId = objectId;
-        this.polygon = polygon;
-        this.parId = 0;
-        this.parNum = "";
-        this.shapeLength = 0;
-        this.shapeArea = 0;
-        this.owner = "";
-        this.freguesia = "";
-        this.municipio = "";
-        this.ilha = "";
     }
 
     public int getObjectId() {
@@ -197,4 +183,13 @@ public class PropertyPolygon {
         return "ID: " + objectId + ", Owner: " + owner + ", Vertices: " + polygon.toString();
     }
 
+
+    /**
+     * Sets the owner of the property. This method is used for testing purposes
+     *
+     * @param owner The new owner ID to set.
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

@@ -1,5 +1,9 @@
 package DetectAdjacentProperties;
 
+import Models.Polygon;
+import Models.PropertyPolygon;
+import Models.VertexCoordinate;
+import Utils.MockedPropertyPolygon;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -8,6 +12,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class contains unit tests for the {@link AdjacentPropertyPair} class.
@@ -24,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *     <li>Constructor: 1</li>
  *     <li>getPropertyId1: 1</li>
  *     <li>getPropertyId2: 1</li>
+ *     <li>getOwners: 6</li>
  *     <li>toString: 1</li>
  * </ul>
  */
@@ -70,5 +79,45 @@ class AdjacentPropertyPairTests {
 
         String expected = "AdjacentPropertyPair{propertyId1=101, propertyId2=202}";
         assertEquals(expected, pair.toString(), "toString should return the correct string representation.");
+    }
+
+    @Test
+    @DisplayName("getOwners returns correct owners for both properties")
+    @Description("Validates that getOwners returns the correct owners when both properties are present in the list.")
+    @Severity(SeverityLevel.CRITICAL)
+    void getOwners_returnsCorrectOwners() {
+        PropertyPolygon p1 = new MockedPropertyPolygon(1, "Alice", new Polygon(List.of(new VertexCoordinate(0, 0))));
+        PropertyPolygon p2 = new MockedPropertyPolygon(2, "Bob", new Polygon(List.of(new VertexCoordinate(1, 1))));
+        List<PropertyPolygon> properties = Arrays.asList(p1, p2);
+
+        AdjacentPropertyPair pair = new AdjacentPropertyPair(1, 2);
+        String[] owners = pair.getOwners(properties);
+
+        assertArrayEquals(new String[]{"Alice", "Bob"}, owners);
+    }
+
+    @Test
+    @DisplayName("getOwners returns null for missing property")
+    @Description("Validates that getOwners returns null for an owner if the property is not found in the list.")
+    @Severity(SeverityLevel.NORMAL)
+    void getOwners_missingProperty() {
+        PropertyPolygon p1 = new MockedPropertyPolygon(1, "Alice", new Polygon(List.of(new VertexCoordinate(0, 0))));
+        List<PropertyPolygon> properties = Collections.singletonList(p1);
+
+        AdjacentPropertyPair pair = new AdjacentPropertyPair(1, 2);
+        String[] owners = pair.getOwners(properties);
+
+        assertArrayEquals(new String[]{"Alice", null}, owners);
+    }
+
+    @Test
+    @DisplayName("getOwners returns nulls for empty property list")
+    @Description("Validates that getOwners returns null for both owners if the property list is empty.")
+    @Severity(SeverityLevel.MINOR)
+    void getOwners_emptyList() {
+        AdjacentPropertyPair pair = new AdjacentPropertyPair(1, 2);
+        String[] owners = pair.getOwners(Collections.emptyList());
+
+        assertArrayEquals(new String[]{null, null}, owners);
     }
 }

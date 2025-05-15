@@ -5,8 +5,14 @@ import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,14 +27,14 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Cyclomatic Complexity:</strong></p>
  * <ul>
- *     <li>SpatialGrid (constructor): 1</li>
+ *     <li>constructor: 1</li>
  *     <li>getCellKey: 1</li>
  *     <li>insert: 1</li>
- *     <li>printGridRanges: 1</li>
- *     <li>logPropertiesInCells: 1</li>
- *     <li>getPropertyGridCells: 1</li>
- *     <li>getNearbyProperties: 4</li>
- *     <li>checkAndAddNearbyProperties: 1</li>
+ *     <li>printGridRanges: 3</li>
+ *     <li>logPropertiesInCells: 2</li>
+ *     <li>getPropertyGridCells: 2</li>
+ *     <li>getNearbyProperties: 11</li>
+ *     <li>checkAndAddNearbyProperties: 3</li>
  * </ul>
  */
 @Feature("Detect adjacent properties")
@@ -198,5 +204,53 @@ class SpatialGridTests {
 
         assertNotNull(nearby, "Nearby properties list should not be null.");
         assertFalse(nearby.isEmpty(), "Nearby properties list should not be empty.");
+    }
+
+    @Test
+    @DisplayName("checkAndAddNearbyProperties adds properties from cell")
+    @Description("Verifies that checkAndAddNearbyProperties adds all properties from the specified cell to the set.")
+    @Severity(SeverityLevel.NORMAL)
+    void checkAndAddNearbyProperties_addsProperties() throws Exception {
+        // Setup grid and property
+        PropertyPolygon property = TestUtils.createSingleProperty();
+        List<PropertyPolygon> properties = Collections.singletonList(property);
+        SpatialGrid grid = new SpatialGrid(properties);
+        grid.insert(property);
+
+        // Find the cell key for the property
+        String cellKey = grid.getCellKey(
+                property.getPolygon().getVertices().get(0).getX(),
+                property.getPolygon().getVertices().get(0).getY()
+        );
+
+        Set<PropertyPolygon> nearby = new HashSet<>();
+
+        // Use reflection to invoke private method
+        Method method = SpatialGrid.class.getDeclaredMethod("checkAndAddNearbyProperties", String.class, Set.class);
+        method.setAccessible(true);
+        method.invoke(grid, cellKey, nearby);
+
+        assertTrue(nearby.contains(property), "Nearby set should contain the inserted property.");
+    }
+
+    @Test
+    @DisplayName("printGridRanges prints grid cell ranges")
+    @Description("Verifies that printGridRanges outputs grid cell ranges to the console.")
+    @Severity(SeverityLevel.TRIVIAL)
+    void printGridRanges_printsOutput() {
+        List<PropertyPolygon> properties = new ArrayList<>();
+        SpatialGrid grid = new SpatialGrid(properties);
+
+        // Capture console output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        grid.printGridRanges();
+
+        System.setOut(originalOut);
+        String output = outContent.toString();
+
+        assertTrue(output.contains("--- Grid Cell Ranges ---"), "Output should contain grid cell ranges header.");
     }
 }
