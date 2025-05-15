@@ -3,6 +3,7 @@ package Services;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
+import Utils.MockedPropertyPolygon;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -29,8 +30,8 @@ public class TestUtils {
      * @return A list of {@link PropertyPolygon} objects with no shared vertices.
      */
     public static List<PropertyPolygon> createNonAdjacentProperties() {
-        PropertyPolygon property1 = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
-        PropertyPolygon property2 = new PropertyPolygon(2, createPolygon(new double[][]{{2, 2}, {3, 2}, {3, 3}, {2, 3}}));
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{2, 2}, {3, 2}, {3, 3}, {2, 3}}));
         List<PropertyPolygon> properties = new ArrayList<>();
         properties.add(property1);
         properties.add(property2);
@@ -43,8 +44,8 @@ public class TestUtils {
      * @return A list of {@link PropertyPolygon} objects with shared vertices.
      */
     public static List<PropertyPolygon> createAdjacentProperties() {
-        PropertyPolygon property1 = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
-        PropertyPolygon property2 = new PropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
         List<PropertyPolygon> properties = new ArrayList<>();
         properties.add(property1);
         properties.add(property2);
@@ -58,8 +59,8 @@ public class TestUtils {
      */
     public static Graph<PropertyPolygon, DefaultEdge> createSampleGraph() {
         Graph<PropertyPolygon, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        PropertyPolygon property1 = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
-        PropertyPolygon property2 = new PropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
         graph.addVertex(property1);
         graph.addVertex(property2);
         graph.addEdge(property1, property2);
@@ -82,7 +83,7 @@ public class TestUtils {
      */
     public static Graph<PropertyPolygon, DefaultEdge> createSinglePropertyGraph() {
         Graph<PropertyPolygon, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        PropertyPolygon property = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
         graph.addVertex(property);
         return graph;
     }

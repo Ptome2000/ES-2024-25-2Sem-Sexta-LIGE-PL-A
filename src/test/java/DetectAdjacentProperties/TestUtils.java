@@ -3,6 +3,7 @@ package DetectAdjacentProperties;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
+import Utils.MockedPropertyPolygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,8 @@ public class TestUtils {
      * @return A list of {@link PropertyPolygon} objects with no shared vertices.
      */
     public static List<PropertyPolygon> createNonAdjacentProperties() {
-        PropertyPolygon property1 = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
-        PropertyPolygon property2 = new PropertyPolygon(2, createPolygon(new double[][]{{3, 3}, {4, 3}, {4, 4}, {3, 4}}));
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{3, 3}, {4, 3}, {4, 4}, {3, 4}}));
         List<PropertyPolygon> properties = new ArrayList<>();
         properties.add(property1);
         properties.add(property2);
@@ -40,8 +41,8 @@ public class TestUtils {
      * @return A list of {@link PropertyPolygon} objects with shared vertices.
      */
     public static List<PropertyPolygon> createAdjacentProperties() {
-        PropertyPolygon property1 = new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
-        PropertyPolygon property2 = new PropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
         List<PropertyPolygon> properties = new ArrayList<>();
         properties.add(property1);
         properties.add(property2);
@@ -54,7 +55,7 @@ public class TestUtils {
      * @return A {@link PropertyPolygon} object representing a single property.
      */
     public static PropertyPolygon createSingleProperty() {
-        return new PropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
+        return new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
     }
 
     /**
@@ -132,6 +133,6 @@ public class TestUtils {
             vertices.add(new VertexCoordinate(coordinates[i], coordinates[i + 1]));
         }
         Polygon polygon = new Polygon(vertices);
-        return new PropertyPolygon(1, polygon);
+        return new MockedPropertyPolygon(1, polygon);
     }
 }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import Utils.MockedPropertyPolygon;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -63,7 +64,7 @@ class PropertyPolygonTests {
     @Description("Validates that the getObjectId method returns the correct object ID.")
     @Severity(SeverityLevel.NORMAL)
     void getObjectId() {
-        PropertyPolygon property = new PropertyPolygon(1, new Polygon(List.of(new VertexCoordinate(0, 0))));
+        PropertyPolygon property = new MockedPropertyPolygon(1, new Polygon(List.of(new VertexCoordinate(0, 0))));
         assertEquals(1, property.getObjectId(), "getObjectId should return the correct object ID.");
     }
 
@@ -210,7 +211,7 @@ class PropertyPolygonTests {
     @Severity(SeverityLevel.NORMAL)
     void equals1() {
         Polygon polygon = new Polygon(List.of(new VertexCoordinate(0, 0)));
-        PropertyPolygon property = new PropertyPolygon(1, polygon);
+        PropertyPolygon property = new MockedPropertyPolygon(1, polygon);
 
         assertEquals(property, property, "An object should be equal to itself.");
     }
@@ -222,8 +223,8 @@ class PropertyPolygonTests {
     void equals2() {
         Polygon polygon1 = new Polygon(List.of(new VertexCoordinate(0, 0)));
         Polygon polygon2 = new Polygon(List.of(new VertexCoordinate(1, 1)));
-        PropertyPolygon property1 = new PropertyPolygon(1, polygon1);
-        PropertyPolygon property2 = new PropertyPolygon(2, polygon2);
+        PropertyPolygon property1 = new MockedPropertyPolygon(1, polygon1);
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, polygon2);
 
         assertNotEquals(property1, property2, "Objects with different IDs should not be equal.");
     }
@@ -234,7 +235,7 @@ class PropertyPolygonTests {
     @Severity(SeverityLevel.NORMAL)
     void hashCodeTest() {
         Polygon polygon = new Polygon(List.of(new VertexCoordinate(0, 0)));
-        PropertyPolygon property = new PropertyPolygon(1, polygon);
+        PropertyPolygon property = new MockedPropertyPolygon(1, polygon);
 
         assertEquals(1, property.hashCode(), "Hash code should match the object ID.");
     }
@@ -245,7 +246,7 @@ class PropertyPolygonTests {
     @Severity(SeverityLevel.TRIVIAL)
     void toStringTest() {
         Polygon polygon = new Polygon(List.of(new VertexCoordinate(0, 0), new VertexCoordinate(1, 1)));
-        PropertyPolygon property = new PropertyPolygon(1, polygon);
+        PropertyPolygon property = new MockedPropertyPolygon(1, polygon);
 
         String expected = "ID: 1, Owner: , Vertices: " + polygon;
         assertEquals(expected, property.toString(), "toString should return the correct representation.");
