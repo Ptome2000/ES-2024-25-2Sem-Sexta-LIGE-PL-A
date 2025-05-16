@@ -1,6 +1,7 @@
 package Models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -251,4 +252,34 @@ class PropertyPolygonTests {
         String expected = "ID: 1, Owner: , Vertices: " + polygon;
         assertEquals(expected, property.toString(), "toString should return the correct representation.");
     }
+
+    @Test
+    @DisplayName("equals returns false when compared to null")
+    @Description("Validates that the equals method returns false when the object is compared to null.")
+    @Severity(SeverityLevel.NORMAL)
+    void equals_null_returnsFalse() {
+        PropertyPolygon p = new PropertyPolygon(1, 0, "", 0, 0, new Polygon(List.of()), "", "", "", "");
+        assertNotEquals(null, p, "equals should return false when compared to null.");
+    }
+
+    @Test
+    @DisplayName("equals returns true for objects with the same objectId")
+    @Description("Validates that the equals method returns true for two PropertyPolygon objects with the same objectId.")
+    @Severity(SeverityLevel.NORMAL)
+    void equals_sameId_returnsTrue() {
+        PropertyPolygon p1 = new PropertyPolygon(1, 0, "", 0, 0, new Polygon(List.of()), "", "", "", "");
+        PropertyPolygon p2 = new PropertyPolygon(1, 0, "", 0, 0, new Polygon(List.of()), "", "", "", "");
+        assertEquals(p1, p2, "equals should return true for objects with the same objectId.");
+    }
+
+    @Test
+    @DisplayName("equals returns false for objects with different objectId")
+    @Description("Validates that the equals method returns false for two PropertyPolygon objects with different objectId.")
+    @Severity(SeverityLevel.NORMAL)
+    void equals_differentId_returnsFalse() {
+        PropertyPolygon p1 = new PropertyPolygon(1, 0, "", 0, 0, new Polygon(List.of()), "", "", "", "");
+        PropertyPolygon p2 = new PropertyPolygon(2, 0, "", 0, 0, new Polygon(List.of()), "", "", "", "");
+        assertNotEquals(p1, p2, "equals should return false for objects with different objectId.");
+    }
+
 }
