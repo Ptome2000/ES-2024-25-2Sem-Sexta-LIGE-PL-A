@@ -10,7 +10,21 @@ import java.io.IOException;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Feature("CsvUploader Tests")
+/**
+ * This class contains unit tests for the {@link CsvUploader} class.
+ * It verifies the correct uploading and reading of CSV files, including handling of valid files,
+ * empty files, and invalid file paths. Each test ensures the robustness and correctness
+ * of the CsvUploader implementation.
+ *
+ * <p><strong>Author:</strong> Ptome2000</p>
+ * <p><strong>Date:</strong> 15/05/2025</p>
+ *
+ * <p><strong>Cyclomatic Complexity:</strong></p>
+ * <ul>
+ *     <li>uploadCsv: 1</li>
+ * </ul>
+ */
+@Feature("CSV Importation")
 class CsvUploaderTests {
 
     @Test

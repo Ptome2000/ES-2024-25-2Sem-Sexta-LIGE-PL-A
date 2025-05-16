@@ -7,8 +7,6 @@ import java.util.List;
  */
 public class CsvValidator {
 
-    //TODO: Divide validate into or more functions to reduce cyclomatic complexity (current is 20)
-
     /**
      * Validates the contents of the CSV file.
      *
@@ -22,8 +20,18 @@ public class CsvValidator {
         }
 
         String[] headers = data.get(0);
+        validateHeaders(headers);
 
-        // Validate headers
+        validateDataRows(data);
+    }
+
+    /**
+     * Validates the headers of the CSV file.
+     *
+     * @param headers the array of header strings
+     * @throws CsvException if the headers are incomplete or invalid
+     */
+    private void validateHeaders(String[] headers) throws CsvException {
         if (headers.length != 10) {
             CsvLogger.logError("incomplete or invalid headers.");
             throw new CsvException("incomplete or invalid headers.");
@@ -42,40 +50,47 @@ public class CsvValidator {
             CsvLogger.logError("invalid headers!");
             throw new CsvException("invalid headers!");
         }
+    }
 
-        // Validate data rows (starting from the second row)
+    /**
+     * Validates all data rows in the CSV file except the header row.
+     *
+     * @param data the list of string arrays representing the CSV data
+     */
+    private void validateDataRows(List<String[]> data) {
         for (int i = 1; i < data.size(); i++) {
             String[] row = data.get(i);
+            validateDataRow(row, i + 1);
+        }
+    }
 
-            // Check if the row has 10 columns
-            if (row.length != 10) {
-                CsvLogger.logError("line " + (i + 1) + " has an invalid number of columns.");
-                continue; // Skip to the next row
+    /**
+     * Validates a single data row in the CSV file.
+     *
+     * @param row the array of strings representing a data row
+     * @param lineNumber the line number of the row in the CSV file (1-based)
+     */
+    private void validateDataRow(String[] row, int lineNumber) {
+        if (row.length != 10) {
+            CsvLogger.logError("line " + lineNumber + " has an invalid number of columns.");
+            return;
+        }
+
+        try {
+            if (!row[1].matches("\\d+(\\.\\d+)?")) {
+                CsvLogger.logError("PAR_ID invalid in line " + lineNumber);
             }
-
-            try {
-                // Validate numeric values
-                if (!row[1].matches("\\d+(\\.\\d+)?")) { // PAR_ID: numeric, can be decimal
-                    CsvLogger.logError("PAR_ID invalid in line " + (i + 1));
-                }
-
-                if (!row[3].matches("\\d+(\\.\\d+)?")) { // Shape_Length: numeric
-                    CsvLogger.logError("Shape_Length invalid in line " + (i + 1));
-                }
-
-                if (!row[4].matches("\\d+(\\.\\d+)?")) { // Shape_Area: numeric
-                    CsvLogger.logError("Shape_Area invalid in line " + (i + 1));
-                }
-
-                // Validate geometry (MULTIPOLYGON WKT)
-                if (!row[5].matches("^MULTIPOLYGON\\s*\\(\\(.*\\)\\)")) { // Simple example to check MULTIPOLYGON
-                    CsvLogger.logError("Formato de geometria invalid in line " + (i + 1) + ": " + row[5]);
-                }
-
-            } catch (Exception e) {
-                // Any error within the try (if a row validation fails)
-                CsvLogger.logError("error while validating line " + (i + 1) + ": " + e.getMessage());
+            if (!row[3].matches("\\d+(\\.\\d+)?")) {
+                CsvLogger.logError("Shape_Length invalid in line " + lineNumber);
             }
+            if (!row[4].matches("\\d+(\\.\\d+)?")) {
+                CsvLogger.logError("Shape_Area invalid in line " + lineNumber);
+            }
+            if (!row[5].matches("^MULTIPOLYGON\\s*\\(\\(.*\\)\\)")) {
+                CsvLogger.logError("Formato de geometria invalid in line " + lineNumber + ": " + row[5]);
+            }
+        } catch (Exception e) {
+            CsvLogger.logError("error while validating line " + lineNumber + ": " + e.getMessage());
         }
     }
 }
