@@ -1,6 +1,6 @@
 package Repository;
 
-import DetectAdjacentProperties.PropertyScoreCalculator;
+import Services.PropertyScoreCalculator;
 import Models.District;
 import Models.Municipality;
 import Models.Parish;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * The CsvProcessor class is responsible for processing CSV files containing property data.

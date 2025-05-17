@@ -1,4 +1,4 @@
-package ExchangeSuggestionEngine;
+package Services;
 
 import DetectAdjacentProperties.AdjacentPropertyPair;
 import Models.ExchangeSuggestion;
@@ -70,8 +70,8 @@ public class SuggestionGenerator {
 
                 for (PropertyPolygon a : groupA) {
                     for (PropertyPolygon b : groupB) {
-                        double feasibility = calculateFeasibility(a.getShapeArea(), b.getShapeArea());
-                        if (feasibility < 0.85 || feasibility <= bestFeasibility) continue;
+                        double areafeasibility = calculateFeasibility(a.getShapeArea(), b.getShapeArea());
+                        if (areafeasibility < 0.85 || areafeasibility <= bestFeasibility) continue;
 
                         PropertyPolygon outroDeA = groupA.get(0).equals(a) ? groupA.get(1) : groupA.get(0);
                         PropertyPolygon outroDeB = groupB.get(0).equals(b) ? groupB.get(1) : groupB.get(0);
@@ -86,7 +86,7 @@ public class SuggestionGenerator {
                         double percentB = calculateNetAreaChange(beforeB, afterB);
 
                         ExchangeSuggestion suggestion = new ExchangeSuggestion(
-                                a.getObjectId(), b.getObjectId(), feasibility
+                                a.getObjectId(), b.getObjectId(), areafeasibility
                         );
                         suggestion.setPercentChangeA(percentA);
                         suggestion.setPercentChangeB(percentB);
@@ -97,14 +97,14 @@ public class SuggestionGenerator {
                         double areaMedia = (a.getShapeArea() + b.getShapeArea()) / 2.0;
                         double areaFactor = Math.min(1.0, areaMedia / 1000.0); // até 1000 m² conta a 100%
 
-                        double viabilidadeFactor = feasibility;
+                        double viabilidadeFactor = areafeasibility;
 
                         double score = equidade * areaFactor * viabilidadeFactor;
 
                         suggestion.setScore(score);
 
                         bestSuggestion = suggestion;
-                        bestFeasibility = feasibility;
+                        bestFeasibility = areafeasibility;
                     }
                 }
 

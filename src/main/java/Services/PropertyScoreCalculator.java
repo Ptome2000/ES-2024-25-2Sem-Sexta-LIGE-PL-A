@@ -1,4 +1,4 @@
-package DetectAdjacentProperties;
+package Services;
 
 import Models.District;
 import Models.Municipality;

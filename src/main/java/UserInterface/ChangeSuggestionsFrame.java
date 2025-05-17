@@ -1,7 +1,7 @@
 package UserInterface;
 
 import DetectAdjacentProperties.AdjacentPropertyPair;
-import ExchangeSuggestionEngine.SuggestionGenerator;
+import Services.SuggestionGenerator;
 import Models.ExchangeSuggestion;
 import Models.PropertyPolygon;
 
@@ -66,7 +66,7 @@ public class ChangeSuggestionsFrame extends JFrame {
         panel.add(new JLabel("📌 Suggestion:"));
         panel.add(new JLabel("• Terrain A: " + sugestao.getPropertyFromA()));
         panel.add(new JLabel("• Terrain B: " + sugestao.getPropertyFromB()));
-        panel.add(new JLabel("• Feasibility: " + format2Decimals(sugestao.getFeasibility())));
+        panel.add(new JLabel("• Feasibility: " + format2Decimals(sugestao.getAreafeasibility())));
         panel.add(new JLabel("• % A: " + formatPercentage(sugestao.getPercentChangeA())));
         panel.add(new JLabel("• % B: " + formatPercentage(sugestao.getPercentChangeB())));
         panel.add(new JLabel("• Score: " + format2Decimals(sugestao.getScore())));

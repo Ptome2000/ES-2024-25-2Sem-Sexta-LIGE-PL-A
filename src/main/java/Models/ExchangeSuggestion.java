@@ -7,7 +7,7 @@ package Models;
 public class ExchangeSuggestion {
     private final int propertyFromA;
     private final int propertyFromB;
-    private final double feasibility;
+    private final double areafeasibility;
     private double valueSimilarity;
     private double score;
 
@@ -15,15 +15,15 @@ public class ExchangeSuggestion {
     private double percentChangeA;
     private double percentChangeB;
 
-    public ExchangeSuggestion(int propertyFromA, int propertyFromB, double feasibility) {
+    public ExchangeSuggestion(int propertyFromA, int propertyFromB, double areafeasibility) {
         this.propertyFromA = propertyFromA;
         this.propertyFromB = propertyFromB;
-        this.feasibility = feasibility;
+        this.areafeasibility = areafeasibility;
     }
 
     public int getPropertyFromA() { return propertyFromA; }
     public int getPropertyFromB() { return propertyFromB; }
-    public double getFeasibility() { return feasibility; }
+    public double getAreafeasibility() { return areafeasibility; }
 
     public double getPercentChangeA() { return percentChangeA; }
     public double getPercentChangeB() { return percentChangeB; }
@@ -51,7 +51,7 @@ public class ExchangeSuggestion {
     @Override
     public String toString() {
         return "\nSugestão: [Terreno A: " + propertyFromA + "] ↔ [Terreno B: " + propertyFromB + "]" +
-                " | Viabilidade: " + String.format("%.2f", feasibility) +
+                " | Viabilidade: " + String.format("%.2f", areafeasibility) +
                 " | % A: " + formatPercentage(percentChangeA) +
                 " | % B: " + formatPercentage(percentChangeB) +
                 " | Score: " + String.format("%.2f", score);
