@@ -3,14 +3,19 @@ package DetectAdjacentProperties;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
 import Repository.CsvLogger;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * This class is responsible for detecting adjacent properties based on their polygons.
- * It provides methods to convert CSV data to property polygons and identify pairs of adjacent properties.
+ * The {@code AdjacencyDetector} class is responsible for detecting adjacent properties
+ * based on their polygon coordinates. It provides methods to convert CSV data into
+ * PropertyPolygon objects and to find adjacent properties.
  */
+@Layer(LayerType.BACK_END)
 public class AdjacencyDetector {
 
     /**
@@ -20,6 +25,7 @@ public class AdjacencyDetector {
      * @param data A list of CSV rows, each representing a property with polygon data.
      * @return A list of PropertyPolygon objects.
      */
+    @CyclomaticComplexity(6)
     public static List<PropertyPolygon> convertToProperties(List<String[]> data) {
         List<PropertyPolygon> properties = new ArrayList<>();
 
@@ -51,6 +57,7 @@ public class AdjacencyDetector {
      * @param properties A list of PropertyPolygon objects to check for adjacency.
      * @return A list of AdjacentPropertyPair objects, representing pairs of adjacent properties.
      */
+    @CyclomaticComplexity(8)
     public static List<AdjacentPropertyPair> findAdjacentProperties(List<PropertyPolygon> properties) {
         List<AdjacentPropertyPair> adjacentPairs = new ArrayList<>();
         Set<String> seenPairs = new HashSet<>();
@@ -58,18 +65,12 @@ public class AdjacencyDetector {
 
         // Create the spatial grid and insert properties into it
         SpatialGrid spatialGrid = new SpatialGrid(properties);
-//        spatialGrid.printGridRanges();
 
         for (PropertyPolygon property : properties) {
             spatialGrid.insert(property);
         }
 
-
-        // After inserting all properties, log the number of properties in each cell
-        spatialGrid.logPropertiesInCells();
-
         // Compare each property only with others in the same grid
-
         for (PropertyPolygon prop1 : properties) {
             List<PropertyPolygon> nearbyProperties = spatialGrid.getNearbyProperties(prop1);
 
@@ -103,6 +104,7 @@ public class AdjacencyDetector {
      * @param properties A list of PropertyPolygon objects to check for adjacency.
      * @return A list of AdjacentPropertyPair objects, representing pairs of adjacent properties.
      */
+    @CyclomaticComplexity(11)
     public static List<AdjacentPropertyPair> findValidAdjacentPairs(List<PropertyPolygon> properties) {
         List<AdjacentPropertyPair> adjacentPairs = new ArrayList<>();
         Set<String> seenPairs = new HashSet<>();
@@ -148,6 +150,7 @@ public class AdjacencyDetector {
      * @param property The PropertyPolygon object to check.
      * @return True if the property is valid, false otherwise.
      */
+    @CyclomaticComplexity(5)
     private static boolean isValidProperty(PropertyPolygon property) {
         return property != null &&
                 property.getPolygon() != null &&
@@ -163,6 +166,7 @@ public class AdjacencyDetector {
      * @param p2 The second property polygon.
      * @return True if the two properties share at least one vertex, false otherwise.
      */
+    @CyclomaticComplexity(4)
     static boolean shareVertex(PropertyPolygon p1, PropertyPolygon p2) {
         Set<String> vertices1 = new HashSet<>();
         for (VertexCoordinate v : p1.getPolygon().getVertices()) {

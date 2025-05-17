@@ -1,20 +1,17 @@
 package DetectAdjacentProperties;
 
 import Models.PropertyPolygon;
-import Repository.CsvLogger;
-import Repository.CsvUploader;
-import Repository.CsvValidator;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * This class is responsible for managing property ownership data.
- * It groups properties by their owners and provides methods to filter and
- * retrieve property information.
+ * The {@code PropertyOwnership} class provides functionality to manage and analyze property ownership.
+ * It groups properties by their owners and provides methods to filter properties by owner and
+ * generate a sorted list of owners with their property counts.
  */
+@Deprecated
 public class PropertyOwnership {
 
     final private Map<String, List<PropertyPolygon>> propertiesByOwner;
@@ -24,6 +21,7 @@ public class PropertyOwnership {
      *
      * @param properties List of PropertyPolygon objects.
      */
+    @Deprecated
     public PropertyOwnership(List<PropertyPolygon> properties) {
         this.propertiesByOwner = groupPropertiesByOwner(properties);
     }
@@ -35,6 +33,7 @@ public class PropertyOwnership {
      * @return A map where the key is the owner's name and the value is a list of
      *         PropertyPolygon objects owned by that owner.
      */
+    @Deprecated
     private Map<String, List<PropertyPolygon>> groupPropertiesByOwner(List<PropertyPolygon> properties) {
         return properties.stream()
                 .collect(Collectors.groupingBy(PropertyPolygon::getOwner));
@@ -58,6 +57,7 @@ public class PropertyOwnership {
      *
      * @return A sorted list of owners and their property counts.
      */
+    @Deprecated
     public List<Map.Entry<String, Integer>> getOwnerPropertyCounts() {
         return propertiesByOwner.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getValue().size()))

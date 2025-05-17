@@ -2,13 +2,19 @@ package DetectAdjacentProperties;
 
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.util.*;
 
 /**
- * Represents a spatial grid to optimize the search for adjacent properties
- * by dividing the space into cells and storing properties based on their vertices.
+ * The {@code SpatialGrid} class manages a spatial grid for property polygons.
+ * It allows for efficient insertion and retrieval of properties based on their spatial location.
+ * The grid is divided into cells of a fixed size, and properties are stored in the cell corresponding
+ * to their first vertex.
  */
+@Layer(LayerType.BACK_END)
 class SpatialGrid {
 
     private static final int CELL_SIZE = 150;
@@ -49,7 +55,7 @@ class SpatialGrid {
      * @param y The y-coordinate of the vertex.
      * @return A string representing the cell key.
      */
-
+    @CyclomaticComplexity(1)
     String getCellKey(double x, double y) {
         int gridX = (int) Math.floor((x - minX) / CELL_SIZE);
         int gridY = (int) Math.floor((y - minY) / CELL_SIZE);
@@ -66,44 +72,11 @@ class SpatialGrid {
      *
      * @param property The property polygon to be inserted.
      */
+    @CyclomaticComplexity(1)
     public void insert(PropertyPolygon property) {
         VertexCoordinate firstVertex = property.getPolygon().getVertices().get(0);
         String firstCellKey = getCellKey(firstVertex.x(), firstVertex.y());
         grid.computeIfAbsent(firstCellKey, k -> new ArrayList<>()).add(property);
-    }
-
-    /**
-     * Prints the coordinate ranges for each grid cell to the console.
-     * Used for debugging or inspection purposes.
-     */
-    public void printGridRanges() {
-        System.out.println("\n--- Grid Cell Ranges ---");
-
-        for (int i = 0; i < MAX_GRID_X; i++) {
-            for (int j = 0; j < MAX_GRID_Y; j++) {
-                double xStart = i * CELL_SIZE;
-                double yStart = j * CELL_SIZE;
-                double xEnd = xStart + CELL_SIZE;
-                double yEnd = yStart + CELL_SIZE;
-
-//                System.out.printf("Cell (%d, %d): X = [%.2f, %.2f], Y = [%.2f, %.2f]%n",
-//                        i, j, xStart, xEnd, yStart, yEnd);
-            }
-        }
-    }
-
-    /**
-     * Logs the number of properties present in each cell of the grid.
-     * Useful for performance tuning and diagnostics.
-     */
-    public void logPropertiesInCells() {
-        System.out.println("Properties in each grid cell:");
-
-        for (Map.Entry<String, List<PropertyPolygon>> entry : grid.entrySet()) {
-            String cellKey = entry.getKey();
-            List<PropertyPolygon> propertiesInCell = entry.getValue();
-//            System.out.println("Cell " + cellKey + " has " + propertiesInCell.size() + " properties.");
-        }
     }
 
     /**
@@ -112,7 +85,7 @@ class SpatialGrid {
      * @param property The property to locate in the grid.
      * @return A list of cell keys the property touches.
      */
-
+    @CyclomaticComplexity(2)
     List<String> getPropertyGridCells(PropertyPolygon property) {
         Set<String> cells = new HashSet<>();
         for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
@@ -122,17 +95,16 @@ class SpatialGrid {
     }
 
     /**
-     * Retrieves a list of properties that are near the given property,
-     * by checking its current and adjacent grid cells.
+     * Retrieves a list of properties that are nearby a given property.
+     * It checks the adjacent cells in the grid to find nearby properties.
      *
-     * @param property The property whose neighbors are to be found.
+     * @param property The property to check for nearby properties.
      * @return A list of nearby properties.
      */
+    @CyclomaticComplexity(8)
     public List<PropertyPolygon> getNearbyProperties(PropertyPolygon property) {
         Set<PropertyPolygon> nearby = new HashSet<>();
         List<String> propertyCells = getPropertyGridCells(property);
-
-        System.out.println("\n--- Checking property " + property.getObjectId() + " -> " + propertyCells + " ---");
 
         for (String cellKey : propertyCells) {
             String[] parts = cellKey.split("-");
@@ -147,14 +119,7 @@ class SpatialGrid {
                     if (adjX < 0 || adjX > MAX_GRID_X || adjY < 0 || adjY > MAX_GRID_Y) continue;
 
                     String adjCellKey = adjX + "-" + adjY;
-
-                    if (grid.containsKey(adjCellKey)) {
-                        for (PropertyPolygon other : grid.get(adjCellKey)) {
-                            if (!other.equals(property)) {
-                                nearby.add(other);
-                            }
-                        }
-                    }
+                    addPropertiesFromCell(adjCellKey, property, nearby);
                 }
             }
         }
@@ -162,16 +127,19 @@ class SpatialGrid {
     }
 
     /**
-     * Helper method to check and add properties from a specific cell key
-     * into the provided nearby set.
+     * Adds properties from a specific cell to the nearby set, excluding the given property.
      *
-     * @param cellKey The cell key to search.
-     * @param nearby The set of nearby properties being built.
+     * @param cellKey The key of the cell to check.
+     * @param property The property to exclude from the nearby set.
+     * @param nearby   The set of nearby properties to add to.
      */
-    private void checkAndAddNearbyProperties(String cellKey, Set<PropertyPolygon> nearby) {
+    @CyclomaticComplexity(4)
+    private void addPropertiesFromCell(String cellKey, PropertyPolygon property, Set<PropertyPolygon> nearby) {
         if (grid.containsKey(cellKey)) {
-            for (PropertyPolygon property : grid.get(cellKey)) {
-                nearby.add(property);
+            for (PropertyPolygon other : grid.get(cellKey)) {
+                if (!other.equals(property)) {
+                    nearby.add(other);
+                }
             }
         }
     }
