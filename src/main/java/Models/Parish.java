@@ -1,12 +1,16 @@
 package Models;
 
+import Annotations.CyclomaticComplexity;
+import Annotations.Layer;
+import Enums.LayerType;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Parish class represents a parish within a municipality.
- * It contains the name of the parish and a list of PropertyPolygons.
+ * The {@code Parish} class represents a parish within a municipality.
+ * It provides methods to access the parish's name and other related information.
  */
+@Layer(LayerType.BACK_END)
 public class Parish implements Region {
 
     private final String name;
@@ -30,6 +34,7 @@ public class Parish implements Region {
      * @return The name of the parish.
      */
     @Override
+    @CyclomaticComplexity(1)
     public String name() {
         return name;
     }
@@ -39,6 +44,7 @@ public class Parish implements Region {
      *
      * @return A list of PropertyPolygon objects.
      */
+    @CyclomaticComplexity(1)
     public List<PropertyPolygon> getPropertyPolygons() {
         return propertyPolygons;
     }
@@ -48,6 +54,7 @@ public class Parish implements Region {
      *
      * @param propertyPolygon The PropertyPolygon to add.
      */
+    @CyclomaticComplexity(1)
     public void addPropertyPolygon(PropertyPolygon propertyPolygon) {
         this.propertyPolygons.add(propertyPolygon);
     }
@@ -57,6 +64,7 @@ public class Parish implements Region {
      *
      * @return The count of PropertyPolygons.
      */
+    @CyclomaticComplexity(1)
     public int getPropertyPolygonCount() {
         return propertyPolygons.size();
     }
