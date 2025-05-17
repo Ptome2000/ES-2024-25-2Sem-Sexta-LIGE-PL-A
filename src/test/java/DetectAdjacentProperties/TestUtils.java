@@ -3,7 +3,7 @@ package DetectAdjacentProperties;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
-import Utils.MockedPropertyPolygon;
+import Utils.Mocks.MockedPropertyPolygon;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package Enums;
+package Utils.Enums;
 
 public enum LayerType {
     BACK_END {

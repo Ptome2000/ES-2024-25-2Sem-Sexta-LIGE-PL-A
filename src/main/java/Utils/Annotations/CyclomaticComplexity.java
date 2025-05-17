@@ -1,4 +1,4 @@
-package Annotations;
+package Utils.Annotations;
 
 import java.lang.annotation.*;
 @Documented

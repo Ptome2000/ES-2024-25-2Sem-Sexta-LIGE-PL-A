@@ -1,7 +1,7 @@
 package Models;
 
-import Annotations.Layer;
-import Enums.LayerType;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 /**
  * The {@code Region} interface represents a geographical region with a name.

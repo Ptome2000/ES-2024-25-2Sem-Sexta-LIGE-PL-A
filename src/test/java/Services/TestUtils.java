@@ -3,7 +3,7 @@ package Services;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
-import Utils.MockedPropertyPolygon;
+import Utils.Mocks.MockedPropertyPolygon;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;

@@ -1,7 +1,7 @@
-package Annotations;
+package Utils.Annotations;
 
 import java.lang.annotation.*;
-import Enums.LayerType;
+import Utils.Enums.LayerType;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
