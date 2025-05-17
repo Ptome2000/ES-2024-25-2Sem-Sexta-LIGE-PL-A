@@ -6,9 +6,11 @@ import Utils.Enums.LayerType;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * The {@code Parish} class represents a parish within a municipality.
- * It provides methods to access the parish's name and other related information.
+ * It contains a list of property polygons and provides methods to manage them.
+ * This class implements the {@link Region} interface.
  */
 @Layer(LayerType.BACK_END)
 public class Parish implements Region {

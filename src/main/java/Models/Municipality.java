@@ -8,7 +8,8 @@ import java.util.List;
 
 /**
  * The {@code Municipality} class represents a municipality within a district.
- * It provides methods to access the municipality's name and other related information.
+ * It contains a list of parishes and provides methods to manage them.
+ * This class implements the {@link Region} interface.
  */
 @Layer(LayerType.BACK_END)
 public class Municipality implements Region {

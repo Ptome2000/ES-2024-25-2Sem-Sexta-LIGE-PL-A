@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Layer(LayerType.BACK_END)
 public class Polygon {
-    private List<VertexCoordinate> vertices;
+    private final List<VertexCoordinate> vertices;
 
     /**
      * Constructor to initialize the polygon with a list of coordinates.
