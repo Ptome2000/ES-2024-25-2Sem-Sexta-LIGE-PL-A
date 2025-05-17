@@ -1,5 +1,6 @@
 package Repository;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -58,17 +59,23 @@ public class CsvValidator {
      * @throws CsvException if any row is invalid
      */
     private void validateDataRows(List<String[]> data) throws CsvException {
-        boolean hasErrors = false;
+        int validCount = 0;
 
         for (int i = 1; i < data.size(); i++) {
             boolean rowHasError = validateDataRow(data.get(i), i + 1);
-            if (rowHasError) {
-                hasErrors = true;
+            if (!rowHasError) {
+                validCount++;
             }
         }
 
-        if (hasErrors) {
-            throw new CsvException("CSV contains invalid data rows. See log for details.");
+        if (validCount == 0) {
+            throw new CsvException("CSV contains no valid data rows. Import cancelled.");
+        }
+
+        if (validCount < data.size() - 1) {
+            JOptionPane.showMessageDialog(null,
+                    "Importação parcial: Algumas linhas foram ignoradas devido a erros. Consulte o log para detalhes.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -125,5 +132,6 @@ public class CsvValidator {
 
         return hasError;
     }
+
 
 }
