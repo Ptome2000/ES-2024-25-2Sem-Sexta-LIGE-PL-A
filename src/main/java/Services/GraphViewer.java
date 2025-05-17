@@ -1,17 +1,13 @@
 package Services;
 
-import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 
 import javax.swing.*;
@@ -50,8 +46,8 @@ public class GraphViewer {
             List<VertexCoordinate> coords = polygon.getPolygon().getVertices();
             double sumX = 0, sumY = 0;
             for (VertexCoordinate vc : coords) {
-                sumX += vc.getX();
-                sumY += vc.getY();
+                sumX += vc.x();
+                sumY += vc.y();
             }
             double centerX = sumX / coords.size();
             double centerY = sumY / coords.size();

@@ -39,8 +39,8 @@ class VertexCoordinateTests {
         VertexCoordinate vertex = new VertexCoordinate(10.5, 20.5);
 
         assertNotNull(vertex, "VertexCoordinate instance should not be null.");
-        assertEquals(10.5, vertex.getX(), "X coordinate should match the provided value.");
-        assertEquals(20.5, vertex.getY(), "Y coordinate should match the provided value.");
+        assertEquals(10.5, vertex.x(), "X coordinate should match the provided value.");
+        assertEquals(20.5, vertex.y(), "Y coordinate should match the provided value.");
     }
 
     @Test
@@ -50,7 +50,7 @@ class VertexCoordinateTests {
     void getX() {
         VertexCoordinate vertex = new VertexCoordinate(15.0, 25.0);
 
-        assertEquals(15.0, vertex.getX(), "getX should return the correct X coordinate.");
+        assertEquals(15.0, vertex.x(), "getX should return the correct X coordinate.");
     }
 
     @Test
@@ -60,7 +60,7 @@ class VertexCoordinateTests {
     void getY() {
         VertexCoordinate vertex = new VertexCoordinate(15.0, 25.0);
 
-        assertEquals(25.0, vertex.getY(), "getY should return the correct Y coordinate.");
+        assertEquals(25.0, vertex.y(), "getY should return the correct Y coordinate.");
     }
 
     @Test

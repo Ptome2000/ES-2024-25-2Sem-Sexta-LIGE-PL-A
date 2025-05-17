@@ -26,8 +26,8 @@ public class CoordinateFinder {
 
         final double[] max = { Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY };
         forEachVertex(properties, vertex -> {
-            max[0] = Math.max(max[0], vertex.getX());
-            max[1] = Math.max(max[1], vertex.getY());
+            max[0] = Math.max(max[0], vertex.x());
+            max[1] = Math.max(max[1], vertex.y());
         });
 
         return max;
@@ -47,8 +47,8 @@ public class CoordinateFinder {
 
         final double[] min = { Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY };
         forEachVertex(properties, vertex -> {
-            min[0] = Math.min(min[0], vertex.getX());
-            min[1] = Math.min(min[1], vertex.getY());
+            min[0] = Math.min(min[0], vertex.x());
+            min[1] = Math.min(min[1], vertex.y());
         });
 
         return min;

@@ -1,27 +1,24 @@
 package Models;
 
+import Annotations.CyclomaticComplexity;
+import Annotations.Layer;
+import Enums.LayerType;
 import java.util.Objects;
 
-
 /**
- * This class represents a coordinate of a vertex with X and Y values.
- * It is used to store the coordinates of a point in a polygon representing a property.
+ * The {@code VertexCoordinate} record represents a vertex in a 2D space with X and Y coordinates.
+ * It provides methods to access the X and Y coordinates, compare vertices, and generate a string
+ * representation of the vertex.
  */
-
-public class VertexCoordinate {
-    private double x;
-    private double y;
-
+@Layer(LayerType.BACK_END)
+public record VertexCoordinate(double x, double y) {
     /**
      * Constructor to initialize the vertex coordinates with X and Y values.
      *
      * @param x The X coordinate of the vertex.
      * @param y The Y coordinate of the vertex.
      */
-
-    public VertexCoordinate(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public VertexCoordinate {
     }
 
     /**
@@ -29,8 +26,9 @@ public class VertexCoordinate {
      *
      * @return The X coordinate of the vertex.
      */
-
-    public double getX() {
+    @Override
+    @CyclomaticComplexity(1)
+    public double x() {
         return x;
     }
 
@@ -39,7 +37,9 @@ public class VertexCoordinate {
      *
      * @return The Y coordinate of the vertex.
      */
-    public double getY() {
+    @Override
+    @CyclomaticComplexity(1)
+    public double y() {
         return y;
     }
 
@@ -50,10 +50,10 @@ public class VertexCoordinate {
      * @return true if the given object represents a VertexCoordinate with the same coordinates, false otherwise
      */
     @Override
+    @CyclomaticComplexity(4)
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof VertexCoordinate)) return false;
-        VertexCoordinate that = (VertexCoordinate) o;
+        if (!(o instanceof VertexCoordinate that)) return false;
         return Math.abs(that.x - x) < 0.0001 && Math.abs(that.y - y) < 0.0001;
     }
 
@@ -63,8 +63,9 @@ public class VertexCoordinate {
      * @return a hash code value for this VertexCoordinate
      */
     @Override
+    @CyclomaticComplexity(1)
     public int hashCode() {
-        return Objects.hash((int)(x * 1000), (int)(y * 1000));
+        return Objects.hash((int) (x * 1000), (int) (y * 1000));
     }
 
     /**
@@ -73,6 +74,7 @@ public class VertexCoordinate {
      * @return A string in the format (X, Y) representing the coordinates of the vertex.
      */
     @Override
+    @CyclomaticComplexity(1)
     public String toString() {
         return "(" + x + ", " + y + ")";
     }
