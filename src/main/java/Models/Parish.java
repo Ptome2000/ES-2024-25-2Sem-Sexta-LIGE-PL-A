@@ -11,6 +11,8 @@ public class Parish implements Region {
 
     private final String name;
     private final List<PropertyPolygon> propertyPolygons;
+    private double urbanizationScore;
+
 
     /**
      * Constructor to initialize the Parish object.
@@ -58,5 +60,20 @@ public class Parish implements Region {
     public int getPropertyPolygonCount() {
         return propertyPolygons.size();
     }
+
+    /**
+     * Gets the name of the municipality to which the parish belongs.
+     *
+     * @return The name of the municipality.
+     */
+    public double getUrbanizationScore() { return urbanizationScore; }
+
+    /**
+     * Sets the urbanization score for the parish.
+     *
+     * @param urbanizationScore The urbanization score to set.
+     */
+    public void setUrbanizationScore(double urbanizationScore) { this.urbanizationScore = urbanizationScore; }
+
 
 }

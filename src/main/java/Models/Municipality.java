@@ -11,6 +11,8 @@ public class Municipality implements Region {
 
     private final String name;
     private final List<Parish> parishes;
+    private double tourismScore;
+
 
     /**
      * Constructor to initialize the Municipality object.
@@ -48,6 +50,21 @@ public class Municipality implements Region {
     public void addParish(Parish parish) {
         this.parishes.add(parish);
     }
+
+    /**
+     * Gets the tourism score for the municipality.
+     *
+     * @return The tourism score of the municipality.
+     */
+    public double getTourismScore() { return tourismScore; }
+
+    /**
+     * Sets the tourism score for the municipality.
+     *
+     * @param tourismScore The tourism score to be set.
+     */
+    public void setTourismScore(double tourismScore) { this.tourismScore = tourismScore; }
+
 
     /**
      * Gets the list of all PropertyPolygons in the municipality.

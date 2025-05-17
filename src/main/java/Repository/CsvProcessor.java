@@ -1,5 +1,6 @@
 package Repository;
 
+import DetectAdjacentProperties.PropertyScoreCalculator;
 import Models.District;
 import Models.Municipality;
 import Models.Parish;
@@ -33,7 +34,6 @@ public class CsvProcessor {
         for (int i = 1; i < csvData.size(); i++) {
             String[] columns = csvData.get(i);
 
-            // Skip rows with invalid data
             if (!validRegion(columns)) {
                 CsvLogger.logError("Line " + i + " has invalid region data.");
                 continue;
@@ -82,6 +82,16 @@ public class CsvProcessor {
         }
 
         CsvLogger.logEnd();
+
+        List<PropertyPolygon> allProperties = districtMap.values().stream()
+                .flatMap(d -> d.getMunicipalities().stream())
+                .flatMap(m -> m.getParishes().stream())
+                .flatMap(p -> p.getPropertyPolygons().stream())
+                .toList();
+
+        PropertyScoreCalculator.assignScoresToRegions(new ArrayList<>(districtMap.values()), allProperties);
+
+
         return new ArrayList<>(districtMap.values());
     }
 
