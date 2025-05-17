@@ -74,8 +74,8 @@ public class CsvValidator {
 
         if (validCount < data.size() - 1) {
             JOptionPane.showMessageDialog(null,
-                    "Importação parcial: Algumas linhas foram ignoradas devido a erros. Consulte o log para detalhes.",
-                    "Aviso", JOptionPane.WARNING_MESSAGE);
+                    "Partial import: Some rows were skipped due to errors. Check the log for details.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -88,11 +88,6 @@ public class CsvValidator {
      */
     private boolean validateDataRow(String[] row, int lineNumber) {
         boolean hasError = false;
-
-        System.out.println("🧪 Linha " + lineNumber + ":");
-        for (int i = 0; i < row.length; i++) {
-            System.out.println("   Coluna [" + i + "]: '" + row[i] + "'");
-        }
 
         if (row.length != 10) {
             CsvLogger.logError("Line " + lineNumber + " has an invalid number of columns.");
