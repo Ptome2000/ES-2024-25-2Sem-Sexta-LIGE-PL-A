@@ -8,6 +8,7 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/inspectionProfiles/Project_Default.xml
 *.iws
 *.iml
 *.ipr
@@ -42,6 +43,7 @@ build/
 .allure
 allure-results
 csv_errors.log
+Reports
 
 src/main/resources/grids.txt
 

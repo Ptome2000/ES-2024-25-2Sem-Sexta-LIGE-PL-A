@@ -191,6 +191,19 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.10</version>
+        <configuration>
+          <excludes>
+            <exclude>Annotations/*</exclude>
+            <exclude>Enums/*</exclude>
+            <exclude>Utils/*</exclude>
+            <exclude>UserInterface/*</exclude>
+            <exclude>Services/PropertyInfoDialog*</exclude>
+            <exclude>Services/PropertyGraphJungBuilder*</exclude>
+            <exclude>Services/GraphViewer*</exclude>
+            <exclude>DetectAdjacentProperties/MaxCoordinateFinder*</exclude>
+            <exclude>DetectAdjacentProperties/MinCoordinateFinder*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>prepare-agent</id>
