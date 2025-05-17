@@ -310,6 +310,29 @@ public class MainFrame extends JFrame {
                     @Override
                     protected Void doInBackground() {
                         try {
+                            districtJComboBox.removeAllItems();
+                            municipalityJComboBox.removeAllItems();
+                            parishJComboBox.removeAllItems();
+                            ownerJComboBox.removeAllItems();
+
+                            districtJComboBox.addItem(null);
+                            municipalityJComboBox.addItem(null);
+                            parishJComboBox.addItem(null);
+                            ownerJComboBox.addItem(null);
+
+                            districtJComboBox.setSelectedItem(null);
+                            municipalityJComboBox.setSelectedItem(null);
+                            parishJComboBox.setSelectedItem(null);
+                            ownerJComboBox.setSelectedItem(null);
+
+                            municipalityLabel.setVisible(false);
+                            municipalityJComboBox.setVisible(false);
+                            parishLabel.setVisible(false);
+                            parishJComboBox.setVisible(false);
+                            currentlyDisplayingLabel.setVisible(false);
+                            activeFilterType = null;
+                            activeFilterValue = null;
+
                             List<District> properties = CsvProcessor.convertToRegionsAndProperties(selectedFile.getAbsolutePath());
                             collector = new PropertyCollector(properties);
                             updateGraph(collector.collectAllProperties());
