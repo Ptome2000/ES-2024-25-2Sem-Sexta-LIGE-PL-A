@@ -1,5 +1,6 @@
 package Repository;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -51,16 +52,30 @@ public class CsvValidator {
             throw new CsvException("invalid headers!");
         }
     }
-
     /**
      * Validates all data rows in the CSV file except the header row.
      *
      * @param data the list of string arrays representing the CSV data
+     * @throws CsvException if any row is invalid
      */
-    private void validateDataRows(List<String[]> data) {
+    private void validateDataRows(List<String[]> data) throws CsvException {
+        int validCount = 0;
+
         for (int i = 1; i < data.size(); i++) {
-            String[] row = data.get(i);
-            validateDataRow(row, i + 1);
+            boolean rowHasError = validateDataRow(data.get(i), i + 1);
+            if (!rowHasError) {
+                validCount++;
+            }
+        }
+
+        if (validCount == 0) {
+            throw new CsvException("CSV contains no valid data rows. Import cancelled.");
+        }
+
+        if (validCount < data.size() - 1) {
+            JOptionPane.showMessageDialog(null,
+                    "Partial import: Some rows were skipped due to errors. Check the log for details.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -69,28 +84,49 @@ public class CsvValidator {
      *
      * @param row the array of strings representing a data row
      * @param lineNumber the line number of the row in the CSV file (1-based)
+     * @return true if there was any error in the row
      */
-    private void validateDataRow(String[] row, int lineNumber) {
+    private boolean validateDataRow(String[] row, int lineNumber) {
+        boolean hasError = false;
+
         if (row.length != 10) {
-            CsvLogger.logError("line " + lineNumber + " has an invalid number of columns.");
-            return;
+            CsvLogger.logError("Line " + lineNumber + " has an invalid number of columns.");
+            return true;
         }
 
         try {
             if (!row[1].matches("\\d+(\\.\\d+)?")) {
                 CsvLogger.logError("PAR_ID invalid in line " + lineNumber);
+                hasError = true;
             }
             if (!row[3].matches("\\d+(\\.\\d+)?")) {
                 CsvLogger.logError("Shape_Length invalid in line " + lineNumber);
+                hasError = true;
             }
             if (!row[4].matches("\\d+(\\.\\d+)?")) {
                 CsvLogger.logError("Shape_Area invalid in line " + lineNumber);
+                hasError = true;
             }
             if (!row[5].matches("^MULTIPOLYGON\\s*\\(\\(.*\\)\\)")) {
-                CsvLogger.logError("Formato de geometria invalid in line " + lineNumber + ": " + row[5]);
+                CsvLogger.logError("Invalid geometry format in line " + lineNumber + ": " + row[5]);
+                hasError = true;
+            }
+
+            for (int idx = 7; idx <= 9; idx++) {
+                String value = row[idx].trim().toLowerCase();
+                if (value.isEmpty() || value.equals("na") || value.equals("nd") ||
+                        value.equals("0") || value.equals("null")) {
+                    CsvLogger.logError("Invalid region data (Freguesia/Municipio/Ilha) in line " + lineNumber + ": " + row[idx]);
+                    hasError = true;
+                }
             }
         } catch (Exception e) {
-            CsvLogger.logError("error while validating line " + lineNumber + ": " + e.getMessage());
+            CsvLogger.logError("Error while validating line " + lineNumber + ": " + e.getMessage());
+            hasError = true;
         }
+
+        return hasError;
     }
+
+
 }
