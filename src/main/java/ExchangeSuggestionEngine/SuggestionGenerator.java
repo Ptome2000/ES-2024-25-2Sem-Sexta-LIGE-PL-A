@@ -90,6 +90,7 @@ public class SuggestionGenerator {
                         );
                         suggestion.setPercentChangeA(percentA);
                         suggestion.setPercentChangeB(percentB);
+                        suggestion.computeValueSimilarity(a, b);
 
                         double equidade = 100.0 - Math.abs(percentA * 100.0 - percentB * 100.0);
 

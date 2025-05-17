@@ -8,6 +8,7 @@ import Models.PropertyPolygon;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Responsible for calculating tourism and urbanization scores
@@ -54,6 +55,11 @@ public class PropertyScoreCalculator {
                     int rawUrban = urbanizationByParish.getOrDefault(parish.name(), 0);
                     double normalizedUrban = (double) rawUrban / maxUrbanization;
                     parish.setUrbanizationScore(normalizedUrban);
+
+                    for (PropertyPolygon property : parish.getPropertyPolygons()) {
+                        property.setTourismScore(normalizedTourism);
+                        property.setUrbanizationScore(normalizedUrban);
+                    }
                 }
             }
         }
@@ -71,6 +77,22 @@ public class PropertyScoreCalculator {
             double normalized = (double) entry.getValue() / maxUrbanization;
             System.out.printf("Parish: %s, Urbanization Score: %.3f%n", entry.getKey(), normalized);
         }
+
+        System.out.println("\n--- Tourism & Urbanization Scores by Property ---");
+        for (PropertyPolygon property : allProperties) {
+            if(Objects.equals(property.getMunicipio(), "Funchal") || Objects.equals(property.getMunicipio(), "Machico") ){
+                System.out.printf("Property ID: %d | Municipality: %s | Parish: %s | Tourism Score: %.3f | Urbanization Score: %.3f%n",
+                        property.getObjectId(),
+                        property.getMunicipio(),
+                        property.getFreguesia(),
+                        property.getTourismScore(),
+                        property.getUrbanizationScore());
+            }
+
+
+            }
+
+
 
     }
 }

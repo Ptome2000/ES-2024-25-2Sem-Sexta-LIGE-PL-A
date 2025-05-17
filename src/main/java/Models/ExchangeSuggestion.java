@@ -8,6 +8,7 @@ public class ExchangeSuggestion {
     private final int propertyFromA;
     private final int propertyFromB;
     private final double feasibility;
+    private double valueSimilarity;
     private double score;
 
 
@@ -30,7 +31,6 @@ public class ExchangeSuggestion {
     public void setPercentChangeA(double percentChangeA) {
         this.percentChangeA = percentChangeA;
     }
-
     public void setPercentChangeB(double percentChangeB) {
         this.percentChangeB = percentChangeB;
     }
@@ -38,10 +38,13 @@ public class ExchangeSuggestion {
     public void setScore(double score) {
         this.score = score;
     }
-
     public double getScore() {
         return score;
     }
+
+    public double getValueSimilarity() { return valueSimilarity; }
+    public void setValueSimilarity(double valueSimilarity) { this.valueSimilarity = valueSimilarity;}
+
 
 
 
@@ -57,6 +60,14 @@ public class ExchangeSuggestion {
     private String formatPercentage(double value) {
         if (Double.isNaN(value)) return "N/A";
         return String.format("%.2f%%", value * 100);
+    }
+
+    public void computeValueSimilarity(PropertyPolygon a, PropertyPolygon b) {
+        double urbanDiff = Math.abs(a.getUrbanizationScore() - b.getUrbanizationScore());
+        double tourismDiff = Math.abs(a.getTourismScore() - b.getTourismScore());
+        this.valueSimilarity = 0.6 * (1 - urbanDiff) + 0.4 * (1 - tourismDiff);
+        //TODO tirar depois de testar
+        System.out.println("Value Similarity: " + this.valueSimilarity);
     }
 }
 

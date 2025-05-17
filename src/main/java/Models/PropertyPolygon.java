@@ -22,6 +22,8 @@ public class PropertyPolygon {
     private final String freguesia;
     private final String municipio;
     private final String ilha;
+    private double urbanizationScore;
+    private double tourismScore;
 
     /**
      * Constructor to initialize a PropertyPolygon object.
@@ -90,6 +92,16 @@ public class PropertyPolygon {
     public String getIlha() {
         return ilha;
     }
+
+    public double getUrbanizationScore() { return urbanizationScore; }
+
+    public void setUrbanizationScore(double urbanizationScore) { this.urbanizationScore = urbanizationScore; }
+
+    public double getTourismScore() { return tourismScore; }
+
+    public void setTourismScore(double tourismScore) { this.tourismScore = tourismScore; }
+
+
 
     /**
      * Creates a PropertyPolygon object from a CSV row.
