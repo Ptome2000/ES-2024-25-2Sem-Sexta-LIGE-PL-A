@@ -9,6 +9,7 @@ public class ExchangeSuggestion {
     private final int propertyFromB;
     private final double areafeasibility;
     private double valueSimilarity;
+    private double feability;
     private double score;
 
 
@@ -45,6 +46,9 @@ public class ExchangeSuggestion {
     public double getValueSimilarity() { return valueSimilarity; }
     public void setValueSimilarity(double valueSimilarity) { this.valueSimilarity = valueSimilarity;}
 
+    public double getFeability() { return feability; }
+    public void setFeability(double feability) { this.feability = feability; }
+
 
 
 
@@ -66,8 +70,6 @@ public class ExchangeSuggestion {
         double urbanDiff = Math.abs(a.getUrbanizationScore() - b.getUrbanizationScore());
         double tourismDiff = Math.abs(a.getTourismScore() - b.getTourismScore());
         this.valueSimilarity = 0.6 * (1 - urbanDiff) + 0.4 * (1 - tourismDiff);
-        //TODO tirar depois de testar
-        System.out.println("Value Similarity: " + this.valueSimilarity);
     }
 }
 

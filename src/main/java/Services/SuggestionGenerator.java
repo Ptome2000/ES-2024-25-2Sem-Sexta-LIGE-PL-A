@@ -130,8 +130,8 @@ public class SuggestionGenerator {
 
         for (PropertyPolygon a : groupA) {
             for (PropertyPolygon b : groupB) {
-                double feasibility = calculateAreaFeasibility(a.getShapeArea(), b.getShapeArea());
-                if (feasibility < 0.85 || feasibility <= bestFeasibility) continue;
+                double areaFeasibility = calculateAreaFeasibility(a.getShapeArea(), b.getShapeArea());
+                if (areaFeasibility < 0.85 || areaFeasibility <= bestFeasibility) continue;
 
                 PropertyPolygon otherA = groupA.get(0).equals(a) ? groupA.get(1) : groupA.get(0);
                 PropertyPolygon otherB = groupB.get(0).equals(b) ? groupB.get(1) : groupB.get(0);
@@ -139,26 +139,30 @@ public class SuggestionGenerator {
                 double percentA = calculateNetAreaChange(a.getShapeArea() + otherA.getShapeArea(), b.getShapeArea() + otherA.getShapeArea());
                 double percentB = calculateNetAreaChange(b.getShapeArea() + otherB.getShapeArea(), a.getShapeArea() + otherB.getShapeArea());
 
-                ExchangeSuggestion suggestion = new ExchangeSuggestion(a.getObjectId(), b.getObjectId(), feasibility);
+                ExchangeSuggestion suggestion = new ExchangeSuggestion(a.getObjectId(), b.getObjectId(), areaFeasibility);
                 suggestion.setPercentChangeA(percentA);
                 suggestion.setPercentChangeB(percentB);
                 suggestion.computeValueSimilarity(a, b);
+
+                double fiability = areaFeasibility * suggestion.getValueSimilarity();
+                suggestion.setFeability(fiability);
 
                 double equidade = 100.0 - Math.abs(percentA * 100.0 - percentB * 100.0);
                 double areaMedia = (a.getShapeArea() + b.getShapeArea()) / 2.0;
                 double areaFactor = Math.min(1.0, areaMedia / 1000.0);
 
-                double score = equidade * areaFactor * feasibility;
+                System.out.println("areaFeasibility"+ areaFeasibility+ "getValueSimilarity"+ suggestion.getValueSimilarity()+ "fiability"
+                        + fiability);
+                double score = equidade * areaFactor * fiability;
                 suggestion.setScore(score);
 
                 bestSuggestion = suggestion;
-                bestFeasibility = feasibility;
+                bestFeasibility = (fiability);
             }
         }
 
         return Optional.ofNullable(bestSuggestion);
     }
-
 
 
 
