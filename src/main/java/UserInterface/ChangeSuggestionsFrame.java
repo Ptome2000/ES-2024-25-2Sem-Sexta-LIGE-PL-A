@@ -66,9 +66,11 @@ public class ChangeSuggestionsFrame extends JFrame {
         panel.add(new JLabel("📌 Suggestion:"));
         panel.add(new JLabel("• Terrain A: " + sugestao.getPropertyFromA()));
         panel.add(new JLabel("• Terrain B: " + sugestao.getPropertyFromB()));
-        panel.add(new JLabel("• Feasibility: " + format2Decimals(sugestao.getAreafeasibility())));
+        panel.add(new JLabel("• Area Feasibility: " + format2Decimals(sugestao.getAreafeasibility())));
         panel.add(new JLabel("• % A: " + formatPercentage(sugestao.getPercentChangeA())));
         panel.add(new JLabel("• % B: " + formatPercentage(sugestao.getPercentChangeB())));
+        panel.add(new JLabel("• Value Feasibility: " + format2Decimals(sugestao.getValueSimilarity())));
+        panel.add(new JLabel("• Feasibility: " + format2Decimals(sugestao.getFeability())));
         panel.add(new JLabel("• Score: " + format2Decimals(sugestao.getScore())));
 
         return panel;
