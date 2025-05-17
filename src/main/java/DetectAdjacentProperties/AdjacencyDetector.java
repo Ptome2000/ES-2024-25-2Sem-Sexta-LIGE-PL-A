@@ -166,11 +166,11 @@ public class AdjacencyDetector {
     static boolean shareVertex(PropertyPolygon p1, PropertyPolygon p2) {
         Set<String> vertices1 = new HashSet<>();
         for (VertexCoordinate v : p1.getPolygon().getVertices()) {
-            vertices1.add(v.getX() + "," + v.getY());
+            vertices1.add(v.x() + "," + v.y());
         }
 
         for (VertexCoordinate v : p2.getPolygon().getVertices()) {
-            if (vertices1.contains(v.getX() + "," + v.getY())) {
+            if (vertices1.contains(v.x() + "," + v.y())) {
                 return true; // Found a shared vertex
             }
         }

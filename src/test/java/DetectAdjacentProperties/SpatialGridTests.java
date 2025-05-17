@@ -219,8 +219,8 @@ class SpatialGridTests {
 
         // Find the cell key for the property
         String cellKey = grid.getCellKey(
-                property.getPolygon().getVertices().get(0).getX(),
-                property.getPolygon().getVertices().get(0).getY()
+                property.getPolygon().getVertices().get(0).x(),
+                property.getPolygon().getVertices().get(0).y()
         );
 
         Set<PropertyPolygon> nearby = new HashSet<>();

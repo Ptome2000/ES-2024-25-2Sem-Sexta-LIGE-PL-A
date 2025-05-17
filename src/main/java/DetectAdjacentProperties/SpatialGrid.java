@@ -68,7 +68,7 @@ class SpatialGrid {
      */
     public void insert(PropertyPolygon property) {
         VertexCoordinate firstVertex = property.getPolygon().getVertices().get(0);
-        String firstCellKey = getCellKey(firstVertex.getX(), firstVertex.getY());
+        String firstCellKey = getCellKey(firstVertex.x(), firstVertex.y());
         grid.computeIfAbsent(firstCellKey, k -> new ArrayList<>()).add(property);
     }
 
@@ -116,7 +116,7 @@ class SpatialGrid {
     List<String> getPropertyGridCells(PropertyPolygon property) {
         Set<String> cells = new HashSet<>();
         for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
-            cells.add(getCellKey(vertex.getX(), vertex.getY()));
+            cells.add(getCellKey(vertex.x(), vertex.y()));
         }
         return new ArrayList<>(cells);
     }

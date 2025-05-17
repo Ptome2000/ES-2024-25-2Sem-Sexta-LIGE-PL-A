@@ -30,12 +30,12 @@ public class MaxCoordinateFinder {
         // Iterate through all properties and their vertices to find the maximum X and Y values
         for (PropertyPolygon property : properties) {
             for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
-                if (vertex.getX() > maxX) {
-                    maxX = vertex.getX();
+                if (vertex.x() > maxX) {
+                    maxX = vertex.x();
                 }
 
-                if (vertex.getY() > maxY) {
-                    maxY = vertex.getY();
+                if (vertex.y() > maxY) {
+                    maxY = vertex.y();
                 }
             }
         }

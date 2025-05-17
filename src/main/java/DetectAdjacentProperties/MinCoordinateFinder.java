@@ -31,11 +31,11 @@ public class MinCoordinateFinder {
 
         for (PropertyPolygon property : properties) {
             for (VertexCoordinate vertex : property.getPolygon().getVertices()) {
-                if (vertex.getX() < minX) {
-                    minX = vertex.getX();
+                if (vertex.x() < minX) {
+                    minX = vertex.x();
                 }
-                if (vertex.getY() < minY) {
-                    minY = vertex.getY();
+                if (vertex.y() < minY) {
+                    minY = vertex.y();
                 }
             }
         }
