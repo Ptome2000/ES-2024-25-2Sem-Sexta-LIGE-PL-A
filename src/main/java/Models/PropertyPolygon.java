@@ -1,9 +1,9 @@
 package Models;
 
 
-import Annotations.CyclomaticComplexity;
-import Annotations.Layer;
-import Enums.LayerType;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import Repository.CsvColum;
 
 import java.util.ArrayList;

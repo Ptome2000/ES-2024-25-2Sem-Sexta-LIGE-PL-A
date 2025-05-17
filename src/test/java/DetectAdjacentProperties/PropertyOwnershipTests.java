@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import Models.Polygon;
 import Models.PropertyPolygon;
-import Utils.MockedPropertyPolygon;
+import Utils.Mocks.MockedPropertyPolygon;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;

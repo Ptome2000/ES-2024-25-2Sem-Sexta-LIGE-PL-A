@@ -3,7 +3,7 @@ package DetectAdjacentProperties;
 import Models.Polygon;
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
-import Utils.MockedPropertyPolygon;
+import Utils.Mocks.MockedPropertyPolygon;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
