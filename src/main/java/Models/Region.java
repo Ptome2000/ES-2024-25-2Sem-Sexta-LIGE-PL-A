@@ -1,9 +1,14 @@
 package Models;
 
+import Annotations.Layer;
+import Enums.LayerType;
+
 /**
- * The Region interface represents a geographical region with a name.
- * It is implemented by various classes representing different levels of regions.
+ * The {@code Region} interface represents a geographical region with a name.
+ * It is implemented by various classes representing different levels of regions,
+ * such as districts, municipalities, and parishes.
  */
+@Layer(LayerType.BACK_END)
 public interface Region {
     String name();
 }

@@ -1,12 +1,16 @@
 package Models;
 
+import Annotations.CyclomaticComplexity;
+import Annotations.Layer;
+import Enums.LayerType;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Municipality class represents a municipality within a district.
- * It contains the name of the municipality and a list of parishes.
+ * The {@code Municipality} class represents a municipality within a district.
+ * It provides methods to access the municipality's name and other related information.
  */
+@Layer(LayerType.BACK_END)
 public class Municipality implements Region {
 
     private final String name;
@@ -29,6 +33,7 @@ public class Municipality implements Region {
      *
      * @return The name of the municipality.
      */
+    @CyclomaticComplexity(1)
     public String name() {
         return name;
     }
@@ -38,6 +43,7 @@ public class Municipality implements Region {
      *
      * @return A list of Parish objects representing the parishes in the municipality.
      */
+    @CyclomaticComplexity(1)
     public List<Parish> getParishes() {
         return parishes;
     }
@@ -47,6 +53,7 @@ public class Municipality implements Region {
      *
      * @param parish The Parish object to be added to the municipality.
      */
+    @CyclomaticComplexity(1)
     public void addParish(Parish parish) {
         this.parishes.add(parish);
     }
@@ -71,6 +78,7 @@ public class Municipality implements Region {
      *
      * @return A list of PropertyPolygon objects from all parishes in the municipality.
      */
+    @CyclomaticComplexity(2)
     public List<PropertyPolygon> getAllPropertyPolygons() {
         List<PropertyPolygon> allPolygons = new ArrayList<>();
         for (Parish parish : parishes) {

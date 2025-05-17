@@ -1,15 +1,19 @@
 package Models;
 
 
+import Annotations.CyclomaticComplexity;
+import Annotations.Layer;
+import Enums.LayerType;
 import Repository.CsvColum;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a property polygon with various attributes such as
- * object ID, parcel ID, geometry (polygon), and other property details.
+ * The {@code PropertyPolygon} class represents a property with a polygonal shape.
+ * It includes attributes such as the property ID, owner, geographical location, and shape details.
  */
+@Layer(LayerType.BACK_END)
 public class PropertyPolygon {
 
     private final int objectId;
@@ -53,42 +57,102 @@ public class PropertyPolygon {
         this.ilha = ilha;
     }
 
+    /**
+     * Gets the object ID of the property.
+     *
+     * @return The object ID.
+     */
+    @CyclomaticComplexity(1)
     public int getObjectId() {
         return objectId;
     }
 
+    /**
+     * Gets the parcel ID of the property.
+     *
+     * @return The parcel ID.
+     */
+    @CyclomaticComplexity(1)
     public double getParId() {
         return parId;
     }
 
+    /**
+     * Gets the parcel number of the property.
+     *
+     * @return The parcel number.
+     */
+    @CyclomaticComplexity(1)
     public String getParNum() {
         return parNum;
     }
 
+    /**
+     * Gets the length of the shape's boundary.
+     *
+     * @return The shape length.
+     */
+    @CyclomaticComplexity(1)
     public double getShapeLength() {
         return shapeLength;
     }
 
+    /**
+     * Gets the area of the property shape.
+     *
+     * @return The shape area.
+     */
+    @CyclomaticComplexity(1)
     public double getShapeArea() {
         return shapeArea;
     }
 
+    /**
+     * Gets the polygon representing the shape of the property.
+     *
+     * @return The polygon object.
+     */
+    @CyclomaticComplexity(1)
     public Polygon getPolygon() {
         return polygon;
     }
 
+    /**
+     * Gets the owner ID of the property.
+     *
+     * @return The owner ID.
+     */
+    @CyclomaticComplexity(1)
     public String getOwner() {
         return owner;
     }
 
+    /**
+     * Gets the parish where the property is located.
+     *
+     * @return The parish name.
+     */
+    @CyclomaticComplexity(1)
     public String getFreguesia() {
         return freguesia;
     }
 
+    /**
+     * Gets the municipality where the property is located.
+     *
+     * @return The municipality name.
+     */
+    @CyclomaticComplexity(1)
     public String getMunicipio() {
         return municipio;
     }
 
+    /**
+     * Gets the island where the property is located.
+     *
+     * @return The island name.
+     */
+    @CyclomaticComplexity(1)
     public String getIlha() {
         return ilha;
     }
@@ -109,6 +173,7 @@ public class PropertyPolygon {
      * @param row A CSV row representing the properties of the polygon.
      * @return A PropertyPolygon object or null if an error occurs during parsing.
      */
+    @CyclomaticComplexity(2)
     public static PropertyPolygon fromCsvRow(String[] row) {
         try {
             int objectId = Integer.parseInt(row[CsvColum.OBJECT_ID.getIndex()]);
@@ -135,6 +200,7 @@ public class PropertyPolygon {
      * @param geometry The geometry string representing the polygon.
      * @return A Polygon object representing the parsed geometry.
      */
+    @CyclomaticComplexity(5)
     static Polygon parseGeometry(String geometry) {
         List<VertexCoordinate> vertices = new ArrayList<>();
 
@@ -166,6 +232,7 @@ public class PropertyPolygon {
      * @param obj the object to compare this PropertyPolygon against
      * @return true if the given object represents a PropertyPolygon with the same objectId, false otherwise
      */
+    @CyclomaticComplexity(4)
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -179,6 +246,7 @@ public class PropertyPolygon {
      *
      * @return a hash code value for this PropertyPolygon
      */
+    @CyclomaticComplexity(1)
     @Override
     public int hashCode() {
         return Integer.hashCode(objectId);
@@ -190,6 +258,7 @@ public class PropertyPolygon {
      *
      * @return A string containing the property ID, owner, and the list of vertices.
      */
+    @CyclomaticComplexity(1)
     @Override
     public String toString() {
         return "ID: " + objectId + ", Owner: " + owner + ", Vertices: " + polygon.toString();
@@ -201,6 +270,7 @@ public class PropertyPolygon {
      *
      * @param owner The new owner ID to set.
      */
+    @CyclomaticComplexity(1)
     public void setOwner(String owner) {
         this.owner = owner;
     }
