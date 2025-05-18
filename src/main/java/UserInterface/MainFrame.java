@@ -10,7 +10,7 @@ import DetectAdjacentProperties.*;
 import Utils.Annotations.CyclomaticComplexity;
 import Utils.Annotations.Layer;
 import Utils.Enums.LayerType;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.SwingWorker;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
@@ -33,39 +34,37 @@ import javax.swing.plaf.basic.BasicToggleButtonUI;
  */
 @Layer(LayerType.FRONT_END)
 public class MainFrame extends JFrame {
-    private JPanel contentPanel;
-    private JPanel contentPanelCenter;
+    private final JPanel contentPanelCenter;
     private JPanel graphInfoPanel;
-    private VisualizationViewer<PropertyPolygon, String> viewer;
     private PropertyCollector collector;
 
-    private JLabel districtTitle;
-    private JLabel municipalityTitle;
-    private JLabel parishTitle;
-    private JLabel ownerTitle;
+    private final JLabel districtTitle;
+    private final JLabel municipalityTitle;
+    private final JLabel parishTitle;
+    private final JLabel ownerTitle;
 
-    private JLabel numPropsByDistrictLabel;
-    private JLabel numPropsByMunicipalityLabel;
-    private JLabel numPropsByParishLabel;
-    private JLabel numPropsByOwnerLabel;
+    private final JLabel numPropsByDistrictLabel;
+    private final JLabel numPropsByMunicipalityLabel;
+    private final JLabel numPropsByParishLabel;
+    private final JLabel numPropsByOwnerLabel;
 
-    private JLabel avgPropsByDistrictLabel;
-    private JLabel avgPropsByMunicipalityLabel;
-    private JLabel avgPropsByParishLabel;
-    private JLabel avgPropsByOwnerLabel;
+    private final JLabel avgPropsByDistrictLabel;
+    private final JLabel avgPropsByMunicipalityLabel;
+    private final JLabel avgPropsByParishLabel;
+    private final JLabel avgPropsByOwnerLabel;
 
-    private JComboBox<String> districtJComboBox;
-    private JComboBox<String> municipalityJComboBox;
-    private JComboBox<String> parishJComboBox;
-    private JComboBox<String> ownerJComboBox;
+    private final JComboBox<String> districtJComboBox;
+    private final JComboBox<String> municipalityJComboBox;
+    private final JComboBox<String> parishJComboBox;
+    private final JComboBox<String> ownerJComboBox;
 
     String activeFilterType = null;
     String activeFilterValue = null;
 
-    private JLabel currentlyDisplayingLabel = new JLabel();
+    private final JLabel currentlyDisplayingLabel = new JLabel();
 
-    private JCheckBox toggleShowOwnerId;
-    private JCheckBox toggleMergeSameOwnerProperties;
+    private final JCheckBox toggleShowOwnerId;
+    private final JCheckBox toggleMergeSameOwnerProperties;
 
     private JPanel graphPanel;
     private edu.uci.ics.jung.graph.Graph<PropertyPolygon, String> jungGraph;
@@ -94,7 +93,7 @@ public class MainFrame extends JFrame {
 
 // === LOGO NO TOPO ===
         JLabel logoLabel = new JLabel();
-        ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo_Side.png"));
+        ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("Images/logo_Side.png")));
         Image logoImage = logoIcon.getImage();
         Image resizedImageSide = logoImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(resizedImageSide);
@@ -161,7 +160,7 @@ public class MainFrame extends JFrame {
             combo.setUI(new BasicComboBoxUI() {
                 @Override
                 protected JButton createArrowButton() {
-                    JButton button = new JButton("\u25BC");
+                    JButton button = new JButton("▼");
                     button.setFont(new Font("SansSerif", Font.BOLD, 12));
                     button.setForeground(white);
                     button.setBackground(new Color(50, 50, 50));
@@ -276,13 +275,11 @@ public class MainFrame extends JFrame {
                             return null;
                         }
 
-                        List<PropertyPolygon> propriedades = collector.collectAllProperties();
-
-                        List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(propriedades);
+                        List<AdjacentPropertyPair> adjacentPairs = AdjacencyDetector.findValidAdjacentPairs(getCurrentDisplayedProperties());
 
                         SwingUtilities.invokeLater(() -> {
                             showSuccessDialog("Suggestions generated successfully to " + activeFilterValue);
-                            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(propriedades, adjacentPairs, "Location");
+                            ChangeSuggestionsFrame csf = new ChangeSuggestionsFrame(getCurrentDisplayedProperties(), adjacentPairs, "Location");
                             csf.setVisible(true);
                         });
                     } catch (Exception ex) {
@@ -541,7 +538,7 @@ public class MainFrame extends JFrame {
 
 // === CONTENT PANEL ===
 // Content panel (centro da tela)
-        contentPanel = new JPanel(); // Usa o campo da classe
+        JPanel contentPanel = new JPanel(); // Usa o campo da classe
         contentPanel.setLayout(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
         contentPanel = new JPanel(new BorderLayout());
@@ -563,7 +560,7 @@ public class MainFrame extends JFrame {
 
 // === LOGO CENTRAL ===
         JLabel centerLogo = new JLabel();
-        logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo.png")); // Carrega o logo
+        logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("Images/logo.png"))); // Carrega o logo
 
 // Redimensionar a imagem do logo para 500x500 pixels
         logoImage = logoIcon.getImage();
@@ -788,7 +785,7 @@ public class MainFrame extends JFrame {
         dialog.setLayout(new BorderLayout());
 
         // Ícone verde de check
-        JLabel iconLabel = new JLabel("\u2714"); // ✔
+        JLabel iconLabel = new JLabel("✔"); // ✔
         iconLabel.setFont(new Font("SansSerif", Font.BOLD, 48));
         iconLabel.setForeground(new Color(0, 153, 0));
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -954,8 +951,6 @@ public class MainFrame extends JFrame {
 
     @CyclomaticComplexity(1)
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new MainFrame().setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
     }
 }

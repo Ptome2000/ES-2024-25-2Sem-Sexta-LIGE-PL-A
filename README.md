@@ -32,12 +32,40 @@
 
 <h3> Functionalities </h3>
 <h4> Implemented: </h4>
+<ul>
+  <li> CSV importation </li>
+  <li> Properties graph showed </li>
+  <li> Same owner grouping </li>
+  <li> Mean property area calculated by parish, municipality and district </li>
+  <li> Mean property area calculated by parish, municipality and district with same owner properties grouped</li>
+  <li> Changes suggestions filtered by area </li>
+  <li> Changes suggestions filtered by tourism score (tourists checkpoints in the area) and urbanization </li>
+  <li>Implementation of test coverage and test results reports </li>
+  <li>implementation of github actions to automatically run the project tests</li>
+
+</ul>
 
 <h4> Not Implemented: </h4>
+<ul>
+<li>Color code for each region not implemented</li>
+</ul>
 
 <h3> How to run the project </h3>
+<p>Run main class and import CSV in "CSV import" button</p>
 
-<h3> How to test the project </h3>
+<h3> How to test the project and generate reports</h3>
+<ul> With maven use the following commands
+<li>mvn clean test</li>
+<li>mvn jacoco:report</li>
+<li>mvn allure:report</li>
+
+</ul>
+<p>Another way to generate reports is by using script "generate-reports" inside scripts folder</p>
 
 <h3> Errors / Bugs </h3>
+<ul>
+<li>Avoid 2 equal properties to be insered into graph</li>
+<li>Fix vulnerability found</li>
+</ul>
+
 

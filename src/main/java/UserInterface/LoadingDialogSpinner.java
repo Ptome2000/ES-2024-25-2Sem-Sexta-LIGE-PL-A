@@ -4,6 +4,7 @@ import Utils.Annotations.Layer;
 import Utils.Enums.LayerType;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * The {@code LoadingDialogSpinner} class represents a modal dialog that displays
@@ -29,7 +30,7 @@ public class LoadingDialogSpinner extends JDialog {
         panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         // Ícone de loading
-        ImageIcon loadingIcon = new ImageIcon(getClass().getResource("/Images/loading.gif"));
+        ImageIcon loadingIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Images/loading.gif")));
         JLabel iconLabel = new JLabel(loadingIcon, JLabel.CENTER);
         iconLabel.setOpaque(false); // não força fundo
         iconLabel.setBackground(Color.WHITE); // só se necessário
