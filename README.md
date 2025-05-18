@@ -13,20 +13,21 @@
     <td> 110660 </td>
     <td> alexandrevenancio21 </td>
   </tr>
-      <tr>
-        <td> Filipa Romão </td>
-        <td> 100744 </td>
-        <td> pipsromao </td>
-      </tr>
-      <tr>
-        <td> Lucas Jardim </td>
-        <td> 111353  </td>
-        <td> LucasJardim2004 </td>
-      </tr>
-      <td> Pedro Tomé </td>
-    <td> 106085 </td>
-  <td> ptome2000 </td>
+  <tr>
+    <td> Filipa Romão </td>
+    <td> 100744 </td>
+    <td> pipsromao </td>
+  </tr>
+  <tr>
+    <td> Lucas Jardim </td>
+    <td> 111353  </td>
+    <td> LucasJardim2004 </td>
+  </tr>
     <tr>
+      <td> Pedro Tomé </td>
+        <td> 106085 </td>
+        <td> ptome2000 </td>
+    </tr>
 </table>
 
 <h3> Functionalities </h3>
