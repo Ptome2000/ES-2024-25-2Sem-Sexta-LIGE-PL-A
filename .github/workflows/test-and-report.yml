@@ -24,23 +24,36 @@ jobs:
       # Run tests and generate reports
       - name: Run tests and generate reports
         run: |
+          set +e
           mvn clean test
+          TEST_RESULT=$?
           mvn jacoco:report
           mvn allure:report
+          exit $TEST_RESULT
+
+        # Upload  Surefire reports
+      - name: Upload Surefire Reports (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
 
       # Save reports to a folder with branch name and timestamp
       - name: Save reports
+        if: always()
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           BRANCH_NAME=${{ github.event.pull_request.head.ref }}
           REPORT_DIR="reports/${BRANCH_NAME}_${TIMESTAMP}"
           mkdir -p $REPORT_DIR
-          cp -r target/site/jacoco $REPORT_DIR/jacoco
-          cp -r reports/allure $REPORT_DIR/allure
+          cp -r target/site/jacoco $REPORT_DIR/jacoco || true
+          cp -r reports/allure $REPORT_DIR/allure || true
           echo "Reports saved to $REPORT_DIR"
 
       # Upload reports as artifacts
       - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports
