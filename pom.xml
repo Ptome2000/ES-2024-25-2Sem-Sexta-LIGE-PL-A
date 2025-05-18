@@ -17,7 +17,6 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <allure.version>2.25.0</allure.version>
-    <allure.report.path>${project.basedir}/reports/allure</allure.report.path>
   </properties>
 
   <!-- Add allure-bom to dependency management to ensure correct versions of all the dependencies are used -->
@@ -169,9 +168,6 @@
             <includes>
               <include>**/*Tests.java</include>
             </includes>
-            <systemPropertyVariables>
-              <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-            </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
@@ -229,9 +225,6 @@
             <goals>
               <goal>report</goal>
             </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/reports/jacoco</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -248,9 +241,6 @@
             <goals>
               <goal>report</goal>
             </goals>
-            <configuration>
-              <outputDirectory>${allure.report.path}</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>

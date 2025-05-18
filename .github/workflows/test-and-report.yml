@@ -79,7 +79,7 @@ jobs:
       - name: Copy Allure report to docs folder for GitHub Pages
         run: |
           rm -rf docs
-          cp -r target/site/allure docs
+          cp -r target/site/allure-maven-plugin docs
 
       - name: Commit and push Allure report to main/docs
         run: |
