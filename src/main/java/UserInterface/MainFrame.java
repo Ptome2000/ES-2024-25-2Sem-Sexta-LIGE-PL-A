@@ -88,7 +88,9 @@ public class MainFrame extends JFrame {
 
 // === LOGO NO TOPO ===
         JLabel logoLabel = new JLabel();
+
         ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("Images/logo_Side.png"));
+
         Image logoImage = logoIcon.getImage();
         Image resizedImageSide = logoImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(resizedImageSide);

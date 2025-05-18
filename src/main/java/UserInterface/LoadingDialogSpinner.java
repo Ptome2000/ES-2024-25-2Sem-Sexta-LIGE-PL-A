@@ -2,6 +2,7 @@ package UserInterface;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 /**
  * A modal dialog that displays a loading animation and message while a process is running.
@@ -10,6 +11,7 @@ import java.awt.*;
  * to inform the user that the application is busy.
  */
 public class LoadingDialogSpinner extends JDialog {
+
 
     /**
      * Constructs a new {@code LoadingDialogSpinner} attached to a parent frame.
@@ -26,8 +28,18 @@ public class LoadingDialogSpinner extends JDialog {
         panel.setBackground(Color.WHITE); // fundo branco
         panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
+        ImageIcon loadingIcon = new ImageIcon();
+
         // Ícone de loading
-        ImageIcon loadingIcon = new ImageIcon(getClass().getResource("/Images/loading.gif"));
+        URL loadingUrl = getClass().getResource("/Images/loading.gif");
+
+        if (loadingUrl != null) {
+            loadingIcon = new ImageIcon(loadingUrl);
+        } else {
+            System.err.println("⚠️ Imagem '/Images/loading.gif' não encontrada.");
+            loadingIcon = new ImageIcon(); // Ícone vazio para evitar null
+        }
+
         JLabel iconLabel = new JLabel(loadingIcon, JLabel.CENTER);
         iconLabel.setOpaque(false); // não força fundo
         iconLabel.setBackground(Color.WHITE); // só se necessário
