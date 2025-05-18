@@ -48,7 +48,7 @@ jobs:
           REPORT_DIR="reports/${BRANCH_NAME}_${TIMESTAMP}"
           mkdir -p $REPORT_DIR
           cp -r target/site/jacoco $REPORT_DIR/jacoco || true
-          cp -r reports/allure $REPORT_DIR/allure || true
+          cp -r target/site/allure-maven-plugin $REPORT_DIR/allure || true
           echo "Reports saved to $REPORT_DIR"
 
       # Upload reports as artifacts
