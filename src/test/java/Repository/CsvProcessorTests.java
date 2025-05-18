@@ -70,14 +70,16 @@ class CsvProcessorTests {
 
         @Test
         @DisplayName("Handle CSV file with no valid rows")
-        @Description("Ensures that the CsvProcessor returns an empty list when the CSV file contains no valid rows.")
+        @Description("Ensures that the CsvProcessor throws a RuntimeException when the CSV contains no valid data rows.")
         @Severity(SeverityLevel.NORMAL)
         void testNoValidRows() throws IOException {
             String filePath = "src/main/resources/tests/no_valid_rows.csv";
-            List<District> districts = CsvProcessor.convertToRegionsAndProperties(filePath);
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> CsvProcessor.convertToRegionsAndProperties(filePath),
+                    "Expected RuntimeException when CSV contains no valid rows."
+            );
 
-            assertNotNull(districts, "Districts list should not be null.");
-            assertTrue(districts.get(0).getAllPropertyPolygons().isEmpty(), "Property polygons list should be empty when there are no valid rows.");
+            assertEquals("CSV validation error: CSV contains no valid data rows. Import cancelled.", exception.getMessage());
         }
     }
 
@@ -87,13 +89,15 @@ class CsvProcessorTests {
 
         @Test
         @DisplayName("Handle invalid CSV data gracefully")
-        @Description("Ensures that invalid CSV data is logged and skipped without crashing the application.")
+        @Description("Ensures that the CsvProcessor throws a RuntimeException when the CSV contains no valid data rows.")
         @Severity(SeverityLevel.NORMAL)
         void testHandleInvalidCsvData() throws IOException {
-            List<District> districts = CsvProcessor.convertToRegionsAndProperties(INVALID_CSV_PATH);
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> CsvProcessor.convertToRegionsAndProperties(INVALID_CSV_PATH),
+                    "Expected RuntimeException when CSV contains no valid rows."
+            );
 
-            assertNotNull(districts, "Districts list should not be null.");
-            assertTrue(districts.isEmpty(), "Districts list should be empty for invalid data.");
+            assertEquals("CSV validation error: CSV contains no valid data rows. Import cancelled.", exception.getMessage());
         }
 
         @Test
