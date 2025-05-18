@@ -1,5 +1,8 @@
 package Services;
 
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import Models.PropertyPolygon;
@@ -7,10 +10,11 @@ import Models.VertexCoordinate;
 import java.util.*;
 
 /**
- * The PropertyGraphJungBuilder class is responsible for creating a graph representation
- * of property polygons using the JUNG library. Each property polygon is represented as a vertex,
- * and edges are created between properties that share at least one vertex coordinate.
+ * The {@code PropertyGraphJungBuilder} class is responsible for building a graph representation
+ * of property polygons using the JUNG library. Each vertex in the graph represents a property polygon,
+ * and edges connect properties that share at least one vertex coordinate.
  */
+@Layer(LayerType.BACK_END)
 public class PropertyGraphJungBuilder {
 
     /**
@@ -20,6 +24,7 @@ public class PropertyGraphJungBuilder {
      * @param properties A list of PropertyPolygon objects to be added to the graph.
      * @return A JUNG graph with PropertyPolygon objects as vertices and edges representing shared coordinates.
      */
+    @CyclomaticComplexity(9)
     public static Graph<PropertyPolygon, String> buildGraph(List<PropertyPolygon> properties) {
         Graph<PropertyPolygon, String> graph = new SparseGraph<>();
         int edgeId = 0;

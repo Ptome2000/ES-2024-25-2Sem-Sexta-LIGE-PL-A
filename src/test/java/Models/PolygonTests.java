@@ -5,6 +5,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,15 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 11/04/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>Constructor: 1</li>
- *     <li>getVertices: 1</li>
- *     <li>toString: 2</li>
- * </ul>
  */
 @Feature("Object Models")
+@DisplayName("Polygon Object Tests")
 class PolygonTests {
 
     @Test
@@ -36,7 +31,10 @@ class PolygonTests {
     @Description("Validates that the Polygon constructor initializes the vertices list correctly.")
     @Severity(SeverityLevel.CRITICAL)
     void constructor() {
-        List<VertexCoordinate> vertices = List.of(new VertexCoordinate(0, 0), new VertexCoordinate(1, 1));
+        List<VertexCoordinate> vertices = List.of(
+                new VertexCoordinate(0, 0),
+                new VertexCoordinate(1, 1)
+        );
         Polygon polygon = new Polygon(vertices);
 
         assertNotNull(polygon.getVertices(), "Vertices list should not be null.");
@@ -49,7 +47,10 @@ class PolygonTests {
     @Description("Validates that the getVertices method returns the correct list of vertices.")
     @Severity(SeverityLevel.NORMAL)
     void getVertices() {
-        List<VertexCoordinate> vertices = List.of(new VertexCoordinate(0, 0), new VertexCoordinate(1, 1));
+        List<VertexCoordinate> vertices = List.of(
+                new VertexCoordinate(0, 0),
+                new VertexCoordinate(1, 1)
+        );
         Polygon polygon = new Polygon(vertices);
 
         assertNotNull(polygon.getVertices(), "getVertices should not return null.");
@@ -62,10 +63,14 @@ class PolygonTests {
     @Description("Validates that the toString method returns the correct string representation of the Polygon object.")
     @Severity(SeverityLevel.TRIVIAL)
     void toStringTest() {
-        List<VertexCoordinate> vertices = List.of(new VertexCoordinate(0, 0), new VertexCoordinate(1, 1));
+        List<VertexCoordinate> vertices = List.of(
+                new VertexCoordinate(0, 0),
+                new VertexCoordinate(1, 1)
+        );
         Polygon polygon = new Polygon(vertices);
 
         String expected = "(0.0, 0.0) (1.0, 1.0) ";
         assertEquals(expected, polygon.toString(), "toString should return the correct string representation.");
     }
+
 }

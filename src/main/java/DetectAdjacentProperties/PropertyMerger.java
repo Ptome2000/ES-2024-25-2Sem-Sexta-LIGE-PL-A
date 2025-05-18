@@ -40,7 +40,7 @@ public class PropertyMerger {
      * @return A list of PropertyPolygon objects after merging adjacent properties.
      */
     @CyclomaticComplexity(3)
-    private static Map<VertexCoordinate, List<PropertyPolygon>> buildVertexMap(List<PropertyPolygon> properties) {
+    static Map<VertexCoordinate, List<PropertyPolygon>> buildVertexMap(List<PropertyPolygon> properties) {
         Map<VertexCoordinate, List<PropertyPolygon>> vertexMap = new HashMap<>();
         for (PropertyPolygon property : properties) {
             for (VertexCoordinate vertex : property.getPolygon().getVertices()) {

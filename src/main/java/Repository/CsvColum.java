@@ -1,9 +1,14 @@
 package Repository;
 
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
+
 /**
- * Enum representing the columns in a CSV file.
- * Each enum constant corresponds to a specific column in the CSV.
+ * The {@code CsvColum} enum represents the columns in a CSV file related to geographical data.
+ * Each enum constant corresponds to a specific column in the CSV file, identified by its index.
  */
+@Layer(LayerType.BACK_END)
 public enum CsvColum {
 
     OBJECT_ID(0),
@@ -33,6 +38,7 @@ public enum CsvColum {
      *
      * @return The column index.
      */
+    @CyclomaticComplexity(1)
     public int getIndex() {
         return index;
     }

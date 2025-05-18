@@ -5,6 +5,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
@@ -18,59 +19,49 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 15/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>uploadCsv: 1</li>
- * </ul>
  */
 @Feature("CSV Importation")
+@DisplayName("CSV Uploader Tests")
 class CsvUploaderTests {
 
+    private final CsvUploader uploader = new CsvUploader();
+
     @Test
-    @DisplayName("Validate Uploading Valid CSV File")
-    @Description("Ensures that the uploadCsv method correctly reads a valid CSV file and returns non-null, non-empty data.")
+    @DisplayName("Upload and read valid CSV file")
+    @Description("Ensures that the CsvUploader correctly uploads and reads a valid CSV file.")
     @Severity(SeverityLevel.CRITICAL)
-    void uploadValidCsv() {
-        CsvUploader uploader = new CsvUploader();
+    void uploadValidFile() throws IOException {
         String filePath = "src/main/resources/tests/valid.csv";
+        List<String[]> result = uploader.uploadCsv(filePath);
 
-        try {
-            List<String[]> data = uploader.uploadCsv(filePath);
-            assertNotNull(data, "Data should not be null");
-            assertFalse(data.isEmpty(), "Data should not be empty");
-        } catch (IOException e) {
-            fail("IOException should not occur: " + e.getMessage());
-        }
+        assertNotNull(result, "Result should not be null");
+        assertEquals(2, result.size(), "Expected 2 rows in the CSV file");
+        assertArrayEquals(new String[]{
+                "OBJECTID", "PAR_ID", "PAR_NUM", "Shape_Length", "Shape_Area",
+                "geometry", "OWNER", "Freguesia", "Municipio", "Ilha"
+        }, result.get(0), "Header row does not match expected values");
     }
 
     @Test
-    @DisplayName("Validate Uploading Empty CSV File")
-    @Description("Ensures that the uploadCsv method correctly handles an empty CSV file and returns an empty list.")
+    @DisplayName("Upload and handle empty CSV file")
+    @Description("Ensures that the CsvUploader correctly handles an empty CSV file.")
     @Severity(SeverityLevel.NORMAL)
-    void uploadEmptyCsv() {
-        CsvUploader uploader = new CsvUploader();
+    void uploadEmptyFile() throws IOException {
         String filePath = "src/main/resources/empty_teste.csv";
+        List<String[]> result = uploader.uploadCsv(filePath);
 
-        try {
-            List<String[]> data = uploader.uploadCsv(filePath);
-            assertNotNull(data, "Data should not be null");
-            assertTrue(data.isEmpty(), "Data should be empty");
-        } catch (IOException e) {
-            fail("IOException should not occur: " + e.getMessage());
-        }
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for an empty file");
     }
 
     @Test
-    @DisplayName("Validate Handling of Invalid File Path")
-    @Description("Ensures that the uploadCsv method throws an IOException when provided with an invalid file path.")
+    @DisplayName("Handle invalid file path")
+    @Description("Ensures that the CsvUploader throws an IOException for an invalid file path.")
     @Severity(SeverityLevel.CRITICAL)
     void uploadInvalidFilePath() {
-        CsvUploader uploader = new CsvUploader();
         String filePath = "src/main/resources/non_existent_file.csv";
 
-        assertThrows(IOException.class, () -> {
-            uploader.uploadCsv(filePath);
-        });
+        assertThrows(IOException.class, () -> uploader.uploadCsv(filePath),
+                "Expected IOException for nonexistent file path");
     }
 }

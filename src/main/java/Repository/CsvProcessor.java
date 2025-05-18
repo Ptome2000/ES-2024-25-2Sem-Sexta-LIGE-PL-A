@@ -5,6 +5,9 @@ import Models.District;
 import Models.Municipality;
 import Models.Parish;
 import Models.PropertyPolygon;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * The CsvProcessor class is responsible for processing CSV files containing property data.
- * It converts the CSV data into a structured format of Districts, Municipalities, and Parishes with their respective properties.
+ * The {@code CsvProcessor} class processes CSV data related to geographical regions, municipalities, and parishes.
+ * It converts the CSV data into a list of District objects, each containing a list of municipalities and parishes.
  */
+@Layer(LayerType.BACK_END)
 public class CsvProcessor {
 
     /**
@@ -25,6 +30,7 @@ public class CsvProcessor {
      * @return a list of District objects
      * @throws IOException if an I/O error occurs
      */
+    @CyclomaticComplexity(6)
     public static List<District> convertToRegionsAndProperties(String filePath) throws IOException {
         Map<String, District> districtMap = new HashMap<>();
         CsvLogger.logStart();
@@ -100,6 +106,7 @@ public class CsvProcessor {
      * @param columns the columns of the CSV row
      * @return true if the region data is valid, false otherwise
      */
+    @CyclomaticComplexity(3)
     private static boolean validRegion(String[] columns) {
         return !columns[7].equalsIgnoreCase("NA") &&
                 !columns[8].equalsIgnoreCase("NA") &&
@@ -113,6 +120,7 @@ public class CsvProcessor {
      * @return a list of string arrays representing the validated CSV data
      * @throws IOException if an I/O error occurs
      */
+    @CyclomaticComplexity(2)
     private static List<String[]> validateCsvData(String filePath) throws IOException {
         CsvUploader uploader = new CsvUploader();
         List<String[]> data = uploader.uploadCsv(filePath);

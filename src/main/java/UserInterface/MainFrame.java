@@ -7,6 +7,9 @@ import Repository.*;
 import Services.*;
 import DetectAdjacentProperties.*;
 
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 import javax.swing.*;
@@ -19,6 +22,16 @@ import javax.swing.SwingWorker;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 
+
+//TODO: Add javadocs for all methods and fix warnings (maybe if possible transfer some of the methods to a service controller class)
+
+/**
+ * The {@code MainFrame} class represents the main graphical user interface (GUI) of the application.
+ * It provides a visual representation of properties and allows users to interact with them.
+ * This class is responsible for displaying the main window, handling user interactions,
+ * and updating the visualization based on user input.
+ */
+@Layer(LayerType.FRONT_END)
 public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private JPanel contentPanelCenter;
@@ -64,8 +77,6 @@ public class MainFrame extends JFrame {
     public List<PropertyPolygon> getCurrentDisplayedProperties() {
         return currentDisplayedProperties;
     }
-
-
 
     public MainFrame() {
         setTitle("GeoOrganizer");
@@ -769,6 +780,7 @@ public class MainFrame extends JFrame {
     }
 
     //FUNÇÕES AUXILIARES
+    @CyclomaticComplexity(1)
     public void showSuccessDialog(String message) {
         JDialog dialog = new JDialog(this, "Sucesso", true);
         dialog.setSize(350, 150);
@@ -807,6 +819,7 @@ public class MainFrame extends JFrame {
         dialog.setVisible(true);
     }
 
+    @CyclomaticComplexity(1)
     private void updateDistrictInfo(List<PropertyPolygon> propriedades) {
         int total = propriedades.size();
         double media = propriedades.stream()
@@ -818,6 +831,7 @@ public class MainFrame extends JFrame {
         avgPropsByDistrictLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
+    @CyclomaticComplexity(1)
     private void updateMunicipalityInfo(List<PropertyPolygon> propriedades) {
         int total = propriedades.size();
         double media = propriedades.stream()
@@ -828,6 +842,7 @@ public class MainFrame extends JFrame {
         avgPropsByMunicipalityLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
+    @CyclomaticComplexity(1)
     private void updateParishInfo(List<PropertyPolygon> propriedades) {
         int total = propriedades.size();
         double media = propriedades.stream()
@@ -838,6 +853,7 @@ public class MainFrame extends JFrame {
         avgPropsByParishLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
+    @CyclomaticComplexity(1)
     private void updateOwnerInfo(List<PropertyPolygon> propriedades) {
         int total = propriedades.size();
         double media = propriedades.stream()
@@ -848,46 +864,56 @@ public class MainFrame extends JFrame {
         avgPropsByOwnerLabel.setText(String.format("Average Area: %.2f m²", media));
     }
 
+    @CyclomaticComplexity(2)
     public void setDistrictTitle(String text) {
         if (districtTitle != null) districtTitle.setText(text);
     }
 
+    @CyclomaticComplexity(2)
     public void setMunicipalityTitle(String text) {
         if (municipalityTitle != null) municipalityTitle.setText(text);
     }
 
+    @CyclomaticComplexity(2)
     public void setParishTitle(String text) {
         if (parishTitle != null) parishTitle.setText(text);
     }
 
+    @CyclomaticComplexity(2)
     public void setOwnerTitle(String text) {
         if (ownerTitle != null) ownerTitle.setText(text);
     }
 
+
+    @CyclomaticComplexity(1)
     private void clearDistrictInfo() {
         districtTitle.setText("District - NA");
         numPropsByDistrictLabel.setText("Amount of Properties: - NA");
         avgPropsByDistrictLabel.setText("Average Area: - NA");
     }
 
+    @CyclomaticComplexity(1)
     private void clearMunicipalityInfo() {
         municipalityTitle.setText("Municipality - NA");
         numPropsByMunicipalityLabel.setText("Amount of Properties: - NA");
         avgPropsByMunicipalityLabel.setText("Average Area: - NA");
     }
 
+    @CyclomaticComplexity(1)
     private void clearParishInfo() {
         parishTitle.setText("Parish - NA");
         numPropsByParishLabel.setText("Amount of Properties: - NA");
         avgPropsByParishLabel.setText("Average Area: - NA");
     }
 
+    @CyclomaticComplexity(1)
     private void clearOwnerInfo() {
         ownerTitle.setText("Owner - NA");
         numPropsByOwnerLabel.setText("Amount of Properties: - NA");
         avgPropsByOwnerLabel.setText("Average Area: - NA");
     }
 
+    @CyclomaticComplexity(8)
     public void updateGraph(List<PropertyPolygon> propriedades) {
         currentDisplayedProperties = propriedades;
 
@@ -926,7 +952,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    //MAIN
+    @CyclomaticComplexity(1)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new MainFrame().setVisible(true);

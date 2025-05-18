@@ -7,7 +7,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,19 +21,10 @@ import java.util.List;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 14/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>Constructor: 1</li>
- *     <li>addMunicipality: 1</li>
- *     <li>getMunicipalities: 1</li>
- *     <li>getAllPropertyPolygons: 2</li>
- *     <li>name: 1</li>
- * </ul>
  */
 @Feature("Object Models")
+@DisplayName("District Object Tests")
 class DistrictTests {
-
     @Test
     @DisplayName("Constructor initializes District with correct name and empty municipality list")
     @Description("Ensures that the District constructor sets the name correctly and initializes an empty municipalities list.")
@@ -45,37 +36,42 @@ class DistrictTests {
         assertTrue(district.getMunicipalities().isEmpty(), "Municipalities list should be empty on initialization.");
     }
 
-    @Test
-    @DisplayName("addMunicipality adds a Municipality to the list")
-    @Description("Ensures that the addMunicipality method adds a Municipality to the District's list.")
-    @Severity(SeverityLevel.CRITICAL)
-    void addMunicipality() {
-        District district = new District("District1");
-        Municipality municipality = new Municipality("Municipality1");
+    @Nested
+    @DisplayName("District's Municipality Management Tests")
+    class MunicipalityTests {
 
-        district.addMunicipality(municipality);
+        @Test
+        @DisplayName("addMunicipality adds a Municipality to the list")
+        @Description("Ensures that the addMunicipality method adds a Municipality to the District's list.")
+        @Severity(SeverityLevel.CRITICAL)
+        void addMunicipality() {
+            District district = new District("District1");
+            Municipality municipality = new Municipality("Municipality1");
 
-        assertEquals(1, district.getMunicipalities().size(), "Municipalities list size should be 1 after adding a municipality.");
-        assertEquals(municipality, district.getMunicipalities().get(0), "Added Municipality should match the one in the list.");
-    }
+            district.addMunicipality(municipality);
 
-    @Test
-    @DisplayName("getMunicipalities returns correct list of municipalities")
-    @Description("Ensures that the getMunicipalities method returns the correct list of municipalities.")
-    @Severity(SeverityLevel.NORMAL)
-    void getMunicipalities() {
-        District district = new District("District1");
-        Municipality municipality1 = new Municipality("Municipality1");
-        Municipality municipality2 = new Municipality("Municipality2");
+            assertEquals(1, district.getMunicipalities().size(), "Municipalities list size should be 1 after adding a municipality.");
+            assertEquals(municipality, district.getMunicipalities().get(0), "Added Municipality should match the one in the list.");
+        }
 
-        district.addMunicipality(municipality1);
-        district.addMunicipality(municipality2);
+        @Test
+        @DisplayName("getMunicipalities returns correct list of municipalities")
+        @Description("Ensures that the getMunicipalities method returns the correct list of municipalities.")
+        @Severity(SeverityLevel.NORMAL)
+        void getMunicipalities() {
+            District district = new District("District1");
+            Municipality municipality1 = new Municipality("Municipality1");
+            Municipality municipality2 = new Municipality("Municipality2");
 
-        List<Municipality> municipalities = district.getMunicipalities();
+            district.addMunicipality(municipality1);
+            district.addMunicipality(municipality2);
 
-        assertEquals(2, municipalities.size(), "getMunicipalities should return a list with 2 municipalities.");
-        assertTrue(municipalities.contains(municipality1), "List should contain the first added municipality.");
-        assertTrue(municipalities.contains(municipality2), "List should contain the second added municipality.");
+            List<Municipality> municipalities = district.getMunicipalities();
+
+            assertEquals(2, municipalities.size(), "getMunicipalities should return a list with 2 municipalities.");
+            assertTrue(municipalities.contains(municipality1), "List should contain the first added municipality.");
+            assertTrue(municipalities.contains(municipality2), "List should contain the second added municipality.");
+        }
     }
 
     @Test

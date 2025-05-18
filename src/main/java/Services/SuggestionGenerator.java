@@ -3,11 +3,19 @@ package Services;
 import DetectAdjacentProperties.AdjacentPropertyPair;
 import Models.ExchangeSuggestion;
 import Models.PropertyPolygon;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.util.*;
 
-public class SuggestionGenerator {
 
+/**
+ * The {@code SuggestionGenerator} class is responsible for generating exchange suggestions
+ * between adjacent properties based on their owners and areas.
+ */
+@Layer(LayerType.BACK_END)
+public class SuggestionGenerator {
 
     /**
      * Generates exchange suggestions based on adjacent property pairs and their properties.
@@ -16,6 +24,7 @@ public class SuggestionGenerator {
      * @param properties    The list of properties.
      * @return A list of exchange suggestions.
      */
+    @CyclomaticComplexity(2)
     public static List<ExchangeSuggestion> generateSuggestions(
             List<AdjacentPropertyPair> adjacentPairs,
             List<PropertyPolygon> properties) {
@@ -39,7 +48,8 @@ public class SuggestionGenerator {
      * @param properties The list of properties.
      * @return A map where the key is the property ID and the value is the PropertyPolygon object.
      */
-    private static Map<Integer, PropertyPolygon> mapProperties(List<PropertyPolygon> properties) {
+    @CyclomaticComplexity(2)
+    static Map<Integer, PropertyPolygon> mapProperties(List<PropertyPolygon> properties) {
         Map<Integer, PropertyPolygon> propertyMap = new HashMap<>();
         for (PropertyPolygon p : properties) {
             propertyMap.put(p.getObjectId(), p);
@@ -54,7 +64,8 @@ public class SuggestionGenerator {
      * @param propertyMap   A map of property IDs to PropertyPolygon objects.
      * @return A map where the key is a string representing the owner pair and the value is a list of adjacent property pairs.
      */
-    private static Map<String, List<AdjacentPropertyPair>> groupPairsByOwner(
+    @CyclomaticComplexity(5)
+    static Map<String, List<AdjacentPropertyPair>> groupPairsByOwner(
             List<AdjacentPropertyPair> adjacentPairs,
             Map<Integer, PropertyPolygon> propertyMap) {
 
@@ -83,7 +94,8 @@ public class SuggestionGenerator {
      * @param propertyMap A map of property IDs to PropertyPolygon objects.
      * @return An Optional containing the best exchange suggestion, or empty if no valid suggestion is found.
      */
-    private static Optional<ExchangeSuggestion> processPairList(
+    @CyclomaticComplexity(10)
+    static Optional<ExchangeSuggestion> processPairList(
             List<AdjacentPropertyPair> pairList,
             Map<Integer, PropertyPolygon> propertyMap) {
 
@@ -122,7 +134,8 @@ public class SuggestionGenerator {
      * @param groupB The second group of properties.
      * @return An Optional containing the best suggestion, or empty if no valid suggestion is found.
      */
-    private static Optional<ExchangeSuggestion> findBestSuggestion(
+    @CyclomaticComplexity(7)
+    static Optional<ExchangeSuggestion> findBestSuggestion(
             List<PropertyPolygon> groupA, List<PropertyPolygon> groupB) {
 
         double bestFeasibility = -1;
@@ -164,8 +177,6 @@ public class SuggestionGenerator {
         return Optional.ofNullable(bestSuggestion);
     }
 
-
-
     /**
      * Calculates the feasibility of an exchange based on the areas of two properties.
      *
@@ -173,6 +184,7 @@ public class SuggestionGenerator {
      * @param area2 Area of the second property.
      * @return A value between 0 and 1 representing the feasibility of the exchange.
      */
+    @CyclomaticComplexity(3)
     public static double calculateAreaFeasibility(double area1, double area2) {
         if (area1 <= 0 || area2 <= 0) return 0.0;
         return 1.0 - (Math.abs(area1 - area2) / Math.max(area1, area2));
@@ -185,7 +197,8 @@ public class SuggestionGenerator {
      * @param after  Area after the exchange.
      * @return The net area change as a percentage.
      */
-    private static double calculateNetAreaChange(double before, double after) {
+    @CyclomaticComplexity(2)
+    static double calculateNetAreaChange(double before, double after) {
         if (before <= 0) return 0.0;
         return (after - before) / before;
     }

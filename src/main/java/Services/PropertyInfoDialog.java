@@ -1,13 +1,20 @@
 package Services;
 
 import Models.PropertyPolygon;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import javax.swing.*;
 import java.awt.*;
 
+
 /**
- * Custom dialog to display detailed information about a property.
+ * The {@code PropertyInfoDialog} class is a custom dialog that displays detailed information
+ * about a specific property. It extends {@link JDialog} and provides a user-friendly interface
+ * to view property details.
  */
+@Layer(LayerType.FRONT_END)
 public class PropertyInfoDialog extends JDialog {
 
     /**

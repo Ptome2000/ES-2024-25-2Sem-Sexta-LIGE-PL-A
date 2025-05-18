@@ -22,16 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 15/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>validate: 2</li>
- *     <li>validateHeaders: 12</li>
- *     <li>validateDataRows: 2</li>
- *     <li>validateDataRow: 7</li>
- * </ul>
  */
 @Feature("CSV Importation")
+@DisplayName("CSV Validator Tests")
 class CsvValidatorTests {
 
     CsvValidator validator;
@@ -82,7 +75,7 @@ class CsvValidatorTests {
     }
 
     @Nested
-    @DisplayName("Header Validation Tests")
+    @DisplayName("CSV Header Validation Tests")
     @Severity(SeverityLevel.CRITICAL)
     class HeaderTests {
 
@@ -264,7 +257,7 @@ class CsvValidatorTests {
     }
 
     @Nested
-    @DisplayName("Data Row Validation Tests")
+    @DisplayName("CSV Data Row Validation Tests")
     @Severity(SeverityLevel.NORMAL)
     class DataRowTests {
 

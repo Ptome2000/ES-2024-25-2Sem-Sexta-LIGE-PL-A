@@ -1,14 +1,16 @@
 package UserInterface;
 
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * A modal dialog that displays a loading animation and message while a process is running.
- * <p>
- * This dialog is intended to be shown during long-running operations, such as importing or validating a file,
- * to inform the user that the application is busy.
+ * The {@code LoadingDialogSpinner} class represents a modal dialog that displays
+ * a loading spinner and a message while a process is running.
+ * It is designed to be used in a graphical user interface (GUI) application.
  */
+@Layer(LayerType.FRONT_END)
 public class LoadingDialogSpinner extends JDialog {
 
     /**
