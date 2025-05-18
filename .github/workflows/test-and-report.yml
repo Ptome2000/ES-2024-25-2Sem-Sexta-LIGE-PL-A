@@ -1,4 +1,4 @@
-name: Run tests and publish report
+name: Run tests and publish coverage report
 
 on:
   pull_request:
@@ -53,30 +53,3 @@ jobs:
         with:
           name: reports
           path: reports/
-
-      # Load test report history from gh-pages branch
-      - name: Load test report history
-        uses: actions/checkout@v4
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      # Build Allure report with history
-      - name: Build test report
-        uses: simple-elf/allure-report-action@v1.7
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: reports/allure
-
-      # Publish to GitHub Pages (gh-pages branch)
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history

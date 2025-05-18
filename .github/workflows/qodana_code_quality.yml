@@ -1,4 +1,4 @@
-name: Qodana
+name: Run Qodana
 on:
   pull_request:
     types: [closed]
