@@ -1,0 +1,47 @@
+name: Run Tests and Generate Reports
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  run-tests-and-generate-reports:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Java
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Run tests and generate reports
+      - name: Run tests and generate reports
+        run: |
+          mvn clean test
+          mvn jacoco:report
+          mvn allure:report
+
+      # Save reports to a folder with branch name and timestamp
+      - name: Save reports
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
+          REPORT_DIR="reports/${BRANCH_NAME}_${TIMESTAMP}"
+          mkdir -p $REPORT_DIR
+          cp -r target/site/jacoco $REPORT_DIR/jacoco
+          cp -r reports/allure $REPORT_DIR/allure
+          echo "Reports saved to $REPORT_DIR"
+
+      # Upload reports as artifacts
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/
