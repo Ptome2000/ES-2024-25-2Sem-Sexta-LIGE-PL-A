@@ -234,15 +234,6 @@
         <groupId>io.qameta.allure</groupId>
         <artifactId>allure-maven</artifactId>
         <version>2.14.0</version>
-        <executions>
-          <execution>
-            <id>allure-report</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
     <testSourceDirectory>src/test/java</testSourceDirectory>
