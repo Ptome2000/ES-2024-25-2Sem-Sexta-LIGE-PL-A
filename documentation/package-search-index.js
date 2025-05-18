@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"DetectAdjacentProperties"},{"l":"Models"},{"l":"Repository"},{"l":"Services"},{"l":"UserInterface"},{"l":"Utils.Annotations"},{"l":"Utils.Enums"},{"l":"Utils.Mocks"}];updateSearchResults();
