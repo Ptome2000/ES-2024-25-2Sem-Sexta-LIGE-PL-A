@@ -6,6 +6,7 @@ on:
 
 jobs:
   run-tests-and-generate-reports:
+    name: Run Tests and Generate Reports
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
@@ -60,9 +61,10 @@ jobs:
           path: reports/
 
   publish-allure-report:
+    name: Publish Allure Report
     needs: run-tests-and-generate-reports
+    if: github.event.pull_request.merged == true && always()
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout code
