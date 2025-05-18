@@ -17,6 +17,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <allure.version>2.25.0</allure.version>
+    <allure.report.path>${project.basedir}/reports/allure</allure.report.path>
   </properties>
 
   <!-- Add allure-bom to dependency management to ensure correct versions of all the dependencies are used -->
@@ -29,10 +30,26 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <!-- Vulnerability Fixing  -->
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.0.1-android</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.10.0</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+
     <dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-core</artifactId>
@@ -115,20 +132,6 @@
       <version>2.1.1</version>
     </dependency>
 
-    <!-- Vulnerability Fixing  -->
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>32.0.1-android</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-      <version>1.10.0</version>
-    </dependency>
-
   </dependencies>
 
   <repositories>
@@ -193,7 +196,7 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
         <configuration>
-          <mainClass>MainFrame</mainClass>
+          <mainClass>UserInterface.MainFrame</mainClass>
         </configuration>
       </plugin>
 
@@ -246,7 +249,7 @@
               <goal>report</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.basedir}/reports/allure</outputDirectory>
+              <outputDirectory>${allure.report.path}</outputDirectory>
             </configuration>
           </execution>
         </executions>
