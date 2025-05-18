@@ -29,9 +29,14 @@
     <tr>
 </table>
 
-<h3> Funcionalidades </h3>
-<h4> Implementadas: </h4>
+<h3> Functionalities </h3>
+<h4> Implemented: </h4>
 
-<h4> Não Implementadas: </h4>
+<h4> Not Implemented: </h4>
 
-<h3> Erros </h3>
+<h3> How to run the project </h3>
+
+<h3> How to test the project </h3>
+
+<h3> Errors / Bugs </h3>
+
