@@ -65,7 +65,6 @@
 <h3> Errors / Bugs </h3>
 <ul>
 <li>Avoid 2 equal properties to be insered into graph</li>
-<li>Fix vulnerability found</li>
 </ul>
 
 
