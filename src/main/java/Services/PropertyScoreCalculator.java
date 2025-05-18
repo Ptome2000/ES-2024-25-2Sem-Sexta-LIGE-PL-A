@@ -4,6 +4,9 @@ import Models.District;
 import Models.Municipality;
 import Models.Parish;
 import Models.PropertyPolygon;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +14,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Responsible for calculating tourism and urbanization scores
- * and assigning them to the corresponding Municipality and Parish.
+ * The {@code PropertyScoreCalculator} class is responsible for assigning tourism and urbanization scores
+ * to municipalities and parishes based on the number of properties and monuments in each region.
  */
+@Layer(LayerType.BACK_END)
 public class PropertyScoreCalculator {
 
     /**
@@ -21,6 +25,7 @@ public class PropertyScoreCalculator {
      * @param districts List of Districts containing municipalities and parishes.
      * @param allProperties Flat list of all PropertyPolygons.
      */
+    @CyclomaticComplexity(13)
     public static void assignScoresToRegions(List<District> districts, List<PropertyPolygon> allProperties) {
         // === 1. Count monuments (negative ID) per municipality ===
         Map<String, Integer> tourismByMunicipality = new HashMap<>();

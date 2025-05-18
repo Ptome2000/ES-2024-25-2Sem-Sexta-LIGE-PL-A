@@ -26,16 +26,10 @@ import java.util.Map;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 15/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>Constructor: 1</li>
- *     <li>filterByOwner: 1</li>
- *     <li>getOwnerPropertyCounts: 1</li>
- *     <li>groupPropertiesByOwner: 1</li>
- * </ul>
  */
 @Feature("Detect adjacent properties")
+@DisplayName("Property Ownership Tests")
+@Deprecated
 class PropertyOwnershipTests {
 
     @Test

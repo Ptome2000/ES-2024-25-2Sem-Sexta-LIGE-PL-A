@@ -134,7 +134,7 @@ class SpatialGrid {
      * @param nearby   The set of nearby properties to add to.
      */
     @CyclomaticComplexity(4)
-    private void addPropertiesFromCell(String cellKey, PropertyPolygon property, Set<PropertyPolygon> nearby) {
+    void addPropertiesFromCell(String cellKey, PropertyPolygon property, Set<PropertyPolygon> nearby) {
         if (grid.containsKey(cellKey)) {
             for (PropertyPolygon other : grid.get(cellKey)) {
                 if (!other.equals(property)) {

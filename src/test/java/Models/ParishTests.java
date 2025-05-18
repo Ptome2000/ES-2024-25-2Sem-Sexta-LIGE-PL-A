@@ -7,6 +7,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
@@ -19,16 +20,9 @@ import java.util.List;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 14/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>Constructor: 1</li>
- *     <li>addPropertyPolygon: 1</li>
- *     <li>getPropertyPolygonCount: 1</li>
- *     <li>getPropertyPolygons: 1</li>
- * </ul>
  */
 @Feature("Object Models")
+@DisplayName("Parish Object Tests")
 class ParishTests {
 
     @Test
@@ -42,52 +36,84 @@ class ParishTests {
         assertTrue(parish.getPropertyPolygons().isEmpty(), "PropertyPolygons list should be empty on initialization.");
     }
 
-    @Test
-    @DisplayName("addPropertyPolygon adds a PropertyPolygon to the list")
-    @Description("Ensures that the addPropertyPolygon method adds a PropertyPolygon to the Parish's list.")
-    @Severity(SeverityLevel.CRITICAL)
-    void addPropertyPolygon() {
-        Parish parish = new Parish("Parish1");
-        PropertyPolygon property = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
+    @Nested
+    @DisplayName("Parish's Property Polygon Management Tests")
+    class PropertyPolygonManagementTests {
 
-        parish.addPropertyPolygon(property);
+        @Test
+        @DisplayName("addPropertyPolygon adds a PropertyPolygon to the list")
+        @Description("Ensures that the addPropertyPolygon method adds a PropertyPolygon to the Parish's list.")
+        @Severity(SeverityLevel.CRITICAL)
+        void addPropertyPolygon() {
+            Parish parish = new Parish("Parish1");
+            PropertyPolygon property = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
 
-        assertEquals(1, parish.getPropertyPolygonCount(), "PropertyPolygon count should be 1 after adding a property.");
-        assertEquals(property, parish.getPropertyPolygons().get(0), "Added PropertyPolygon should match the one in the list.");
+            parish.addPropertyPolygon(property);
+
+            assertEquals(1, parish.getPropertyPolygonCount(), "PropertyPolygon count should be 1 after adding a property.");
+            assertEquals(property, parish.getPropertyPolygons().get(0), "Added PropertyPolygon should match the one in the list.");
+        }
+
+        @Test
+        @DisplayName("getPropertyPolygonCount returns correct count")
+        @Description("Ensures that the getPropertyPolygonCount method returns the correct number of PropertyPolygons.")
+        @Severity(SeverityLevel.NORMAL)
+        void getPropertyPolygonCount() {
+            Parish parish = new Parish("Parish1");
+            PropertyPolygon property1 = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
+            PropertyPolygon property2 = new PropertyPolygon(2, 223.45, "P124", 200.0, 300.0, null, "Owner2", "Parish1", "Municipality1", "Island1");
+
+            parish.addPropertyPolygon(property1);
+            parish.addPropertyPolygon(property2);
+
+            assertEquals(2, parish.getPropertyPolygonCount(), "PropertyPolygon count should be 2 after adding two properties.");
+        }
+
+        @Test
+        @DisplayName("getPropertyPolygons returns correct list of PropertyPolygons")
+        @Description("Ensures that the getPropertyPolygons method returns the correct list of PropertyPolygons.")
+        @Severity(SeverityLevel.NORMAL)
+        void getPropertyPolygons() {
+            Parish parish = new Parish("Parish1");
+            PropertyPolygon property1 = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
+            PropertyPolygon property2 = new PropertyPolygon(2, 223.45, "P124", 200.0, 300.0, null, "Owner2", "Parish1", "Municipality1", "Island1");
+
+            parish.addPropertyPolygon(property1);
+            parish.addPropertyPolygon(property2);
+
+            List<PropertyPolygon> properties = parish.getPropertyPolygons();
+
+            assertEquals(2, properties.size(), "getPropertyPolygons should return a list with 2 properties.");
+            assertTrue(properties.contains(property1), "List should contain the first added property.");
+            assertTrue(properties.contains(property2), "List should contain the second added property.");
+        }
     }
 
-    @Test
-    @DisplayName("getPropertyPolygonCount returns correct count")
-    @Description("Ensures that the getPropertyPolygonCount method returns the correct number of PropertyPolygons.")
-    @Severity(SeverityLevel.NORMAL)
-    void getPropertyPolygonCount() {
-        Parish parish = new Parish("Parish1");
-        PropertyPolygon property1 = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
-        PropertyPolygon property2 = new PropertyPolygon(2, 223.45, "P124", 200.0, 300.0, null, "Owner2", "Parish1", "Municipality1", "Island1");
+    @Nested
+    @DisplayName("Parish's Urbanization Score Tests")
+    class UrbanizationScoreTests {
 
-        parish.addPropertyPolygon(property1);
-        parish.addPropertyPolygon(property2);
+        @Test
+        @DisplayName("setUrbanizationScore sets the urbanization score correctly")
+        @Description("Ensures that the setUrbanizationScore method updates the urbanization score of the parish.")
+        @Severity(SeverityLevel.NORMAL)
+        void setUrbanizationScore() {
+            Parish parish = new Parish("Parish1");
+            parish.setUrbanizationScore(9.3);
 
-        assertEquals(2, parish.getPropertyPolygonCount(), "PropertyPolygon count should be 2 after adding two properties.");
-    }
+            assertEquals(9.3, parish.getUrbanizationScore(), "Urbanization score should be set correctly.");
+        }
 
-    @Test
-    @DisplayName("getPropertyPolygons returns correct list of PropertyPolygons")
-    @Description("Ensures that the getPropertyPolygons method returns the correct list of PropertyPolygons.")
-    @Severity(SeverityLevel.NORMAL)
-    void getPropertyPolygons() {
-        Parish parish = new Parish("Parish1");
-        PropertyPolygon property1 = new PropertyPolygon(1, 123.45, "P123", 100.0, 200.0, null, "Owner1", "Parish1", "Municipality1", "Island1");
-        PropertyPolygon property2 = new PropertyPolygon(2, 223.45, "P124", 200.0, 300.0, null, "Owner2", "Parish1", "Municipality1", "Island1");
+        @Test
+        @DisplayName("getUrbanizationScore retrieves the correct urbanization score")
+        @Description("Ensures that the getUrbanizationScore method retrieves the correct urbanization score of the parish.")
+        @Severity(SeverityLevel.NORMAL)
+        void getUrbanizationScore() {
+            Parish parish = new Parish("Parish1");
+            parish.setUrbanizationScore(7.8);
 
-        parish.addPropertyPolygon(property1);
-        parish.addPropertyPolygon(property2);
-
-        List<PropertyPolygon> properties = parish.getPropertyPolygons();
-
-        assertEquals(2, properties.size(), "getPropertyPolygons should return a list with 2 properties.");
-        assertTrue(properties.contains(property1), "List should contain the first added property.");
-        assertTrue(properties.contains(property2), "List should contain the second added property.");
+            assertEquals(7.8, parish.getUrbanizationScore(), "Urbanization score should be retrieved correctly.");
+        }
     }
 
 }

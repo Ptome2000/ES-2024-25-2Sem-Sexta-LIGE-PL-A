@@ -18,14 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 14/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>getMessage: 1</li>
- *     <li>toString: 1</li>
- * </ul>
  */
 @Feature("CSV Importation")
+@DisplayName("CSV Exception Tests")
 class CsvExceptionTests {
 
     @Test

@@ -39,7 +39,6 @@
       <version>1.5.1</version>
     </dependency>
 
-
     <!-- Exportação para DOT -->
     <dependency>
       <groupId>org.jgrapht</groupId>
@@ -193,12 +192,10 @@
         <version>0.8.10</version>
         <configuration>
           <excludes>
-            <exclude>Annotations/*</exclude>
-            <exclude>Enums/*</exclude>
-            <exclude>Utils/*</exclude>
+            <exclude>Utils/Mocks/*</exclude>
+            <exclude>Utils/Enums/*</exclude>
             <exclude>UserInterface/*</exclude>
             <exclude>Services/PropertyInfoDialog*</exclude>
-            <exclude>Services/PropertyGraphJungBuilder*</exclude>
             <exclude>Services/GraphViewer*</exclude>
             <exclude>DetectAdjacentProperties/MaxCoordinateFinder*</exclude>
             <exclude>DetectAdjacentProperties/MinCoordinateFinder*</exclude>
@@ -217,6 +214,9 @@
             <goals>
               <goal>report</goal>
             </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/reports/jacoco</outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -233,6 +233,9 @@
             <goals>
               <goal>report</goal>
             </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/reports/allure</outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>

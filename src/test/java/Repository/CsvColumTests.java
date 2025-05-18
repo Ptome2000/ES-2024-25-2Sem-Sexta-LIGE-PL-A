@@ -18,15 +18,9 @@ import org.junit.jupiter.api.Test;
  *
  * <p><strong>Author:</strong> Ptome2000</p>
  * <p><strong>Date:</strong> 13/05/2025</p>
- *
- * <p><strong>Cyclomatic Complexity:</strong></p>
- * <ul>
- *     <li>getIndex: 1</li>
- *     <li>values: 1</li>
- *     <li>valueOf: 1</li>
- * </ul>
  */
 @Feature("CSV Importation")
+@DisplayName("CSV Colum Enum Tests")
 class CsvColumTests {
 
     @Test

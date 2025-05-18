@@ -29,6 +29,7 @@ public class TestUtils {
      *
      * @return A list of {@link PropertyPolygon} objects with no shared vertices.
      */
+    @Deprecated
     public static List<PropertyPolygon> createNonAdjacentProperties() {
         PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
         PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{2, 2}, {3, 2}, {3, 3}, {2, 3}}));
@@ -43,6 +44,7 @@ public class TestUtils {
      *
      * @return A list of {@link PropertyPolygon} objects with shared vertices.
      */
+    @Deprecated
     public static List<PropertyPolygon> createAdjacentProperties() {
         PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
         PropertyPolygon property2 = new MockedPropertyPolygon(2, createPolygon(new double[][]{{1, 0}, {2, 0}, {2, 1}, {1, 1}}));
@@ -57,6 +59,7 @@ public class TestUtils {
      *
      * @return A {@link Graph} containing two vertices and one edge.
      */
+    @Deprecated
     public static Graph<PropertyPolygon, DefaultEdge> createSampleGraph() {
         Graph<PropertyPolygon, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
         PropertyPolygon property1 = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));
@@ -72,6 +75,7 @@ public class TestUtils {
      *
      * @return An empty {@link Graph} with no vertices or edges.
      */
+    @Deprecated
     public static Graph<PropertyPolygon, DefaultEdge> createEmptyGraph() {
         return new SimpleGraph<>(DefaultEdge.class);
     }
@@ -81,6 +85,7 @@ public class TestUtils {
      *
      * @return A {@link Graph} containing one vertex and no edges.
      */
+    @Deprecated
     public static Graph<PropertyPolygon, DefaultEdge> createSinglePropertyGraph() {
         Graph<PropertyPolygon, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
         PropertyPolygon property = new MockedPropertyPolygon(1, createPolygon(new double[][]{{0, 0}, {1, 0}, {1, 1}, {0, 1}}));

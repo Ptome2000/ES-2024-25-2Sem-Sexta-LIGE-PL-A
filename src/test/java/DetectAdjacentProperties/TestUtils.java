@@ -6,6 +6,7 @@ import Models.VertexCoordinate;
 import Utils.Mocks.MockedPropertyPolygon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -77,6 +78,7 @@ public class TestUtils {
      *
      * @return A list of string arrays, where each array represents a valid CSV row.
      */
+    @Deprecated
     public static List<String[]> createValidCsvData() {
         List<String[]> data = new ArrayList<>();
         data.add(new String[]{"1", "0,0", "1,0", "1,1", "0,1"});
@@ -89,6 +91,7 @@ public class TestUtils {
      *
      * @return A list of string arrays, where some arrays represent valid CSV rows and others are invalid.
      */
+    @Deprecated
     public static List<String[]> createInvalidCsvData() {
         List<String[]> data = new ArrayList<>();
         data.add(new String[]{"1", "0,0", "1,0", "1,1", "0,1"}); // Valid
@@ -101,6 +104,7 @@ public class TestUtils {
      *
      * @return A list of {@link PropertyPolygon} objects where some properties are duplicates.
      */
+    @Deprecated
     public static List<PropertyPolygon> createDuplicateAdjacentProperties() {
         List<PropertyPolygon> properties = new ArrayList<>();
         properties.add(createPropertyWithVertices(0, 0, 1, 0, 1, 1, 0, 1));
@@ -134,5 +138,22 @@ public class TestUtils {
         }
         Polygon polygon = new Polygon(vertices);
         return new MockedPropertyPolygon(1, polygon);
+    }
+
+    /**
+     * Creates a list of property polygons for testing.
+     *
+     * @param property1 The first property polygon to include in the list.
+     * @return A list of {@link PropertyPolygon} objects, including the given property and two additional ones.
+     */
+    public static List<PropertyPolygon> getPropertyPolygons(PropertyPolygon property1) {
+        PropertyPolygon property2 = new MockedPropertyPolygon(2, 2, "2", 15.0, 150.0,
+                new Polygon(Arrays.asList(new VertexCoordinate(1, 1), new VertexCoordinate(2, 2))),
+                "OwnerA", "FreguesiaA", "MunicipioA", "IlhaA");
+        PropertyPolygon property3 = new MockedPropertyPolygon(3, 3, "3", 20.0, 200.0,
+                new Polygon(Arrays.asList(new VertexCoordinate(3, 3), new VertexCoordinate(4, 4))),
+                "OwnerB", "FreguesiaB", "MunicipioB", "IlhaB");
+
+        return Arrays.asList(property1, property2, property3);
     }
 }

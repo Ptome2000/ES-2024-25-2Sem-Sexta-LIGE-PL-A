@@ -1,11 +1,16 @@
 package Repository;
 
 import javax.swing.*;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import java.util.List;
 
 /**
- * The CsvValidator class provides methods to validate the contents of a CSV file.
+ * The {@code CsvValidator} class provides methods to validate the contents of a CSV file.
+ * It includes methods to check for empty files, validate headers, and validate data rows.
  */
+@Layer(LayerType.BACK_END)
 public class CsvValidator {
 
     /**
@@ -14,6 +19,7 @@ public class CsvValidator {
      * @param data the list of string arrays representing the CSV data
      * @throws CsvException if the CSV file is empty or contains invalid headers
      */
+    @CyclomaticComplexity(2)
     public void validate(List<String[]> data) throws CsvException {
         if (data.isEmpty()) {
             CsvLogger.logError("csv file is empty!");
@@ -32,6 +38,7 @@ public class CsvValidator {
      * @param headers the array of header strings
      * @throws CsvException if the headers are incomplete or invalid
      */
+    @CyclomaticComplexity(12)
     private void validateHeaders(String[] headers) throws CsvException {
         if (headers.length != 10) {
             CsvLogger.logError("incomplete or invalid headers.");
@@ -58,6 +65,7 @@ public class CsvValidator {
      * @param data the list of string arrays representing the CSV data
      * @throws CsvException if any row is invalid
      */
+    @CyclomaticComplexity(2)
     private void validateDataRows(List<String[]> data) throws CsvException {
         int validCount = 0;
 
@@ -86,6 +94,7 @@ public class CsvValidator {
      * @param lineNumber the line number of the row in the CSV file (1-based)
      * @return true if there was any error in the row
      */
+    @CyclomaticComplexity(7)
     private boolean validateDataRow(String[] row, int lineNumber) {
         boolean hasError = false;
 

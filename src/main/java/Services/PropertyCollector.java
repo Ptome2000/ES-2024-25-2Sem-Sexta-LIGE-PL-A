@@ -4,13 +4,21 @@ import Models.Municipality;
 import Models.Parish;
 import Models.PropertyPolygon;
 import Models.District;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 /**
- * Service responsible for collecting and filtering property data from a list of districts.
+ * The {@code PropertyCollector} class is responsible for collecting and filtering property data
+ * from a list of districts. It provides methods to collect properties by owner, district, municipality,
+ * and parish, as well as methods to retrieve unique owner IDs and names of districts, municipalities,
+ * and parishes.
  */
+@Layer(LayerType.BACK_END)
 public class PropertyCollector {
 
     private final List<District> districts;
@@ -29,6 +37,7 @@ public class PropertyCollector {
      *
      * @return A list of PropertyPolygon objects from all districts.
      */
+    @CyclomaticComplexity(2)
     public List<PropertyPolygon> collectAllProperties() {
         List<PropertyPolygon> allPolygons = new ArrayList<>();
         for (District district : districts) {
@@ -43,6 +52,7 @@ public class PropertyCollector {
      * @param id The id of the owner to filter properties by.
      * @return A list of properties.
      */
+    @CyclomaticComplexity(4)
     public List<PropertyPolygon> collectAllPropertiesByOwner(String id) {
         List<PropertyPolygon> ownerProperties = new ArrayList<>();
         for (District district : districts) {
@@ -62,6 +72,7 @@ public class PropertyCollector {
      * @param districtName The name of the district.
      * @return A list of PropertyPolygon objects owned by the owner within the district.
      */
+    @CyclomaticComplexity(1)
     public List<PropertyPolygon> collectPropertiesByOwnerAndDistrict(String ownerId, String districtName) {
         return districts.stream()
                 .filter(d -> d.name().equalsIgnoreCase(districtName))
@@ -79,6 +90,7 @@ public class PropertyCollector {
      * @param municipalityName The name of the municipality.
      * @return A list of PropertyPolygon objects owned by the owner within the municipality.
      */
+    @CyclomaticComplexity(1)
     public List<PropertyPolygon> collectPropertiesByOwnerAndMunicipality(String ownerId, String municipalityName) {
         return districts.stream()
                 .flatMap(d -> d.getMunicipalities().stream())
@@ -96,6 +108,7 @@ public class PropertyCollector {
      * @param parishName The name of the parish.
      * @return A list of PropertyPolygon objects owned by the owner within the parish.
      */
+    @CyclomaticComplexity(1)
     public List<PropertyPolygon> collectPropertiesByOwnerAndParish(String ownerId, String parishName) {
         return districts.stream()
                 .flatMap(d -> d.getMunicipalities().stream())
@@ -111,6 +124,7 @@ public class PropertyCollector {
      *
      * @return A list of unique owner IDs.
      */
+    @CyclomaticComplexity(1)
     public List<String> getOwnerIds() {
         return districts.stream()
                 .flatMap(district -> district.getAllPropertyPolygons().stream())
@@ -125,6 +139,7 @@ public class PropertyCollector {
      *
      * @return A list of district names.
      */
+    @CyclomaticComplexity(3)
     public List<String> getDistrictNames() {
         if (districts == null || districts.isEmpty()) {
             return new ArrayList<>();
@@ -140,6 +155,7 @@ public class PropertyCollector {
      * @param districtName The name of the district to filter municipalities by.
      * @return A list of municipality names in the specified district.
      */
+    @CyclomaticComplexity(3)
     public List<String> getMunicipalityNames(String districtName) {
         if (districtName == null || districtName.isBlank()) {
             throw new IllegalArgumentException("District name cannot be null or empty");
@@ -157,6 +173,7 @@ public class PropertyCollector {
      * @param municipalityName The name of the municipality to filter parishes by.
      * @return A list of parish names in the specified municipality.
      */
+    @CyclomaticComplexity(3)
     public List<String> getParishNames(String municipalityName) {
         if (municipalityName == null || municipalityName.isBlank()) {
             throw new IllegalArgumentException("Municipality name cannot be null or empty");
@@ -175,6 +192,7 @@ public class PropertyCollector {
      * @param districtName The name of the district to filter by.
      * @return A list of PropertyPolygon objects in the specified district.
      */
+    @CyclomaticComplexity(3)
     public List<PropertyPolygon> filterByDistrict(String districtName) {
         if (districtName == null || districtName.isBlank()) {
             throw new IllegalArgumentException("District name cannot be null or empty");
@@ -191,6 +209,7 @@ public class PropertyCollector {
      * @param municipalityName The name of the municipality to filter by.
      * @return A list of PropertyPolygon objects in the specified municipality.
      */
+    @CyclomaticComplexity(3)
     public List<PropertyPolygon> filterByMunicipality(String municipalityName) {
         if (municipalityName == null || municipalityName.isBlank()) {
             throw new IllegalArgumentException("Municipality name cannot be null or empty");
@@ -208,6 +227,7 @@ public class PropertyCollector {
      * @param parishName The name of the parish to filter by.
      * @return A list of PropertyPolygon objects in the specified parish.
      */
+    @CyclomaticComplexity(3)
     public List<PropertyPolygon> filterByParish(String parishName) {
         if (parishName == null || parishName.isBlank()) {
             throw new IllegalArgumentException("Parish name cannot be null or empty");

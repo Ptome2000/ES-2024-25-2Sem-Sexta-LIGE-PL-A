@@ -2,6 +2,9 @@ package Services;
 
 import Models.PropertyPolygon;
 import Models.VertexCoordinate;
+import Utils.Annotations.CyclomaticComplexity;
+import Utils.Annotations.Layer;
+import Utils.Enums.LayerType;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
@@ -25,6 +28,7 @@ import java.util.Map;
  * It includes methods to compute a static layout and render the graph
  * in a Swing {@link JPanel}.
  */
+@Layer(LayerType.FRONT_END)
 public class GraphViewer {
 
     /**
@@ -37,6 +41,7 @@ public class GraphViewer {
      * @param windowHeight the height of the visualization window in pixels
      * @return a map associating each {@link PropertyPolygon} with a scaled screen position
      */
+    @CyclomaticComplexity(4)
     public static Map<PropertyPolygon, Point2D> calculateGraphLayout(Graph<PropertyPolygon, String> graph, int windowWidth, int windowHeight) {
         Map<PropertyPolygon, Point2D> rawCentroids = new HashMap<>();
         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
@@ -88,6 +93,7 @@ public class GraphViewer {
      * @param showOwnerIds  if true, shows the owner ID as the label on each node
      * @return a {@link JPanel} containing the interactive graph visualization
      */
+    @CyclomaticComplexity(3)
     public static JPanel createGraphPanel(Graph<PropertyPolygon, String> graph, int width, int height, boolean showOwnerIds) {
         Map<PropertyPolygon, Point2D> layoutMap = calculateGraphLayout(graph, width, height);
         Layout<PropertyPolygon, String> layout = new StaticLayout<>(graph, layoutMap::get);
@@ -115,7 +121,7 @@ public class GraphViewer {
         graphMouse.setMode(DefaultModalGraphMouse.Mode.TRANSFORMING);
         vv.setGraphMouse(graphMouse);
 
-        vv.addGraphMouseListener(new GraphMouseListener<PropertyPolygon>() {
+        vv.addGraphMouseListener(new GraphMouseListener<>() {
             @Override
             public void graphClicked(PropertyPolygon vertex, MouseEvent me) {
                 SwingUtilities.invokeLater(() -> {
